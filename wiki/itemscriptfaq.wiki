@@ -196,9 +196,15 @@ deserialize objects but it doesn't provide an in-memory object store or an event
 
 ==Is the Item Store like CouchDB and other key:value stores?==
 
+Item Store is a persistence engine for itemscript components and data.  Our reference model implementation is based on Apache Derby.  We chose Derby because it provides a simple Java configuration for development purposes.
+
 CouchDB is an excellent choice for a JSON database that provides peer-replication features. Since it speaks JSON over REST, it's very easy to integrate with an Itemscript system.
 
-Hadoop, Log4j, Hdb, Big Table and a number of other implementations are innovating to build databases that are better suited to analytics, business intelligence, and business to business.  These won't replace relational databases, but they'll be producing information that finds it's way into the same UI as the relational data. 
+Hadoop, Log4j, Hdb, Big Table and a number of other implementations are also good options, depending on your application needs.  In fact, mySQL, DB2 and other relational databases can also host itemscript components and data.
+
+All of these database projects are innovating to improve support for analytics, business intelligence, and business to business interactions.  We don't expect column stores or hash databases to replace relational or legacy databases.   We do think they'll be producing information that finds it's way into the same UI as the relational data.   
+
+Any of these implementations can be used to host itemscript components and data.  Itemscript exposes the data semantics but hides the implementation details.
 
 ==What if we want to connect SQL databases and other legacy data?==
 
