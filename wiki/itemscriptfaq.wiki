@@ -35,24 +35,34 @@ It's possible to consume SOAP to build an itemscript payload.  It's possible to 
 
 ==What levels of use are available?==
 
-A *level 0* itemscript system uses JSON to marshall data from RESTful services and provision interfaces using Java or Javascript API's.
+===level 0=== 
 
-At this level, your application might use no itemscript technologies.  It can connect to an itemscript system.  It can adopt an itemscript schema without changing it's code.  
+At the lowest level, an itemscript system uses JSON to marshall data from RESTful services and provision interfaces using Java or Javascript API's.
 
-Many existing systems that talk JSON over REST are already available for integration.
+A level 0 application might use no itemscript technologies.  It may simply connect to an itemscript system or adopt an itemscript schema without changing it's code.  
 
-A *level 1* itemscript system uses the itemscript JSON libraries to process JSON values and expose JSON APIs either in Java or over a RESTful service.
+Many existing systems that use JSON over REST are already available for integration.
 
-If you have a system architecture that works for you, you can use itemscript to expose JSON APIs.  
+===level 1=== 
 
-A *level 2* itemscript system uses itemscript schema to describe it's metadata.  It may also use the itemscript CRUD protocols to persist items.  On the client side, it may use itemscript JAM to express interface semantics and Item Lens to present the UI.
+A level 1 itemscript system uses itemscript JSON libraries to process JSON values and expose JSON APIs either in Java or over a RESTful service.
 
-At this level, the itemscript schema provides data validation, itemscript JAM describes the interface semantics and the  Item Lens animates your data on a rich web UI..
+If you have a system architecture that works for you, you can use itemscript to expose JSON APIs that wrap its technical details and expose controls using itemscript declarations.
 
-A *level 3* itemscript system uses an Itemscript object model to manage its internal workings. Your application is entirely configured using JSON structures that are processed
+===level 2=== 
+
+A level 2 itemscript system uses itemscript schema to describe it's metadata.  It may also use the itemscript CRUD protocols to persist items.  On the client side, it may use itemscript JAM to express interface semantics and Item Lens to present the UI.
+
+At this level, the itemscript schema provides data validation, itemscript JAM describes the interface semantics and the  Item Lens animates your data on a rich web UI.
+
+===level 3===
+
+A level 3 itemscript system uses an Itemscript object model to manage its internal workings. The application is entirely configured using JSON structures that are processed
 by the Itemscript libraries.
 
-At this level, the itemscript system model may represent all your data as JSON structures. You are able to configure your application using JSON.  The itemscript system mediates communication between different parts of your system using a shared data space and event model.  At this level, the components of your system communicate without directly linking to one another.
+At this level, the itemscript system model may represent all your data as JSON structures. You are able to configure your application using JSON.  
+
+At level 3, the itemscript system mediates communication between different parts of your system using a shared data space and event model.  At this level, the components of your system communicate without directly linking to one another.  
 
 ==What are the benefits of using itemscript?==
 
