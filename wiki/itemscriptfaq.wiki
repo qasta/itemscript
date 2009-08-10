@@ -1,14 +1,15 @@
 #labels Featured,Phase-Requirements
 =What is itemscript?=
 
-Itemscript is a declarative provisioning language for JSON data.
+*Itemscript* is a declarative provisioning language for JSON data.  Itemscript gives JSON (_JavaScript Object Notation_) a language for expressing data, metadata, and applications. 
 
-*Itemscript* is a set of technologies and standard conventions for building applications from components. Itemscript gives JSON (_JavaScript Object Notation_) a language for
-expressing data, metadata, and applications. Itemscript expresses design independent of its technical implementation.  Interfaces and the services that power them can iterate independently to improve agility and reduce time to solution.
+Itemscript expresses design independent of technical implementation. Interfaces and the services that power them can iterate independently to improve agility and reduce time to solution. 
+
+The *Itemscript project* provides a set of technologies and standard conventions for building applications from itemscript components. 
 
 = Frequently Asked Questions =
 
-==Why use JSON instead of XML?  Doesn't XML already do this?==
+==Why use JSON instead of XML?  Wasn't XML designed to do this?==
 
 *XML* (eXtensible Markup Language) developed as a simplified expression of *SGML* (Standard Generalized Markup Language).  XML has gained wide adoption as a document interchange standard.  It was not designed as an application provisioning language though, and does not present a friendly interface to humans (except when you hide it from them).  
 
