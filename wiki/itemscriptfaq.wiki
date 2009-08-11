@@ -111,8 +111,8 @@ The precompiler can produce Java objects from the Itemscript JSON library or fro
 
 ===Itemscript Schema specification===
 
-Itemscript schema is a simple language for describing JSON data. It aims to be a
-human-readable, human-writable way of sharing the contents of a JSON structure.  In a loosely typed environment like Python,  it can also be used to validate code.
+[http://itemscript.org/ItemscriptSchema.html Itemscript schema language] is a simple standard way to describe JSON data. It aims to be a
+human-readable, human-writable way to share the contents of a JSON structure.  In a loosely typed environment, it can also be used to validate data and catch errors.
 
 Any schema language intends to support human-to-human communication. Domain experts should not need to be experts in a schema language to communicate their
 understanding of the structure and content of shared information.
@@ -128,7 +128,7 @@ This library allows for simple internationalization and localization of messages
 
 ===Itemscript JAM (JSON Application Markup) specification===
 
-Itemscript JAM is a simple JSON markup language for provisioning applications. With JAM you describe the fabric of the application using JSON declarations.  You can include
+[http://itemscript.org/JAMOverview.html Itemscript JAM] is a simple JSON markup language for provisioning applications. With JAM you describe the fabric of the application using JSON declarations.  You can include
 event handlers, dialogs and popups. Itemscript JAM is not language- or platform-specific, but our reference model, the Item Lens, was written in Java then compiled to Javascript using Google GWT.
 
 ===Item Lens=== 
