@@ -118,7 +118,7 @@ This library allows for simple internationalization and localization of messages
 
 We define a simple protocol using JSON over REST that allows for create, read, update, delete, and list operations, and specifies what will be returned for success, errors, and warnings. You can use this specification to connect disparate data sources via standard itemscript declarations
 
-===Itemscript CRUD Protocol library for Java & GWT===
+===Itemscript Persistence Protocol library for Java & GWT===
 
 This library helps you work with Itemscript CRUD Protocol exchanges, whether on the initiating or receiving side. With GWT, it lets you easily retrieve or store data without getting into the details of assembling HTTP requests.
 
