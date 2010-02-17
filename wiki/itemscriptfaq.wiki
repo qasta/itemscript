@@ -23,9 +23,7 @@ We think it is an excellent transport for a declarative language that's understo
 
 At its most basic level, itemscript provides a schema definition for JSON data.  If your applications are already handling JSON, you can use itemscript to add a schema to your data.  This documents your data.  You can use the itemscript validator to control what's moving through the tubes.  
 
-If you're building new applications, remodeling into AJAX style UIs, adding cloud services or building mashboards, itemscript JAM (JSON Application Markup) provides a declarative language that's independent of the implementation details of your components or services.
-
-We provide reference implementations of client and server side itemscript.  The Item Lens renders a rich web UI using itemscript JAM.  The Item Store persists JSON data.  You can use our implementation as a model for your own, or you can work with us to extend these models to work for you.  
+If you're building new applications, remodeling into AJAX style UIs, adding cloud services or building mashboards, the Itemscript JSON library provides a common API for Java and GWT development.
 
 ==Is this an all or nothing proposition?  What about my stuff that already works?==
 
@@ -51,9 +49,9 @@ If you have a system architecture that works for you, you can use itemscript to 
 
 ===level 2=== 
 
-A level 2 itemscript system uses itemscript schema to describe it's metadata.  It may also use the itemscript CRUD protocols to persist items.  On the client side, it may use itemscript JAM to express interface semantics and Item Lens to present the UI.
+A level 2 itemscript system uses itemscript schema to describe it's metadata.  It may also use the itemscript protocol to persist items. 
 
-At this level, the itemscript schema provides data validation, itemscript JAM describes the interface semantics and the  Item Lens animates your data on a rich web UI.
+At this level, the itemscript schema provides data validation and the itemscript library provides an in memory object model and a RESTful proxy for data sources.
 
 ===level 3===
 
@@ -89,16 +87,6 @@ For advanced users, this library provides a sophisticated in-memory data model. 
 
 You can even attach native Java values to parts of the data model. Many of the kinds of things you might do with a dependency-injection framework or JNDI can be done using itemscript declarations.
 
-===Itemscript JSON preprocessor=== 
-
-In its simple form, JSON is a comparatively easy format to read and write.   But it can be difficult to read very deeply nested data structures, and it can be hard to break up commonly-used elements into different files. It can be finicky about commas and quotes, which makes it harder to write by hand.
-
-The itemscript schema definition language extends JSON so it can be processed into standard JSON files in a build environment.
-
-The itemscript schema syntax makes commas and quotes optional in most cases. It allows for inclusion of files or inclusion by reference from other locations in the JSON structure. 
-
-The preprocessor produces as output a perfectly legal JSON file with all commas and quotes in the right place, and all inclusions resolved.
-
 ===Itemscript JSON-to-Java precompiler===
 
 There are performance & latency benefits from providing data directly in the code rather than in external files that have to be read in a separate HTTP request.  This is especially true for startup files that are not expected to change frequently. 
@@ -126,48 +114,7 @@ annotated JSON structures with embedded type metadata.
 
 This library allows for simple internationalization and localization of messages, including interpolation of parameter values, using message files defined in JSON.
 
-===Itemscript JAM (JSON Application Markup) specification===
-
-[http://itemscript.org/JAMOverview.html Itemscript JAM] is a simple JSON markup language for provisioning applications. With JAM you describe the fabric of the application using JSON declarations.  You can include
-event handlers, dialogs and popups. Itemscript JAM is not language- or platform-specific, but our reference model, the Item Lens, was written in Java then compiled to Javascript using Google GWT.
-
-===Item Lens=== 
-
-The Item Lens is a reference implementation of an Itemscript JAM client. The Item Lens reads a JAM application description to provision a rich web (AJAX style) application.
-The Item Lens is written using the Google GWT toolkit.  The first version of the Item Lens supports all of the basic GWT widgets.  It provides event handlers and widgets that meet the needs of common web applications that present forms, data grids, and navigation controls.
-
-The Item Lens can be used standalone.  You do not need to be a Java programmer.   If you can write a JSON file, you can write a JAM application description and run it on the Item Lens. 
-
-Itemscript JAM files can be produced by server-side programs in any language. The Item Lens runs entirely in the browser and does not require any server-side components.
-
-Java/GWT programmers can extend the Item Lens by exposing itemscripts that provision widgets, event handlers, and other application components. This helps to separate the task of writing Java code from its use in provisioning applications.
-
-===Item Lens widget library for GWT===
-
-The Item Lens library for GWT is a 3rd-party project that adds itemscripts to the basic GWT widgets. 
-
-===Item Lens GChart library for GWT===
-
-The Item Lens GChart library for GWT is a 3rd-party project that provides itemscripts for an excellent charting module. 
-
-===Item Lens Google Maps library for GWT===
-
-The Item Lens Maps library wraps the Google Maps widget from Google to make it available to Item Lens applications in JAM files.
-
-===Item Store===
-
-The Item Store is a web-accessible RESTful JSON data store integrator.
-
-The Item Store is a server-side application that connects persistent data stores to Itemscript applications, or to any application that uses JSON. 
-
-The Item Store is a simple data store based on the pure-Java Apache Derby database. It can be installed and used without any further configuration. 
-
-Connections to other data stores require a simple Java interface.   If you can access the data from Java, you can easily make it available in JSON over a RESTful connection. 
-
-Item Store helps you manage those connections and make them available to other
-applications via a standard JSON connection based on itemscript.
-
-===Itemscript CRUD Protocol specification===
+===Itemscript Persistence Protocol specification===
 
 We define a simple protocol using JSON over REST that allows for create, read, update, delete, and list operations, and specifies what will be returned for success, errors, and warnings. You can use this specification to connect disparate data sources via standard itemscript declarations
 
@@ -187,24 +134,10 @@ provides facilities for managing tokens in cookies, passing them back to servers
 
 You can configure the authentication source on the server side to talk to your system of choice. 
 
-The Item Store includes a default authentication and authorization system that can be used as a base or a temporary system for development.
-
 ==How does itemscript compare to YAML?==
 
 YAML (YAML Ain't Markup Language) is a great project that's very compatible with Itemscript, as it can read and emit standard JSON. YAML provides a way to serialize and
 deserialize objects but it doesn't provide an in-memory object store or an event model.
-
-==Is the Item Store like CouchDB and other key:value stores?==
-
-Item Store is a persistence engine for itemscript components and data.  Our reference model implementation is based on Apache Derby.  We chose Derby because it provides a simple Java configuration for development purposes.
-
-CouchDB is an excellent choice for a JSON database that provides peer-replication features. Since it speaks JSON over REST, it's very easy to integrate with an Itemscript system.
-
-Hadoop, Log4j, Hdb, Big Table and a number of other implementations are also good options, depending on your application needs.  In fact, mySQL, DB2 and other relational databases can also host itemscript components and data.
-
-All of these database projects are innovating to improve support for analytics, business intelligence, and business to business interactions.  We don't expect column stores or hash databases to replace relational or legacy databases.   We do think they'll be producing information that finds it's way into the same UI as the relational data.   
-
-Any of these implementations can be used to host itemscript components and data.  Itemscript exposes the data semantics but hides the implementation details.
 
 ==What if we want to connect SQL databases and other legacy data?==
 
