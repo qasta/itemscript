@@ -220,7 +220,7 @@ final class ItemscriptObject extends ItemscriptContainer implements JsonObject {
         int i = 0;
         for (String key : keySet()) {
             JsonValue value = get(key);
-            sb.append(ItemscriptFactory.quotedString(key) + ":");
+            sb.append(ItemscriptCreator.quotedString(key) + ":");
             if (value.isContainer()) {
                 sb.append(value.asContainer()
                         .toCompactJsonString());
@@ -249,7 +249,7 @@ final class ItemscriptObject extends ItemscriptContainer implements JsonObject {
         int i = 0;
         for (String key : keySet()) {
             JsonValue value = get(key);
-            sb.append(indent(indent + 1) + ItemscriptFactory.quotedString(key) + " : ");
+            sb.append(indent(indent + 1) + ItemscriptCreator.quotedString(key) + " : ");
             if (value.isContainer()) {
                 sb.append(((ItemscriptContainer) value).toJsonString(indent + 1));
             } else {

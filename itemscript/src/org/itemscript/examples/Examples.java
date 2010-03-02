@@ -254,6 +254,8 @@ public class Examples {
             system.put("abc", 123); // triggers event handler
         }
         // Factory/Foundry interface to assist in creating Java objects from JSON declarations.
-        {}
+        {
+            // For a fully worked example, see org/itemscript/test/JsonFoundryTest.java
+        }
     }
 }

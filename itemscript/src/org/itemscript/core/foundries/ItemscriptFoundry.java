@@ -36,40 +36,37 @@ import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.values.JsonObject;
 
 /**
- * A Foundry is a class that facilitates the creation of instance objects.
- * 
- * It contains a map of {@link JsonFactory} objects. The right factory is found
- * for a {@link JsonObject}, and that factory is used to create a Java object. 
+ * The implementation class for {@link JsonFoundry}. You can either instantiate a typed instance
+ * of this class, or subclass it. 
  * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  * 
  * @param <T> The supertype that this foundry will create.
  */
-public abstract class ItemscriptFoundry<T> implements JsonFactory<T>, HasSystem, JsonFoundry<T> {
+public class ItemscriptFoundry<T> implements JsonFactory<T>, HasSystem, JsonFoundry<T> {
     private JsonSystem system;
     private final String location;
     private final JsonObject factoryObject;
+    private final String nameKey;
 
     /**
      * Subclasses must call this constructor.
      * 
+     * @param system The associated JsonSystem.
      * @param location The mem:/ location that factories in this foundry will be stored under.
+     * @param nameKey The key in the objects supplied to {@link #create(JsonObject)} that contains the name of the factory.
      */
-    protected ItemscriptFoundry(JsonSystem system, String location) {
-        if (system == null) {
-            this.location = null;
-            this.factoryObject = null;
-            return;
-        }
+    public ItemscriptFoundry(JsonSystem system, String location, String nameKey) {
         this.system = system;
         this.location = location;
+        this.nameKey = nameKey;
         factoryObject = system.createObject();
         system.put(location, factoryObject);
     }
 
     @Override
     public T create(JsonObject params) {
-        return create(params.get(getFactoryNameParameter())
+        return create(params.get(nameKey)
                 .stringValue(), params);
     }
 
@@ -82,7 +79,7 @@ public abstract class ItemscriptFoundry<T> implements JsonFactory<T>, HasSystem,
     public T create(String name, JsonObject params) {
         if (params == null) { throw new ItemscriptError("error.foundry.create.params.was.null"); }
         if (name == null) { throw new ItemscriptError("error.itemscript.Foundry.create.factoryName.was.null",
-                new Params().p("factoryNameParameter", getFactoryNameParameter())); }
+                new Params().p("factoryNameParameter", nameKey)); }
         JsonFactory<T> factory = get(name);
         if (factory == null) { throw new ItemscriptError("error.foundry.create.factory.not.found", new Params().p(
                 "name", name)); }
@@ -94,9 +91,6 @@ public abstract class ItemscriptFoundry<T> implements JsonFactory<T>, HasSystem,
         return (JsonFactory<T>) factoryObject.get(name)
                 .nativeValue();
     }
-
-    @Override
-    public abstract String getFactoryNameParameter();
 
     @Override
     public final void put(final FactoryName<T> factoryName) {

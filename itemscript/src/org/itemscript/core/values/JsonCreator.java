@@ -30,12 +30,12 @@
 package org.itemscript.core.values;
 
 /**
- * A JsonFactory is used to create JsonValues, and to convert from native Java types to JsonValues.
+ * A JsonCreator is used to create {@link JsonValue}s, and to convert from native Java types to JsonValues.
  * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  *
  */
-public interface JsonFactory {
+public interface JsonCreator {
     /**
      * Create a new empty JsonArray.
      * 

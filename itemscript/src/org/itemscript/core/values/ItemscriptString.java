@@ -121,6 +121,6 @@ final class ItemscriptString extends ItemscriptScalar implements JsonString {
 
     @Override
     public String toJsonString() {
-        return ItemscriptFactory.quotedString(stringValue());
+        return ItemscriptCreator.quotedString(stringValue());
     }
 }

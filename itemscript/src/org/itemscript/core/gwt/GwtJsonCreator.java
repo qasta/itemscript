@@ -30,7 +30,7 @@
 package org.itemscript.core.gwt;
 
 import org.itemscript.core.JsonSystem;
-import org.itemscript.core.values.ItemscriptFactory;
+import org.itemscript.core.values.ItemscriptCreator;
 import org.itemscript.core.values.JsonValue;
 
 /**
@@ -41,13 +41,13 @@ import org.itemscript.core.values.JsonValue;
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  *
  */
-public class GwtJsonFactory extends ItemscriptFactory {
+public class GwtJsonCreator extends ItemscriptCreator {
     /**
      * Create a new GwtJsonFactory.
      * 
      * @param system The associated JsonSystem.
      */
-    public GwtJsonFactory(JsonSystem system) {
+    public GwtJsonCreator(JsonSystem system) {
         super(system);
     }
 

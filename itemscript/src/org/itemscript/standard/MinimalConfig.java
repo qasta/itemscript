@@ -35,7 +35,7 @@ import java.util.UUID;
 import org.itemscript.core.ItemscriptSystem;
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.config.JsonConfig;
-import org.itemscript.core.values.JsonFactory;
+import org.itemscript.core.values.JsonCreator;
 
 /**
  * A minimal configuration for a native Java environment.
@@ -57,8 +57,8 @@ public class MinimalConfig implements JsonConfig {
     private final Random random = new Random();
 
     @Override
-    public JsonFactory createJsonFactory(JsonSystem system) {
-        return new StandardJsonFactory(system);
+    public JsonCreator createJsonCreator(JsonSystem system) {
+        return new StandardJsonCreator(system);
     }
 
     @Override

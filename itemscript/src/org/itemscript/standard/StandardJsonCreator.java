@@ -34,7 +34,7 @@ import java.io.Reader;
 
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.exceptions.ItemscriptError;
-import org.itemscript.core.values.ItemscriptFactory;
+import org.itemscript.core.values.ItemscriptCreator;
 import org.itemscript.core.values.JsonValue;
 import org.itemscript.standard.parser.JsonParser;
 import org.itemscript.standard.parser.ParseException;
@@ -46,7 +46,7 @@ import org.itemscript.standard.parser.ParseException;
  * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
-public final class StandardJsonFactory extends ItemscriptFactory {
+public final class StandardJsonCreator extends ItemscriptCreator {
     private final JsonParser parser;
 
     /**
@@ -54,7 +54,7 @@ public final class StandardJsonFactory extends ItemscriptFactory {
      * 
      * @param system The associated JsonSystem.
      */
-    public StandardJsonFactory(JsonSystem system) {
+    public StandardJsonCreator(JsonSystem system) {
         super(system);
         parser = new JsonParser(system);
     }
