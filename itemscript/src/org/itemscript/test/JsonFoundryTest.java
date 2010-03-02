@@ -112,7 +112,7 @@ public class JsonFoundryTest extends ItemscriptTestBase {
 
     @Test
     public void testFoundry() {
-        JsonFoundry<Animal> animalFoundry = new ItemscriptFoundry<Animal>(system(), "/AnimalFoundry/", "species");
+        JsonFoundry<Animal> animalFoundry = new ItemscriptFoundry<Animal>(system(), "/AnimalFoundry", "species");
         animalFoundry.put("Cat", new CatFactory());
         animalFoundry.put("Dog", new DogFactory());
         JsonObject catJson = system().getObject("classpath:org/itemscript/test/cat.json");
