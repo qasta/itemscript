@@ -30,9 +30,7 @@
 package org.itemscript.core.values;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.Params;
@@ -53,29 +51,11 @@ import org.itemscript.core.util.JsonAccessHelper;
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
 public final class ItemscriptItem implements JsonItem {
-    private class FragmentPrefixAndHandler {
-        private final String fragmentPrefix;
-        private final Handler handler;
-
-        FragmentPrefixAndHandler(String fragmentPrefix, Handler handler) {
-            this.fragmentPrefix = fragmentPrefix;
-            this.handler = handler;
-        }
-
-        String fragmentPrefix() {
-            return fragmentPrefix;
-        }
-
-        Handler handler() {
-            return handler;
-        }
-    }
-
     private final JsonSystem system;
     private final Url source;
     private JsonValue value;
     private final JsonObject meta;
-    private Map<EventType, List<FragmentPrefixAndHandler>> handlers;
+    private List<Handler> handlers;
 
     protected ItemscriptItem(JsonSystem system, Url source, JsonValue value) {
         this(system, source, null, value);
@@ -95,21 +75,11 @@ public final class ItemscriptItem implements JsonItem {
     }
 
     @Override
-    public void addHandler(EventType eventType, String fragmentPrefix, Handler handler) {
-        // FIXME remove fragment prefix, move to handler base class.
-        if (fragmentPrefix == null) { throw ItemscriptError.internalError(this,
-                "addHandler.fragmentPrefix.was.null"); }
-        if (!fragmentPrefix.startsWith("#")) { throw ItemscriptError.internalError(this,
-                "addHandler.fragmentPrefix.did.not.start.with.hash", fragmentPrefix); }
+    public void addHandler(Handler handler) {
         if (handlers == null) {
-            handlers = new HashMap<EventType, List<FragmentPrefixAndHandler>>();
+            handlers = new ArrayList<Handler>();
         }
-        List<FragmentPrefixAndHandler> handlersForEvent = handlers.get(eventType);
-        if (handlersForEvent == null) {
-            handlersForEvent = new ArrayList<FragmentPrefixAndHandler>();
-            handlers.put(eventType, handlersForEvent);
-        }
-        handlersForEvent.add(new FragmentPrefixAndHandler(fragmentPrefix, handler));
+        handlers.add(handler);
     }
 
     @Override
@@ -233,13 +203,9 @@ public final class ItemscriptItem implements JsonItem {
     void notifyPut(String fragment, JsonValue newValue) {
         if (handlers != null) {
             Event event = new Event(EventType.PUT, fragment, newValue);
-            List<FragmentPrefixAndHandler> handlersForEvent = handlers.get(EventType.PUT);
-            for (int i = 0; i < handlersForEvent.size(); ++i) {
-                FragmentPrefixAndHandler fragmentPrefixAndHandler = handlersForEvent.get(i);
-                if (fragment.startsWith(fragmentPrefixAndHandler.fragmentPrefix())) {
-                    fragmentPrefixAndHandler.handler()
-                            .handle(event);
-                }
+            for (int i = 0; i < handlers.size(); ++i) {
+                handlers.get(i)
+                        .handle(event);
             }
         }
     }
@@ -247,13 +213,9 @@ public final class ItemscriptItem implements JsonItem {
     void notifyRemove(String fragment) {
         if (handlers != null) {
             Event event = new Event(EventType.REMOVE, fragment, null);
-            List<FragmentPrefixAndHandler> handlersForEvent = handlers.get(EventType.REMOVE);
-            for (int i = 0; i < handlersForEvent.size(); ++i) {
-                FragmentPrefixAndHandler fragmentPrefixAndHandler = handlersForEvent.get(i);
-                if (fragment.startsWith(fragmentPrefixAndHandler.fragmentPrefix())) {
-                    fragmentPrefixAndHandler.handler()
-                            .handle(event);
-                }
+            for (int i = 0; i < handlers.size(); ++i) {
+                handlers.get(i)
+                        .handle(event);
             }
         }
     }

@@ -34,7 +34,6 @@ import org.itemscript.core.JsonSystem;
 import org.itemscript.core.connectors.GetCallback;
 import org.itemscript.core.connectors.PutCallback;
 import org.itemscript.core.connectors.RemoveCallback;
-import org.itemscript.core.events.EventType;
 import org.itemscript.core.events.Handler;
 
 /**
@@ -49,13 +48,12 @@ import org.itemscript.core.events.Handler;
  */
 public interface JsonItem extends HasSystem, JsonAccess {
     /**
-     * Add an event handler to this item.
+     * Add an event handler to this item. The handler will be called any time the value of this item
+     * changes or is removed.  
      * 
-     * @param eventType The event type to listen for.
-     * @param fragmentPrefix The fragment prefix to look for.
-     * @param handler The Handler to attach to this event type.
+     * @param handler The Handler to attach to this JsonItem.
      */
-    public void addHandler(EventType eventType, String fragmentPrefix, Handler handler);
+    public void addHandler(Handler handler);
 
     /**
      * Get a value from (or relative to) this item by URL.

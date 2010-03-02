@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.events.Event;
-import org.itemscript.core.events.EventType;
 import org.itemscript.core.events.Handler;
 import org.itemscript.core.util.Base64;
 import org.itemscript.core.values.JsonArray;
@@ -245,7 +244,7 @@ public class Examples {
             system.put("abc", "xyz");
             JsonItem item = system.get("abc")
                     .item();
-            item.addHandler(EventType.PUT, "#", new Handler() {
+            item.addHandler(new Handler() {
                 public void handle(Event event) {
                     int newValue = event.value()
                             .intValue();
