@@ -42,6 +42,7 @@ public class JsonItemTest extends ItemscriptTestBase {
     public static boolean putEventTriggered = false;
     public static String putEventValue = null;
     public static boolean removeEventTriggered = false;
+    public static String removeEventFragment = null;
 
     @Test
     public void testConstruction() {
@@ -64,9 +65,10 @@ public class JsonItemTest extends ItemscriptTestBase {
         {
             JsonValue value = system().put("mem:/test", "value");
             JsonItem item = value.item();
-            item.addHandler(EventType.PUT, "#", new Handler() {
+            item.addHandler(new Handler() {
                 public void handle(Event event) {
-                    putEventTriggered = true;
+                    putEventTriggered = event.eventType()
+                            .equals(EventType.PUT);
                     putEventValue = event.value()
                             .stringValue();
                 }
@@ -78,13 +80,16 @@ public class JsonItemTest extends ItemscriptTestBase {
         {
             JsonValue value = system().put("mem:/test2#foo", "value");
             JsonItem item = value.item();
-            item.addHandler(EventType.REMOVE, "#foo", new Handler() {
+            item.addHandler(new Handler() {
                 public void handle(Event event) {
-                    removeEventTriggered = true;
+                    removeEventTriggered = event.eventType()
+                            .equals(EventType.REMOVE);
+                    removeEventFragment = event.fragment();
                 }
             });
             item.remove("#foo");
             assertTrue(removeEventTriggered);
+            assertEquals("#foo", removeEventFragment);
         }
     }
 
