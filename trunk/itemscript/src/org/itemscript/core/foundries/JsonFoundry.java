@@ -65,16 +65,6 @@ public interface JsonFoundry<T> extends JsonFactory<T> {
     public abstract T create(String name, JsonObject params);
 
     /**
-     * The key of the parameter inside the JsonObject parameter object that
-     * contains the name of the factory to use to create an instance.
-     * 
-     * For instance, for a WidgetFoundry this would be "widget".
-     * 
-     * @return The parameter name used to find the factory.
-     */
-    public abstract String getFactoryNameParameter();
-
-    /**
      * Put a {@link FactoryName} into this foundry.
      * 
      * @param factoryName The factory to be put in this foundry.

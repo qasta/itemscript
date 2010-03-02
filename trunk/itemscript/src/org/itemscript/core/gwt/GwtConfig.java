@@ -31,7 +31,7 @@ package org.itemscript.core.gwt;
 
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.config.JsonConfig;
-import org.itemscript.core.values.JsonFactory;
+import org.itemscript.core.values.JsonCreator;
 
 /**
  * A JsonConfig implementation for the GWT environment.
@@ -43,8 +43,8 @@ public class GwtConfig implements JsonConfig {
     private final static String integerToHex = "0123456789abcdef";
 
     @Override
-    public JsonFactory createJsonFactory(JsonSystem system) {
-        return new GwtJsonFactory(system);
+    public JsonCreator createJsonCreator(JsonSystem system) {
+        return new GwtJsonCreator(system);
     }
 
     @Override

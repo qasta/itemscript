@@ -34,7 +34,7 @@ import org.itemscript.core.connectors.PutCallback;
 import org.itemscript.core.connectors.RemoveCallback;
 import org.itemscript.core.url.Url;
 import org.itemscript.core.values.JsonAccess;
-import org.itemscript.core.values.JsonFactory;
+import org.itemscript.core.values.JsonCreator;
 import org.itemscript.core.values.JsonValue;
 
 /**
@@ -43,7 +43,7 @@ import org.itemscript.core.values.JsonValue;
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  *
  */
-public interface JsonSystem extends JsonAccess, JsonFactory {
+public interface JsonSystem extends JsonAccess, JsonCreator {
     /**
      * The root URL for the system (<code>"mem:/"</code>).
      */

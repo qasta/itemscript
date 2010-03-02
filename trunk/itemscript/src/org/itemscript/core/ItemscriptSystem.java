@@ -47,7 +47,7 @@ import org.itemscript.core.util.JsonAccessHelper;
 import org.itemscript.core.values.ItemscriptContainer;
 import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonBoolean;
-import org.itemscript.core.values.JsonFactory;
+import org.itemscript.core.values.JsonCreator;
 import org.itemscript.core.values.JsonItem;
 import org.itemscript.core.values.JsonNative;
 import org.itemscript.core.values.JsonNull;
@@ -63,7 +63,7 @@ import org.itemscript.core.values.JsonValue;
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
 public final class ItemscriptSystem implements JsonSystem {
-    private final JsonFactory factory;
+    private final JsonCreator factory;
     private final JsonConfig config;
     private final JsonObject connectors;
 
@@ -77,7 +77,7 @@ public final class ItemscriptSystem implements JsonSystem {
      */
     public ItemscriptSystem(JsonConfig config) {
         this.config = config;
-        factory = config.createJsonFactory(this);
+        factory = config.createJsonCreator(this);
         connectors = MemConnector.create(this);
         config.seedSystem(this);
     }
@@ -176,7 +176,7 @@ public final class ItemscriptSystem implements JsonSystem {
         });
     }
 
-    private JsonFactory factory() {
+    private JsonCreator factory() {
         return factory;
     }
 

@@ -34,11 +34,11 @@ import org.itemscript.core.JsonSystem;
 import org.itemscript.core.url.Url;
 
 /**
- * The implementation class for a {@link JsonFactory}. Subclass this to create a new JsonFactory type.
+ * The implementation class for a {@link JsonCreator}. Subclass this to create a new JsonCreator type.
  * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
-public abstract class ItemscriptFactory implements JsonFactory, HasSystem {
+public abstract class ItemscriptCreator implements JsonCreator, HasSystem {
     static String quotedString(String value) {
         if (value == null || value.length() == 0) { return "\"\""; }
         char b;
@@ -98,7 +98,7 @@ public abstract class ItemscriptFactory implements JsonFactory, HasSystem {
      * 
      * @param system The associated JsonSystem.
      */
-    public ItemscriptFactory(JsonSystem system) {
+    public ItemscriptCreator(JsonSystem system) {
         this.system = system;
     }
 

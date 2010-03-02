@@ -30,7 +30,7 @@
 package org.itemscript.core.config;
 
 import org.itemscript.core.JsonSystem;
-import org.itemscript.core.values.JsonFactory;
+import org.itemscript.core.values.JsonCreator;
 
 /**
  * The interface that must be implemented to configure an {@link JsonSystem}.
@@ -42,12 +42,12 @@ import org.itemscript.core.values.JsonFactory;
  */
 public interface JsonConfig {
     /**
-     * Create a new {@link JsonFactory}. Will be called once by the JsonSystem after it is created.
+     * Create a new {@link JsonCreator}. Will be called once by the JsonSystem after it is created.
      * 
      * @param system The associated JsonSystem.
      * @return A new JsonFactory.
      */
-    public JsonFactory createJsonFactory(JsonSystem system);
+    public JsonCreator createJsonCreator(JsonSystem system);
 
     /**
      * Generate a new random UUID.
