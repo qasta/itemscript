@@ -1,0 +1,14 @@
+org.itemscript.core
+org.itemscript.core.config
+org.itemscript.core.connectors
+org.itemscript.core.events
+org.itemscript.core.exceptions
+org.itemscript.core.foundries
+org.itemscript.core.gwt
+org.itemscript.core.mappings
+org.itemscript.core.url
+org.itemscript.core.util
+org.itemscript.core.values
+org.itemscript.server
+org.itemscript.standard
+org.itemscript.standard.parser
