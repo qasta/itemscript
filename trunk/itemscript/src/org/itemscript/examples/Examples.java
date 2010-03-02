@@ -226,7 +226,7 @@ public class Examples {
                     .p("internal", "#def")
                     .p("def", "xyz")
                     .p("absolute", "mem:/ghi")
-                    .p("re2lative", "ghi"));
+                    .p("relative", "ghi"));
             system.put("mem:/ghi", 123);
             String internalString = system.dereference("mem:/abc#internal")
                     .stringValue(); // xyz
