@@ -74,7 +74,7 @@ Instead of spending their time creating and compiling superficial variations of 
 
 Instead of changing code to remodel an interface, or generating new code to re-use a component, your interface developers will be composing from re-usable components.
 
-==What are the pieces and parts of itemscript?==
+==What are the pieces and parts of Itemscript?==
 
 ===Itemscript JSON library=== 
 
