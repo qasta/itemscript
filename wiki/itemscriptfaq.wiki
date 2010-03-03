@@ -33,27 +33,27 @@ It's possible to consume SOAP to build an Itemscript payload.  It's possible to 
 
 ==What levels of use are available?==
 
-===level 0=== 
+===Level 0=== 
 
-At the lowest level, an itemscript system uses JSON to marshall data from RESTful services and provision interfaces using Java or Javascript API's.
+The lowest level of compliance is any system that uses JSON to marshall data from RESTful services and provision interfaces using Java or Javascript APIs.
 
-A level 0 application might use no itemscript technologies.  It may simply connect to an itemscript system or adopt an itemscript schema without changing it's code.  
+A level 0 application might use no Itemscript technologies. It may simply connect to an Itemscript system or adopt an Itemscript schema without using any code.
 
 Many existing systems that use JSON over REST are already available for integration.
 
-===level 1=== 
+===Level 1=== 
 
 A level 1 itemscript system uses itemscript JSON libraries to process JSON values and expose JSON APIs either in Java or over a RESTful service.
 
 If you have a system architecture that works for you, you can use itemscript to expose JSON APIs that wrap its technical details and expose controls using itemscript declarations.  
 
-===level 2=== 
+===Level 2=== 
 
 A level 2 Itemscript system uses Itemscript schema to describe it's metadata.  It may also use the Itemscript protocol to persist items. 
 
 At this level, the Itemscript schema provides data validation and the Itemscript library provides an in memory object model and a RESTful proxy for data sources.
 
-===level 3===
+===Level 3===
 
 A level 3 Itemscript system uses an Itemscript object model to manage its internal workings. The application is entirely configured using JSON structures that are processed
 by the Itemscript libraries.
@@ -124,7 +124,7 @@ provides facilities for managing tokens in cookies, passing them back to servers
 
 You can configure the authentication source on the server side to talk to your system of choice. 
 
-==How does itemscript compare to YAML?==
+==How does Itemscript compare to YAML?==
 
 YAML (YAML Ain't Markup Language) is a great project that's very compatible with Itemscript, as it can read and emit standard JSON. YAML provides a way to serialize and
 deserialize objects but it doesn't provide an in-memory object store or an event model.
