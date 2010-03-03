@@ -15,9 +15,9 @@ Itemscript expresses design independent of technical implementation. Interfaces 
 
 XML parsing is an expensive overhead to *AJAX* style applications.  *JSON* was designed to work with Javascript.  Torn between the nested elegance of XML and the pedal to the metal feel of JSON, we decided to take the best of XML and apply it to JSON.  
 
-JSON is easy to write and understand.  It lends itself to declarative programming, and it presents itself ready to go out of the tubes whether it's presenting or persisting data.  
+JSON is easy to write and understand and lends itself to declarative programming.  
 
-We think it is an excellent transport for a declarative language that's understood by programmers, interface designers, browsers, column stores, relational databases and web services.  What's good for Javascript is good for all of us.
+We think it is an excellent syntax for a declarative language that's understood by programmers, interface designers, browsers, column stores, relational databases and web services.  What's good for Javascript is good for all of us.
 
 ==What's needed to build applications using Itemscript?==
 
@@ -43,13 +43,13 @@ Many existing systems that use JSON over REST are already available for integrat
 
 ===Level 1=== 
 
-A level 1 itemscript system uses itemscript JSON libraries to process JSON values and expose JSON APIs either in Java or over a RESTful service.
+A level 1 Itemscript system uses itemscript JSON libraries to process JSON values and expose JSON APIs either in Java or over a RESTful service.
 
-If you have a system architecture that works for you, you can use itemscript to expose JSON APIs that wrap its technical details and expose controls using itemscript declarations.  
+If you have a system architecture that works for you, you can use Itemscript to expose JSON APIs that wrap its technical details and expose controls using itemscript declarations.  
 
 ===Level 2=== 
 
-A level 2 Itemscript system uses Itemscript schema to describe it's metadata.  It may also use the Itemscript protocol to persist items. 
+A level 2 Itemscript system uses Itemscript schema to describe its metadata.  It may also use the Itemscript protocol to persist items. 
 
 At this level, the Itemscript schema provides data validation and the Itemscript library provides an in memory object model and a RESTful proxy for data sources.
 
@@ -78,14 +78,13 @@ Instead of changing code to remodel an interface, or generating new code to re-u
 
 ===Itemscript JSON library=== 
 
-This is a Java library for working with JSON data.  It's designed to provide convenient services to JSON objects.  JsonObject type implements Map. There are convenience methods for null-safe conversion of stored values to native Java types. There are methods for
-easily creating sub-objects, and for accessing deeply-nested values by path.
+This is a Java library for working with JSON data.  It's designed to provide convenient services to JSON objects. There are convenience methods for null-safe conversion of stored values to native Java types. There are methods for easily creating sub-objects, and for accessing deeply-nested values by path.
 
-This library is compatible with a conventional Java stack (for instance, web applications on an application server).  We developed it using Google's GWT, which compiles Java to concise Javascript for use in web browsers. 
+This library is compatible with a conventional Java stack (for instance, web applications on an application server).  We developed it for use with Google's GWT, which compiles Java to concise Javascript for use in web browsers. 
 
 For advanced users, this library provides a sophisticated in-memory data model.  You can include connections to external persistent data sources or stores. You can attach event handlers to values.  This enables a loosely coupled relationship between the parts of your system mediated through the Itemscript data model. 
 
-You can even attach native Java values to parts of the data model. Many of the kinds of things you might do with a dependency-injection framework or JNDI can be done using itemscript declarations.
+You can even attach native Java values to parts of the data model. Many of the kinds of things you might do with a dependency-injection framework or JNDI can be done using the Itemscript library.
 
 ===Itemscript Schema specification===
 
@@ -94,35 +93,6 @@ human-readable, human-writable way to share the contents of a JSON structure.  I
 
 Any schema language intends to support human-to-human communication. Domain experts should not need to be experts in a schema language to communicate their
 understanding of the structure and content of shared information.
-
-===Itemscript Schema library===
-
-This is a Java library that works with an Itemscript Schema specification.  It can read and  manipulate a schema, then validate JSON values or documents. There are simple methods that check values and throw errors or return lists of errors.  You can use this library to return
-annotated JSON structures with embedded type metadata.
-
-===Itemscript Messages library=== 
-
-This library allows for simple internationalization and localization of messages, including interpolation of parameter values, using message files defined in JSON.
-
-===Itemscript Persistence Protocol specification===
-
-We define a simple protocol using JSON over REST that allows for create, read, update, delete, and list operations, and specifies what will be returned for success, errors, and warnings. You can use this specification to connect disparate data sources via standard Itemscript declarations
-
-===Itemscript Persistence Protocol library for Java & GWT===
-
-This library helps you work with Itemscript CRUD Protocol exchanges, whether on the initiating or receiving side. With GWT, it lets you easily retrieve or store data without getting into the details of assembling HTTP requests.
-
-===Itemscript Pages library for GWT===
-
-This library helps GWT applications maintain state, respond correctly to the back button, and set bookmarks. It uses the metaphor of pages, including multiple pages in tabs or panels, to control how an application animates information in response to user
-requests or responses from a server.
-
-===Itemscript Authentication & Authorization library for Java & GWT===
-
-Almost all applications require authentication and authorization. This library defines the conventions for obtaining and managing authentication information.  It produces authentication tokens that can be passed to web clients. Within GWT, it
-provides facilities for managing tokens in cookies, passing them back to servers. It also provides a simple widget for accepting logins.
-
-You can configure the authentication source on the server side to talk to your system of choice. 
 
 ==How does Itemscript compare to YAML?==
 
