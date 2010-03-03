@@ -1,11 +1,11 @@
 #labels Featured,Phase-Requirements
-=What is itemscript?=
+=What is Itemscript?=
 
-*Itemscript* is a declarative provisioning language for JSON data.  Itemscript gives JSON (!JavaScript Object Notation) a language for expressing data, metadata, and applications. 
+The *Itemscript project* intends to provide a set of technologies and standard conventions for building applications from Itemscript components. 
 
-Itemscript expresses design independent of technical implementation. Interfaces and the services that power them can iterate independently to improve agility and reduce time to solution. 
+*Itemscript* is a declarative provisioning language for JSON data.  Itemscript gives [http://json.org/ JSON] a language for expressing data, metadata, and applications. 
 
-The *Itemscript project* provides a set of technologies and standard conventions for building applications from itemscript components. 
+Itemscript expresses design independent of technical implementation. Interfaces and the services that power them can iterate independently to improve agility and reduce time to solution.
 
 = Frequently Asked Questions =
 
@@ -17,19 +17,19 @@ XML parsing is an expensive overhead to *AJAX* style applications.  *JSON* was d
 
 JSON is easy to write and understand.  It lends itself to declarative programming, and it presents itself ready to go out of the tubes whether it's presenting or persisting data.  
 
-We think it is an excellent transport for a declarative language that's understood by programmers, interface designers, browsers, column stores, relational databases and web services.  What's good for javascript is good for all of us.
+We think it is an excellent transport for a declarative language that's understood by programmers, interface designers, browsers, column stores, relational databases and web services.  What's good for Javascript is good for all of us.
 
-==What's needed to build applications using itemscript?==
+==What's needed to build applications using Itemscript?==
 
-At its most basic level, itemscript provides a schema definition for JSON data.  If your applications are already handling JSON, you can use itemscript to add a schema to your data.  This documents your data.  You can use the itemscript validator to control what's moving through the tubes.  
+At its most basic level, Itemscript provides a schema definition for JSON data.  If your applications are already handling JSON, you can use Itemscript to add a schema to your data.  This documents your data.  You can use the Itemscript validator to control what's moving through the tubes.  
 
 If you're building new applications, remodeling into AJAX style UIs, adding cloud services or building mashboards, the Itemscript JSON library provides a common API for Java and GWT development.
 
 ==Is this an all or nothing proposition?  What about my stuff that already works?==
 
-An "itemscript system" is one that uses some or all of these building blocks.   An Itemscript system can interact with any component or service that knows how to read or write JSON, especially over RESTful connections.
+An "Itemscript system" is one that uses some or all of these building blocks.   An Itemscript system can interact with any component or service that knows how to read or write JSON, especially over RESTful connections.
 
-It's possible to consume SOAP to build an itemscript payload.  It's possible to provision interfaces built with HTML using an itemscript system.  In these use cases, itemscript provides a layer of isolation between the declarative functionality of the service or component and its internal complexity.  In that context, itemscript enables the UI and the services it consumes to iterate independently of each other.  
+It's possible to consume SOAP to build an Itemscript payload.  It's possible to provision interfaces built with HTML using an Itemscript system.  In these use cases, Itemscript provides a layer of isolation between the declarative functionality of the service or component and its internal complexity.  In that context, Itemscript enables the UI and the services it consumes to iterate independently of each other.  
 
 ==What levels of use are available?==
 
@@ -49,26 +49,26 @@ If you have a system architecture that works for you, you can use itemscript to 
 
 ===level 2=== 
 
-A level 2 itemscript system uses itemscript schema to describe it's metadata.  It may also use the itemscript protocol to persist items. 
+A level 2 Itemscript system uses Itemscript schema to describe it's metadata.  It may also use the Itemscript protocol to persist items. 
 
-At this level, the itemscript schema provides data validation and the itemscript library provides an in memory object model and a RESTful proxy for data sources.
+At this level, the Itemscript schema provides data validation and the Itemscript library provides an in memory object model and a RESTful proxy for data sources.
 
 ===level 3===
 
-A level 3 itemscript system uses an Itemscript object model to manage its internal workings. The application is entirely configured using JSON structures that are processed
+A level 3 Itemscript system uses an Itemscript object model to manage its internal workings. The application is entirely configured using JSON structures that are processed
 by the Itemscript libraries.
 
-At this level, the itemscript system model may represent all your data as JSON structures. You are able to configure your application using JSON.  
+At this level, the Itemscript system model may represent all your data as JSON structures. You are able to configure your application using JSON.  
 
-At level 3, the itemscript system mediates communication between different parts of your system using a shared data space and event model.  At this level, the components of your system communicate without directly linking to one another.  
+At level 3, the Itemscript system mediates communication between different parts of your system using a shared data space and event model.  At this level, the components of your system communicate without directly linking to one another.  
 
-==What are the benefits of using itemscript?==
+==What are the benefits of using Itemscript?==
 
-With itemscript, your application is dynamically configurable, your interfaces are extremely extensible, and your components are hot swappable.  Your cost of ownership will be lower and your responsiveness to change will be higher.  
+With Itemscript, your application is dynamically configurable, your interfaces are extremely extensible, and your components are hot swappable.  Your cost of ownership will be lower and your responsiveness to change will be higher.  
 
-The itemscript design exploits a loosely coupled architecture.  During  development, your datastores can be stubbed out to use simple services.  Your technical developers can  expose controls while hiding complexity.  
+The Itemscript design exploits a loosely coupled architecture.  During  development, your datastores can be stubbed out to use simple services.  Your technical developers can  expose controls while hiding complexity.  
 
-This allows a wider group of people to contribute to application development efforts. Casual programmers can read and write itemscript.  
+This allows a wider group of people to contribute to application development efforts. Casual programmers can read and write Itemscript.  
 
 Instead of spending their time creating and compiling superficial variations of existing code, programmers can publish re-usable components that can be configured and connected using simple declarative statements, expressed in JSON.
 
@@ -86,16 +86,6 @@ This library is compatible with a conventional Java stack (for instance, web app
 For advanced users, this library provides a sophisticated in-memory data model.  You can include connections to external persistent data sources or stores. You can attach event handlers to values.  This enables a loosely coupled relationship between the parts of your system mediated through the Itemscript data model. 
 
 You can even attach native Java values to parts of the data model. Many of the kinds of things you might do with a dependency-injection framework or JNDI can be done using itemscript declarations.
-
-===Itemscript JSON-to-Java precompiler===
-
-There are performance & latency benefits from providing data directly in the code rather than in external files that have to be read in a separate HTTP request.  This is especially true for startup files that are not expected to change frequently. 
-
-The precompiler gives you a way to compile a JSON file into a Java file with the same data structure.  The GWT compiler can optimize that file and include it in your application.
-
-By bypassing JSON parsing, the precompiler may also be useful in other Java environments where startup speed is important.
-
-The precompiler can produce Java objects from the Itemscript JSON library or from the GWT JSON library. It may be useful to GWT developers even if they aren't using the rest of the Itemscript system.
 
 ===Itemscript Schema specification===
 
@@ -116,7 +106,7 @@ This library allows for simple internationalization and localization of messages
 
 ===Itemscript Persistence Protocol specification===
 
-We define a simple protocol using JSON over REST that allows for create, read, update, delete, and list operations, and specifies what will be returned for success, errors, and warnings. You can use this specification to connect disparate data sources via standard itemscript declarations
+We define a simple protocol using JSON over REST that allows for create, read, update, delete, and list operations, and specifies what will be returned for success, errors, and warnings. You can use this specification to connect disparate data sources via standard Itemscript declarations
 
 ===Itemscript Persistence Protocol library for Java & GWT===
 
@@ -141,6 +131,6 @@ deserialize objects but it doesn't provide an in-memory object store or an event
 
 ==What if we want to connect SQL databases and other legacy data?==
 
-It's pretty straightforward to write an adapter to a relational server. We're working on a tool that will connect to SQL databases using itemscript declarations.
+It's pretty straightforward to write an adapter to a relational server. We're working on a tool that will connect to SQL databases using Itemscript declarations.
 
 Relational databases are not going away.  Legacy data is not going away.  Messaging is not going away.  Itemscript hides the complexity of their technical details and makes it easier to mash disparate data into intelligent interfaces.
