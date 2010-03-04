@@ -228,12 +228,18 @@ public final class MemConnector extends ConnectorBase
         // Path must have at least one component as well as the root component...
         if (path.size() <= 1) { throw ItemscriptError.internalError(this, "remove.path.not.long.enough",
                 url.pathString()); }
-        for (int i = 0; i < (path.size() - 1); ++i) {
+        for (int i = 1; i < (path.size() - 1); ++i) {
             String key = path.get(i);
             node = node.get(key);
             if (node == null) { return; }
         }
-        node.remove(path.lastKey());
+        if (url.hasFragment()) {
+            node = node.get(path.lastKey());
+            node.item()
+                    .remove("#" + url.fragmentString());
+        } else {
+            node.remove(path.lastKey());
+        }
     }
 
     private String[] sortedKeys(ItemNode node) {
