@@ -151,7 +151,7 @@ public class Examples {
             {
                 object.put("def", system.createObject()
                         .p("abc", "xyz")
-                        .put("123", 456));
+                        .p("123", 456));
             }
             // Compare to:
             {
@@ -208,10 +208,17 @@ public class Examples {
             object.putNative("abc", new StringReader("xyz"));
             Reader reader = (Reader) object.getNative("abc");
         }
-        // Virtual DB for storing and retrieving JSON values under URLs.
+        // In-memory DB for storing and retrieving JSON values under URLs.
         {
             system.put("mem:/abc", "xyz");
             String stringValue = system.getString("mem:/abc"); // xyz
+            system.put("mem:/abc/def", "123");
+            system.put("mem:/abc/ghi", "456");
+            int count = system.getInt("mem:/abc?countItems"); // 2
+            JsonArray keys = system.getArray("mem:/abc?keys"); // ["def", "ghi"]
+            JsonArray pagedItems = system.getArray("mem:/abc?pagedItems&numRows=2&startRow=0"); // [["def", "123"], ["ghi", "456"]]
+            JsonValue value = system.put("mem:/?uuid", "123");
+            String url = value.item().source(); // generated UUID location: e.g. "mem:/2b231beb-2408-4550-8bfd-21cac5c92d8c"
         }
         // Navigation inside JsonItems by URL fragment.
         {

@@ -276,7 +276,7 @@ public class JsonSystemTest extends ItemscriptTestBase {
         system().get("classpath:org/itemscript/test/validate.json");
     }
 
-    final static String basePath = "/d:/workspace/Itemscript2/src/org/itemscript/test/";
+    final static String basePath = "/d:/workspace/Itemscript/src/org/itemscript/test/";
 
     @Test
     public void testJsonFileGet() {
