@@ -140,6 +140,26 @@ public class JsonSystemTest extends ItemscriptTestBase {
                 .source() + "");
     }
 
+    @Test
+    public void testRemove() {
+        system().put("/abc/def", "123");
+        system().put("/abc/ghi", "456");
+        assertEquals("123", system().getString("/abc/def"));
+        assertEquals("456", system().getString("/abc/ghi"));
+        system().remove("/abc");
+        assertNull(system().get("/abc/def"));
+        assertNull(system().get("/abc/ghi"));
+        system().put("/abc#def", "123");
+        system().put("/abc#ghi", "456");
+        assertEquals(2, system().getObject("/abc")
+                .size());
+        assertEquals("123", system().getString("/abc#def"));
+        system().remove("/abc#def");
+        assertEquals(1, system().getObject("/abc")
+                .size());
+        assertEquals("456", system().getString("/abc#ghi"));
+    }
+
     private String randomUrl() {
         StringBuffer sb = new StringBuffer("mem:/foo");
         //        for (int i = 0; i <= (Math.abs(random.nextInt()) % 20); ++i) {
