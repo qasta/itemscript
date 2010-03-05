@@ -13,11 +13,11 @@ In your code, create a new `JsonSystem`:
    JsonSystem system = StandardConfig.createSystem();
 }}}
 
-You may want to store this in a static variable or in a ThreadLocal if you want to keep it around. I generally keep it as an instance variable and pass it to every class that needs to deal with it in their constructor; that overhead is worthwhile, because I can use the in-memory database and ability to store native objects to get dependencies out to other parts of my code. If you already use a dependency injection framework, you could use that.
+You may want to store this in a static variable or in a `ThreadLocal` if you want to keep it around. I generally keep it as an instance variable and pass it to every class that needs to deal with it in their constructor; that overhead is worthwhile, because I can use the in-memory database and ability to store native objects to get dependencies out to other parts of my code. If you already use a dependency injection framework, you could use that.
 
-Creation of a JsonSystem is pretty lightweight, so in non-performance critical applications where you don't want to use it to share data between different parts of the application, you can just create a new JsonSystem where you need it.
+Creation of a `JsonSystem` is pretty lightweight, so in non-performance critical applications where you don't want to use it to share data between different parts of the application, you can just create a new `JsonSystem` where you need it.
 
-Note that it is not thread-safe, so if you are going to use it in a multi-threaded application, you need to either synchronize access to an instance that would be shared between threads, or use a ThreadLocal to create a new instance for each thread.
+Note that it is not thread-safe, so if you are going to use it in a multi-threaded application, you need to either synchronize access to an instance that would be shared between threads, or use a `ThreadLocal` to create a new instance for each thread.
 
 == Create and populate a `JsonObject` ==
 
