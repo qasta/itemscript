@@ -199,3 +199,32 @@ pagedItems: [
 Each of the items in the returned array is itself an array; each of those sub-arrays has as its first element the key of the sub-item, and as the second element the actual value of that sub-item.
 
 By implementing the same queries on an HTTP REST server, you can interchangeably switch between accessing a database locally using the `mem:` scheme, and a remote database using the `http:` scheme.
+
+== Remove an entire value ==
+
+{{{
+        system.put("/Test/removeMe", "foo");
+        system.remove("/Test/removeMe");
+        String removedValue = system.getString("/Test/removeMe");
+        System.out.println("removedValue: " + removedValue);
+}}}
+
+prints:
+
+{{{
+removedValue: null
+}}}
+
+== Remove part of a value using a fragment ==
+
+{{{
+}}}
+
+prints:
+
+{{{
+}}}
+
+== The structure of the database ==
+
+We haven't discussed te
