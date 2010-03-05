@@ -13,7 +13,7 @@ In your module's `.gwt.xml` configuration file, add the following line above you
 <inherits name="org.itemscript.Itemscript" />
 }}}
 
-This will allow you to use the Itemscript classes, and the entry-point for the Itemscript module will create a single static `JsonSystem` instance at `GwtSystem.SYSTEM`. Because the GWT environment is single-threaded, you probably don't need to create any new instances of `JsonSystem`, although if you need to, you can do like this:
+This will allow you to use the Itemscript classes, and the entry-point for the Itemscript module will create a single static `JsonSystem` instance at `GwtSystem.SYSTEM`. Because the GWT environment is single-threaded, you probably don't need to create any new instances of `JsonSystem`, although if you need to, you can do so like this:
 
 {{{
     JsonSystem system = new ItemscriptSystem(new GwtConfig());
