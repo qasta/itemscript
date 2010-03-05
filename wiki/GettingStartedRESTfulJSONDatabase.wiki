@@ -1,0 +1,201 @@
+#summary How to get started using the in-memory RESTful JSON database in the Itemscript library.
+
+== Create a `JsonSystem` ==
+
+We're going to use the `StandardConfig` here; if you're using GWT, just use the `GwtSystem.SYSTEM` instance.
+
+{{{
+    JsonSystem system = StandardConfig.createSystem();
+}}}
+
+== Store some values ==
+
+Any type of `JsonValue` can be stored, not just `JsonObjects`.
+
+If no scheme is supplied to `put` or `get`, the supplied URL is considered to be relative to `mem:/`. So, `/Test/a` will end up being `mem:/Test/a`.
+
+{{{
+        system.put("/Test/a", "A string value");
+        system.put("/Test/b", 123);
+        system.put("/Test/c", false);
+        system.put("/Test/d", system.createObject()
+                .p("x", "y"));
+        system.put("/Test/e", system.createArray()
+                .a("one")
+                .a("two")
+                .a("three"));
+        system.putNative("/Test/f", new Date());
+}}}
+
+== Retrieve some values ==
+
+{{{
+        String stringValue = system.getString("/Test/a");
+        System.out.println("stringValue: " + stringValue);
+        int intValue = system.getInt("/Test/b");
+        System.out.println("intValue: " + intValue);
+        boolean booleanValue = system.getBoolean("/Test/c");
+        System.out.println("booleanValue: " + booleanValue);
+        JsonObject objectValue = system.getObject("/Test/d");
+        System.out.println("objectValue: " + objectValue);
+        JsonArray arrayValue = system.getArray("/Test/e");
+        System.out.println("arrayValue: " + arrayValue);
+        Date dateValue = (Date) system.getNative("/Test/f");
+        System.out.println("dateValue: " + dateValue);
+}}}
+
+prints:
+
+{{{
+stringValue: xyz
+intValue: 123
+booleanValue: false
+objectValue: {
+    "x" : "y"
+}
+
+arrayValue: [
+    "one",
+    "two",
+    "three"
+]
+
+dateValue: Thu Mar 04 17:45:16 PST 2010
+}}}
+
+== Automatically create intermediate database items ==
+
+We actually relied on this feature above, but this is an explicit example. The following fragment creates the items "/Test/one", "/Test/one/two", and "/Test/one/two/three", then sets the value "qwerty" in the node "/Test/one/two/three".
+
+{{{
+        system.put("/Test/one/two/three", "qwerty");
+}}}
+
+== Retrieve some values using fragments ==
+
+{{{
+        String objectStringValue = system.getString("/Test/d#x");
+        System.out.println("objectStringValue: " + objectStringValue);
+        String arrayStringValue = system.getString("/Test/e#2");
+        System.out.println("arrayStringValue: " + arrayStringValue);
+}}}
+
+prints:
+
+{{{
+objectStringValue: y
+arrayStringValue: three
+}}}
+
+== Store a new value using a fragment ==
+
+Note that when a value is put with a fragment when the item did not already exist, the item is created with a `JsonObject` value and the value supplied to put is set inside that object using the fragment. The fragment is divided into separate keys by slashes, those keys are URL-decoded, and the resulting list of keys is used to navigate inside the object. Missing intermediate values inside the object are created as new `JsonObjects` too.
+
+{{{
+        system.put("/Test/g#foo/bar", "xyz");
+        JsonObject fragmentPutObject = system.getObject("/Test/g");
+        System.out.println("fragmentPutObject: " + fragmentPutObject);
+}}}
+
+prints:
+
+{{{
+fragmentPutObject: {
+    "foo" : {
+        "bar" : "xyz"
+    }
+}
+}}}
+
+You can only `put` a value with a fragment URL to a `mem:` scheme URL; for any other scheme, you must `put` the entire new value for a resource, not just one sub-part, since fragments apply only to navigating local resources.
+
+== Query the database ==
+
+The `mem:` scheme allows certain kinds of queries to be performed on the database.
+
+{{{
+       int count = system.getInt("/Test/?countItems");
+       System.out.println("count: " + count);
+}}}
+
+prints:
+
+{{{
+count: 8
+}}}
+
+You can also get a list of the keys of the sub-items of an item in the database:
+
+{{{
+        JsonArray keys = system.getArray("/Test?keys");
+        System.out.println("keys: " + keys);
+}}}
+
+prints:
+
+{{{
+keys: [
+    "f",
+    "g",
+    "d",
+    "e",
+    "b",
+    "c",
+    "one",
+    "a"
+]
+}}}
+
+Or a sorted sub-set of those keys:
+
+{{{
+        JsonArray pagedKeys = system.getArray("/Test?pagedKeys&startRow=0&numRows=4");
+        System.out.println("pagedKeys: " + pagedKeys);
+}}}
+
+prints:
+
+{{{
+pagedKeys: [
+    "a",
+    "b",
+    "c",
+    "d"
+]
+}}}
+
+Or a sorted sub-set of the keys and the values of those items (useful for a paged table of results, for instance):
+
+{{{
+        JsonArray pagedItems = system.getArray("/Test?pagedItems&startRow=0&numRows=4");
+        System.out.println("pagedItems: " + pagedItems);
+}}}
+
+prints:
+
+{{{
+pagedItems: [
+    [
+        "a",
+        "xyz"
+    ],
+    [
+        "b",
+        123
+    ],
+    [
+        "c",
+        false
+    ],
+    [
+        "d",
+        {
+            "x" : "y"
+        }
+    ]
+]
+}}}
+
+Each of the items in the returned array is itself an array; each of those sub-arrays has as its first element the key of the sub-item, and as the second element the actual value of that sub-item.
+
+By implementing the same queries on an HTTP REST server, you can interchangeably switch between accessing a database locally using the `mem:` scheme, and a remote database using the `http:` scheme.
