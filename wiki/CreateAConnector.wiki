@@ -1,0 +1,25 @@
+#summary A short introduction to creating a new `Connector`
+
+= Introduction =
+
+The `Connector` interface allows you to create new interfaces to other systems and access them using the Itemscript API. Itemscript associates a connector with a URL scheme, and uses that connector when asked to `get`, `put`, or `remove` a value with a URL beginning with that scheme. By implementing a new `Connector`, you can handle a new type of URL.
+
+== GWT-only: Synchronous or asynchronous? ==
+
+In the GWT environment, you can specify a connector as being either synchronous or asynchronous. Synchronous connectors immediately perform their operation before returning control to where they were invoked. Asynchronous connectors return immediately and perform their operations in the background, then call a supplied callback when the operation completes. The in-memory database under the `mem:` scheme is a synchronous connector; the HTTP connector is an asynchronous connector. The interfaces are similar, but the asynchronous versions take an additional callback argument and do not return any values.
+
+In the standard Java environment, at least for now, all connectors are synchronous. Execution waits for the completion of the operation before continuing with the statement after the operation. So, if you're retrieving a value via HTTP, your program will wait until the retrieval has completed before continuing. If support for asynchronous operations in the standard Java environment is useful to you, implementation should be fairly straightforward although cross-thread synchronization could be an issue.
+
+We'll assume a synchronous connector from now on; for an example of an asynchronous connector, see [http://code.google.com/p/itemscript/source/browse/trunk/itemscript/src/org/itemscript/core/gwt/GwtHttpConnector.java GwtHttpConnector.java].
+
+== Which interfaces? ==
+
+There are three interfaces for a synchronous connector:
+
+  * `[http://code.google.com/p/itemscript/source/browse/trunk/itemscript/src/org/itemscript/core/connectors/SyncGetConnector.java SyncGetConnector]`
+  * `[http://code.google.com/p/itemscript/source/browse/trunk/itemscript/src/org/itemscript/core/connectors/SyncPutConnector.java SyncPutConnector]`
+  * `[http://code.google.com/p/itemscript/source/browse/trunk/itemscript/src/org/itemscript/core/connectors/SyncPutConnector.java SyncBrowseConnector]`
+
+For most applications, it's sensible to start with `SyncGetConnector`, which is the interface for retrieving values. We can then move on to `SyncBrowseConnector` (for systems where browsing makes sense) and/or `SyncPutConnector` (for systems where values can be stored).
+
+== `SyncGetConnector` ==
