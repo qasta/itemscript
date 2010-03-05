@@ -3,7 +3,9 @@
 
 == Create a `JsonSystem` ==
 
-We're going to use the `StandardConfig` here; if you're using GWT, just use the `GwtSystem.SYSTEM` instance.
+See one of the general Getting Started pages: GettingStartedStandardJava for a standard Java environment, or GettingStartedGwtJava for the GWT Java environment.
+
+We're going to use the `StandardConfig` here; if you're using GWT, just use the `GwtSystem.SYSTEM` instance. The database facilities are identical in either environment.
 
 {{{
     JsonSystem system = StandardConfig.createSystem();
