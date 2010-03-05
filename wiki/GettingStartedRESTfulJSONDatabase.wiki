@@ -277,7 +277,7 @@ Note that the actual `JsonArray` value we retrieved from the database _is_ the v
 
 You can store a value under a UUID that will be generated randomly for you. This is useful when your data has no natural key, or you want to make sure you don't overwrite any existing data with the same key - overwriting an existing value using `put` does not generate an error.
 
-In order to determine what UUID was returned, you need to examine the result of the `put` operation.
+In order to determine what UUID was returned, you need to examine the result of the `put` operation. Values stored in the database have an associated `JsonItem` object, which has a method `source()` that returns the URL they are associated with.
 
 {{{
         for (int i = 0; i < 10; ++i) {
