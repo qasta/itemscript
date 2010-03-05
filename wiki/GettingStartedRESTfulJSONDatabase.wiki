@@ -1,6 +1,20 @@
 #summary How to get started using the in-memory RESTful JSON database in the Itemscript library.
 #labels Featured,Phase-Implementation
 
+= Introduction =
+
+The Itemscript JSON library provides an in-memory database for JSON values with a REST-style interface. Items in the database are accessed using hierarchical URLs, as are queries.
+
+The API supports three basic operations:
+
+  * `get`
+  * `put`
+  * `remove`
+
+These correspond to the REST/HTTP methods `GET`, `PUT`, and `DELETE`. The same API can be used to access values via HTTP or other protocols.
+
+The result of `get` and `put` operations is always a `JsonValue` (unless an exception is thrown). `remove` does not return a result. All the methods are idempotent; that is, repeating an operation has the same result.
+
 == Create a `JsonSystem` ==
 
 See one of the general Getting Started pages: GettingStartedStandardJava for a standard Java environment, or GettingStartedGwtJava for the GWT Java environment.
