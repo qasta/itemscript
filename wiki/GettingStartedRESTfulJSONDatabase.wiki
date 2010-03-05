@@ -272,3 +272,32 @@ array, post-remove: [
 }}}
 
 Note that the actual JsonArray value we retrieved from the database _is_ the value that is changed in the subsequent `remove` operation. The values returned from the database are "live" - you can change them directly.
+
+== Store a value under a generated UUID ==
+
+You can store a value under a UUID that will be generated randomly for you. This is useful when your data has no natural key, or you want to make sure you don't overwrite any existing data with the same key - overwriting an existing value using `put` does not generate an error.
+
+In order to determine what UUID was returned, you need to examine the result of the `put` operation.
+
+{{{
+        for (int i = 0; i < 10; ++i) {
+            JsonValue uuidValue = system.put("/Test/?uuid", "xyz");
+            System.out.println("i: " + i + " uuidValue.item().source(): " + uuidValue.item()
+                    .source());
+        }
+}}}
+
+prints, for example:
+
+{{{
+i: 0 uuidValue.item().source(): mem:/Test/927c599c-2f1f-44ba-9238-146178c45ae0
+i: 1 uuidValue.item().source(): mem:/Test/647b7580-dbd3-4c51-9cf3-a53e8e24e16a
+i: 2 uuidValue.item().source(): mem:/Test/d1a7c820-4cf9-4610-aee1-827e2c2b1466
+i: 3 uuidValue.item().source(): mem:/Test/3e328a2e-ebde-460b-95d1-6f3901595363
+i: 4 uuidValue.item().source(): mem:/Test/8b621cd3-3add-400b-8181-54ff388ae3fb
+i: 5 uuidValue.item().source(): mem:/Test/8eebca9d-9373-4860-b25b-1030e927b530
+i: 6 uuidValue.item().source(): mem:/Test/7567def8-e13e-4fa1-bac0-088d5590c112
+i: 7 uuidValue.item().source(): mem:/Test/0c3ce92e-1b90-4999-9ac0-1ef8e4c6840e
+i: 8 uuidValue.item().source(): mem:/Test/e674bbcd-5d75-43a6-ad1f-1c5d45e066bf
+i: 9 uuidValue.item().source(): mem:/Test/1682f797-a7bc-47c1-911a-0c9861cfe136
+}}}
