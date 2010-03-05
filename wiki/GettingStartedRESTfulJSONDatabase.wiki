@@ -271,7 +271,7 @@ array, post-remove: [
 ]
 }}}
 
-Note that the actual JsonArray value we retrieved from the database _is_ the value that is changed in the subsequent `remove` operation. The values returned from the database are "live" - you can change them directly.
+Note that the actual `JsonArray` value we retrieved from the database _is_ the value that is changed in the subsequent `remove` operation. The values returned from the database are "live" - you can change them directly.
 
 == Store a value under a generated UUID ==
 
