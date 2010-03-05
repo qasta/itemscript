@@ -1,4 +1,4 @@
-#summary A short introduction to creating a new `Connector`
+#summary A short introduction to creating a new Connector
 
 = Introduction =
 
