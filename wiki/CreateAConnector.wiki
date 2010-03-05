@@ -22,7 +22,7 @@ There are three interfaces for a synchronous connector:
 
 For most applications, it's sensible to start with `SyncGetConnector`, which is the interface for retrieving values. We can then move on to `SyncBrowseConnector` (for systems where browsing makes sense) and/or `SyncPutConnector` (for systems where values can be stored).
 
-== `SyncGetConnector` ==
+== Implementing `SyncGetConnector` ==
 
 This interface specifies only one method:
 
@@ -44,7 +44,7 @@ The first thing to note is that while it creates a `JsonItem`, it actually retur
 
 The `JsonItem` had its source field set to the URL that was supplied to `get()`, converted to a string with `+ ""`. Connectors must create a new `JsonItem` and set the source field on that item to be the URL they were retrieved from; they may also want to add some metadata to that item, although we don't in this case.
 
-== `SyncPutConnector` ==
+== Implementing `SyncPutConnector` ==
 
 This interface specifies two methods:
 
