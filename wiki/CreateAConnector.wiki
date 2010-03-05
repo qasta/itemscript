@@ -4,7 +4,7 @@
 
 The `Connector` interface allows you to create new interfaces to other systems and access them using the Itemscript API. Itemscript associates a connector with a URL scheme, and uses that connector when asked to `get`, `put`, or `remove` a value with a URL beginning with that scheme. By implementing a new `Connector`, you can handle a new type of URL.
 
-== GWT-only: Synchronous or asynchronous? ==
+== GWT-only: synchronous or asynchronous? ==
 
 In the GWT environment, you can specify a connector as being either synchronous or asynchronous. Synchronous connectors immediately perform their operation before returning control to where they were invoked. Asynchronous connectors return immediately and perform their operations in the background, then call a supplied callback when the operation completes. The in-memory database under the `mem:` scheme is a synchronous connector; the HTTP connector is an asynchronous connector. The interfaces are similar, but the asynchronous versions take an additional callback argument and do not return any values.
 
