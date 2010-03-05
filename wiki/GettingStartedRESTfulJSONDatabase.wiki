@@ -29,6 +29,8 @@ If no scheme is supplied to `put` or `get`, the supplied URL is considered to be
 
 == Retrieve some values ==
 
+We'll use some of the null-safe conversion methods to access the values we just stored.
+
 {{{
         String stringValue = system.getString("/Test/a");
         System.out.println("stringValue: " + stringValue);
@@ -73,6 +75,8 @@ We actually relied on this feature above, but this is an explicit example. The f
 
 == Retrieve some values using fragments ==
 
+You can supply a fragment to the URL being retrieved, and it will be used to navigate the value retrieved from the database. (You can also use this when loading data from a non-`mem:` scheme URL, since it relates strictly to navigating the structure.)
+
 {{{
         String objectStringValue = system.getString("/Test/d#x");
         System.out.println("objectStringValue: " + objectStringValue);
@@ -86,6 +90,8 @@ prints:
 objectStringValue: y
 arrayStringValue: three
 }}}
+
+Of course, if the value is not an object or an array, supplying a fragment is an error, since they don't have any internal structure to navigate.
 
 == Store a new value using a fragment ==
 
@@ -200,31 +206,52 @@ Each of the items in the returned array is itself an array; each of those sub-ar
 
 By implementing the same queries on an HTTP REST server, you can interchangeably switch between accessing a database locally using the `mem:` scheme, and a remote database using the `http:` scheme.
 
-== Remove an entire value ==
+== Remove an entire item ==
+
+You can remove an entire item (which also removes any sub-items of that item).
 
 {{{
         system.put("/Test/removeMe", "foo");
+        system.put("/Test/removeMe/subItem", "foo");
         system.remove("/Test/removeMe");
         String removedValue = system.getString("/Test/removeMe");
         System.out.println("removedValue: " + removedValue);
+        String removedSubValue = system.getString("/Test/removeMe/subItem");
+        System.out.println("removedSubValue: " + removedSubValue);
 }}}
 
 prints:
 
 {{{
 removedValue: null
+removedSubValue: null
 }}}
 
 == Remove part of a value using a fragment ==
 
+When dealing with `mem:` URLs in the in-memory database, you can supply a fragment to `remove` and remove just part of the value of an item, as long as it was a container - either an object or an array.
+
 {{{
+        system.put("/Test/array", system.createArray().a("x").a("y").a("z"));
+        JsonArray array = system.getArray("/Test/array");
+        System.out.println("array, pre-remove: " + array);
+        system.remove("/Test/array#1");
+        System.out.println("array, post-remove: " + array);
 }}}
 
 prints:
 
 {{{
+array, pre-remove: [
+    "x",
+    "y",
+    "z"
+]
+
+array, post-remove: [
+    "x",
+    "z"
+]
 }}}
 
-== The structure of the database ==
-
-We haven't discussed te
+Note that the actual JsonArray value we retrieved from the database _is_ the value that is changed in the subsequent `remove` operation. The values returned from the database are "live" - you can change them directly.
