@@ -63,6 +63,13 @@ prints:
     System.out.println(fooValue); // prints "bar"
 }}}
 
+== Parse a JSON file loaded from the classpath ==
+
+{{{
+    JsonValue value = system.get("classpath:org/itemscript/test/test3.json");
+    System.out.println(value);
+}}}
+
 == Parse a JSON value loaded via HTTP ==
 
 {{{
