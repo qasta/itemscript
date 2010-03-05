@@ -1,6 +1,6 @@
 #summary A short introduction to creating a new Connector
 
-= Introduction =
+== Introduction ==
 
 The `Connector` interface allows you to create new interfaces to other systems and access them using the Itemscript API. Itemscript associates a connector with a URL scheme, and uses that connector when asked to `get`, `put`, or `remove` a value with a URL beginning with that scheme. By implementing a new `Connector`, you can handle a new type of URL.
 
