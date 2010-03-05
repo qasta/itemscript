@@ -13,7 +13,7 @@ We're going to use the `StandardConfig` here; if you're using GWT, just use the 
 
 == Store some values ==
 
-Any type of `JsonValue` can be stored, not just `JsonObjects`.
+Any type of `JsonValue` can be stored, not just `JsonObjects`. You can also store native Java objects.
 
 If no scheme is supplied to `put` or `get`, the supplied URL is considered to be relative to `mem:/`. So, `/Test/a` will end up being `mem:/Test/a`.
 
