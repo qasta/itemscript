@@ -429,7 +429,7 @@ public final class ItemscriptSystem implements JsonSystem {
         Connector connector = getConnector(fullUrl);
         if (fullUrl.hasQuery() && fullUrl.query()
                 .isLoadQuery() && connector instanceof SyncLoadConnector) {
-            ((SyncLoadConnector) connector).load(fullUrl, value.asArray());
+            ((SyncLoadConnector) connector).load(fullUrl, value.asObject());
             return createNull();
         } else {
             return ((SyncPutConnector) connector).put(fullUrl, value);
@@ -505,10 +505,5 @@ public final class ItemscriptSystem implements JsonSystem {
     @Override
     public JsonItem createItem(String sourceUrl, JsonObject meta, JsonValue value) {
         return factory.createItem(sourceUrl, meta, value);
-    }
-
-    public JsonArray dump(String url) {
-        Url fullUrl = Url.createRelative(ROOT_URL_STRING, url);
-        return ((SyncDumpConnector) getConnector(fullUrl)).dump(fullUrl);
     }
 }

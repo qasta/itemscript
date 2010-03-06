@@ -29,9 +29,8 @@
 
 package org.itemscript.core.connectors;
 
-import org.itemscript.core.JsonSystem;
 import org.itemscript.core.url.Url;
-import org.itemscript.core.values.JsonArray;
+import org.itemscript.core.values.JsonObject;
 
 /**
  * The interface to be implemented for a {@link Connector} which is capable of loading a dump value.
@@ -41,11 +40,12 @@ import org.itemscript.core.values.JsonArray;
 public interface SyncLoadConnector extends Connector {
     /**
      * Load the given value at the given URL.
+     * <p>
+     * For the expected contents of the object to load, see {@link SyncDumpConnector#dump}.
      * 
-     * See {@link JsonSystem} for the specification of what is to be supplied.
-     * 
+     * @see SyncDumpConnector#dump
      * @param url The URL to dump.
      * @param value The value to load.
      */
-    public void load(Url url, JsonArray value);
+    public void load(Url url, JsonObject value);
 }
