@@ -229,10 +229,19 @@ abstract class ItemscriptValue implements JsonValue {
     }
 
     protected final void setParent(JsonContainer newParent) {
-        // It's not okay to change the parent of a value to a value from another item.
-        if (item() != null && newParent != null && item() != newParent.item()) { 
-            throw ItemscriptError.internalError(this, "setParent.new.parent.was.in.another.item");
+        // It's not okay to change the parent of this value to a value that is a sub-value of it
+        // (i.e. a cycle), only applies if this is a container of course.
+        if (isContainer()) {
+            JsonContainer parentToCheck = newParent;
+            while (parentToCheck != null) {
+                if (parentToCheck == this) { throw ItemscriptError.internalError(this,
+                        "setParent.cycle.detected.in.new.parent"); }
+                parentToCheck = parentToCheck.parent();
+            }
         }
+        // It's not okay to change the parent of a value to a value from another item.
+        if (item() != null && newParent != null && item() != newParent.item()) { throw ItemscriptError.internalError(
+                this, "setParent.new.parent.was.in.another.item"); }
         // It's okay to set parent to null if it's not null, but not to any other value.
         if (newParent != null && parent() != null) {
             // Should not occur, but just in case...
