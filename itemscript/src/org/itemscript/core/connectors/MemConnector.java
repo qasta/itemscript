@@ -54,7 +54,8 @@ public final class MemConnector extends ConnectorBase
             SyncPutConnector,
             SyncBrowseConnector,
             SyncDumpConnector,
-            SyncLoadConnector {
+            SyncLoadConnector,
+            SyncPostConnector {
     /**
      * Create the MemConnector for an {@link JsonSystem}.
      * 
@@ -122,11 +123,6 @@ public final class MemConnector extends ConnectorBase
         }
         system().createItem(url + "", keys);
         return keys;
-    }
-
-    @Override
-    public JsonValue otherQuery(Url url) {
-        return null;
     }
 
     @Override
@@ -208,17 +204,6 @@ public final class MemConnector extends ConnectorBase
         if (fragmentString == null) {
             fragmentString = "";
         }
-        if (url.hasQuery()) {
-            Query query = url.query();
-            if (query.containsKey("uuid")) {
-                String uuid = system().generateUuid();
-                ItemNode next = new ItemNode(system().createItem(nodeUrl + "/" + uuid, system().createObject()));
-                node.put(uuid, next);
-                node = next;
-            } else {
-                throw ItemscriptError.internalError(this, "put.has.unknown.query.type", url.queryString());
-            }
-        }
         node.item()
                 .put("#" + fragmentString, value);
         return value;
@@ -286,5 +271,40 @@ public final class MemConnector extends ConnectorBase
             String subUrl = pathedUrl + "/" + Url.encode(key);
             load(Url.create(subUrl), subItems.getObject(key));
         }
+    }
+
+    @Override
+    public JsonValue post(Url url, JsonValue value) {
+        ItemNode node = root;
+        Path path = url.path();
+        String nodeUrl = "mem:";
+        // Starting at path index 1 to skip the initial "/" element...
+        for (int i = 1; i < (path.size()); ++i) {
+            String key = path.get(i);
+            nodeUrl += "/" + Url.encode(key);
+            ItemNode next = node.get(key);
+            if (next == null) {
+                next = new ItemNode(system().createItem(nodeUrl, system().createObject()));
+                node.put(key, next);
+            }
+            node = next;
+        }
+        Query query = url.query();
+        if (query.containsKey("uuid")) {
+            String uuid = system().generateUuid();
+            ItemNode next = new ItemNode(system().createItem(nodeUrl + "/" + uuid, system().createObject()));
+            node.put(uuid, next);
+            node = next;
+        } else {
+            throw ItemscriptError.internalError(this, "post.has.unknown.query.type", url.queryString());
+        }
+        String fragmentString = url.fragmentString();
+        if (fragmentString == null) {
+            fragmentString = "";
+        }
+        System.err.println("value: " + value);
+        node.item()
+                .put("#" + fragmentString, value);
+        return value;
     }
 }
