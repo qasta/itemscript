@@ -83,13 +83,11 @@ public class JsonSystemTest extends ItemscriptTestBase {
 
     @Test
     public void testDump() {
-        JsonArray array = system().getArray("itemscript/connectors?dump");
-        assertEquals(2, array.size());
-        assertNotNull(array.getObject(0));
-        assertTrue(array.getObject(0)
-                .size() > 0);
-        assertEquals("null", array.get(1)
-                .toString());
+        JsonObject object = system().getObject("/itemscript/connectors?dump");
+        assertEquals(2, object.size());
+        assertNotNull(object.getObject("value"));
+        assertTrue(object.getObject("value")
+                .containsKey("mem"));
     }
 
     @Test

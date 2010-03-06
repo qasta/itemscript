@@ -256,39 +256,35 @@ public final class MemConnector extends ConnectorBase
     }
 
     @Override
-    public JsonArray dump(Url url) {
+    public JsonObject dump(Url url) {
         ItemNode node = findNode(url);
-        if (node == null) { return system().createArray(); }
+        if (node == null) { return null; }
         return dumpNode(node);
     }
 
-    private JsonArray dumpNode(ItemNode node) {
-        JsonArray dump = system().createArray();
-        dump.add(node.item()
+    private JsonObject dumpNode(ItemNode node) {
+        JsonObject dump = system().createObject();
+        dump.put("value", node.item()
                 .value()
                 .copy());
-        if (node.size() > 0) {
-            JsonObject subItems = system().createObject();
-            dump.add(subItems);
-            for (String key : node.keySet()) {
-                subItems.put(key, dumpNode(node.get(key)));
-            }
-        } else {
-            dump.add(system().createNull());
+        JsonObject subItems = system().createObject();
+        dump.put("subItems", subItems);
+        for (String key : node.keySet()) {
+            subItems.put(key, dumpNode(node.get(key)));
         }
         return dump;
     }
 
     @Override
-    public void load(Url url, JsonArray value) {
-        if (value.size() != 2) { throw ItemscriptError.internalError(this, "load.value.size.was.not.2"); }
+    public void load(Url url, JsonObject value) {
+        if (value.size() == 0) { return; }
         Url pathedUrl = Url.createRelative(JsonSystem.ROOT_URL_STRING, url.pathString());
-        put(pathedUrl, value.get(0));
-        JsonObject subItems = value.getObject(1);
+        put(pathedUrl, value.get("value"));
+        JsonObject subItems = value.getObject("subItems");
         if (subItems == null) { return; }
         for (String key : subItems.keySet()) {
             String subUrl = pathedUrl + "/" + Url.encode(key);
-            load(Url.create(subUrl), subItems.getArray(key));
+            load(Url.create(subUrl), subItems.getObject(key));
         }
     }
 }

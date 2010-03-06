@@ -30,7 +30,7 @@
 package org.itemscript.core.connectors;
 
 import org.itemscript.core.url.Url;
-import org.itemscript.core.values.JsonArray;
+import org.itemscript.core.values.JsonObject;
 
 /**
  * The interface to be implemented for a {@link Connector} which is capable of being dumped.
@@ -39,12 +39,46 @@ import org.itemscript.core.values.JsonArray;
  */
 public interface SyncDumpConnector extends Connector {
     /**
-     * Dump the value at the given URL to a <code>JsonArray</code>.
+     * Dump the value at the given URL to a <code>JsonObject</code>.
+     * <p>
+     * The returned object will contain two keys. Under the key "value" will be the <code>JsonValue</code>
+     * associated with the item that was dumped. Under the key "subItems" will be a <code>JsonObject</code>.
+     * In that object, each key will the key of a sub-item of the dumped item, and each corresponding value
+     * will be the dumped value of that sub-item.
+     * <p>
+     * For instance:
+     * <pre>
+     * system.put("/foo", 1);
+     * system.put("/foo/a", 2);
+     * system.put("/foo/a/x", true);
+     * system.put("/foo/b", 3);
+     * System.out.println(system.get("/foo?dump"));
+     * </pre>
+     * prints:
+     * <pre>
+     * {
+     *     "subItems" : {
+     *         "b" : {
+     *              "subItems" : {},
+     *              "value" : 3
+     *         },
+     *         "a" : {
+     *             "subItems" : {
+     *                 "x" : {
+     *                     "subItems" : {},
+     *                     "value" : true
+     *                 }
+     *             },
+     *             "value" : 2
+     *         }
+     *     },
+     *     "value" : 1
+     * }
+     * </pre>
      * 
-     * See {@link JsonSystem} for the specification of what is to be returned.
-     * 
+     * @see SyncLoadConnector#load
      * @param url The URL to dump.
-     * @return The JsonArray corresponding to the dumped contents of that value.
+     * @return The <code>JsonObject</code> corresponding to the dumped contents of that value.
      */
-    public JsonArray dump(Url url);
+    public JsonObject dump(Url url);
 }
