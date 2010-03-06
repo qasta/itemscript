@@ -275,35 +275,13 @@ public final class MemConnector extends ConnectorBase
 
     @Override
     public JsonValue post(Url url, JsonValue value) {
-        ItemNode node = root;
-        Path path = url.path();
-        String nodeUrl = "mem:";
-        // Starting at path index 1 to skip the initial "/" element...
-        for (int i = 1; i < (path.size()); ++i) {
-            String key = path.get(i);
-            nodeUrl += "/" + Url.encode(key);
-            ItemNode next = node.get(key);
-            if (next == null) {
-                next = new ItemNode(system().createItem(nodeUrl, system().createObject()));
-                node.put(key, next);
-            }
-            node = next;
-        }
         Query query = url.query();
         if (query.containsKey("uuid")) {
             String uuid = system().generateUuid();
-            ItemNode next = new ItemNode(system().createItem(nodeUrl + "/" + uuid, system().createObject()));
-            node.put(uuid, next);
-            node = next;
+            Url generatedUrl = Url.createRelative(JsonSystem.ROOT_URL_STRING, url.pathString() + "/" + uuid);
+            return put(generatedUrl, value);
         } else {
-            throw ItemscriptError.internalError(this, "post.has.unknown.query.type", url.queryString());
+            throw ItemscriptError.internalError(this, "post.unknown.query.type");
         }
-        String fragmentString = url.fragmentString();
-        if (fragmentString == null) {
-            fragmentString = "";
-        }
-        node.item()
-                .put("#" + fragmentString, value);
-        return value;
     }
 }
