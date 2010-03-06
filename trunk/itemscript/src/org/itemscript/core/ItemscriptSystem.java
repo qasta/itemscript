@@ -41,7 +41,9 @@ import org.itemscript.core.connectors.SyncBrowseConnector;
 import org.itemscript.core.connectors.SyncDumpConnector;
 import org.itemscript.core.connectors.SyncGetConnector;
 import org.itemscript.core.connectors.SyncLoadConnector;
+import org.itemscript.core.connectors.SyncPostConnector;
 import org.itemscript.core.connectors.SyncPutConnector;
+import org.itemscript.core.connectors.SyncQueryConnector;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Query;
 import org.itemscript.core.url.Url;
@@ -198,37 +200,37 @@ public final class ItemscriptSystem implements JsonSystem {
 
     public JsonValue get(Url url) {
         Url absoluteUrl = createRootRelativeUrl(url);
-        Url withoutFragment = absoluteUrl.withoutFragment();
+        Url withoutFragmentUrl = absoluteUrl.withoutFragment();
         JsonValue value = null;
-        Connector connector = getConnector(withoutFragment);
-        // If we have a query and the connector is an instance of a SyncBrowseConnector, use the methods
-        // from that interface.
-        boolean specialConnector = false;
-        if (withoutFragment.hasQuery()) {
-            if (withoutFragment.query()
-                    .isDumpQuery()) {
-                specialConnector = true;
-                value = ((SyncDumpConnector) connector).dump(withoutFragment);
-            } else if (connector instanceof SyncBrowseConnector) {
-                specialConnector = true;
-                Query query = withoutFragment.query();
+        Connector connector = getConnector(withoutFragmentUrl);
+        if (withoutFragmentUrl.hasQuery()) {
+            Query query = withoutFragmentUrl.query();
+            if (query.isDumpQuery() && connector instanceof SyncDumpConnector) {
+                value = ((SyncDumpConnector) connector).dump(withoutFragmentUrl);
+            } else if (connector instanceof SyncBrowseConnector
+                    && (query.isCountItemsQuery() || query.isPagedItemsQuery() || query.isPagedKeysQuery() || query.isKeysQuery())) {
                 SyncBrowseConnector browseConnector = (SyncBrowseConnector) connector;
                 if (query.isCountItemsQuery()) {
-                    value = browseConnector.countItems(withoutFragment);
+                    value = browseConnector.countItems(withoutFragmentUrl);
                 } else if (query.isPagedItemsQuery()) {
-                    value = browseConnector.pagedItems(withoutFragment);
+                    value = browseConnector.pagedItems(withoutFragmentUrl);
                 } else if (query.isPagedKeysQuery()) {
-                    value = browseConnector.pagedKeys(withoutFragment);
+                    value = browseConnector.pagedKeys(withoutFragmentUrl);
                 } else if (query.isKeysQuery()) {
-                    value = browseConnector.getKeys(withoutFragment);
+                    value = browseConnector.getKeys(withoutFragmentUrl);
                 } else {
-                    value = browseConnector.otherQuery(withoutFragment);
+                    // Should never happen.
+                    throw ItemscriptError.internalError(this,
+                            "get.had.query.and.SyncBrowseConnector.but.did.not.know.query.type");
                 }
+            } else {
+                if (!(connector instanceof SyncQueryConnector)) { throw ItemscriptError.internalError(this,
+                        "get.had.query.but.connector.did.not.implement.query.connector.type"); }
+                value = ((SyncQueryConnector) connector).query(withoutFragmentUrl);
             }
-        }
-        if (!specialConnector) {
+        } else {
             // Otherwise just use the regular SyncGetConnector interface.
-            value = ((SyncGetConnector) getConnector(withoutFragment)).get(withoutFragment);
+            value = ((SyncGetConnector) getConnector(withoutFragmentUrl)).get(withoutFragmentUrl);
         }
         if (absoluteUrl.hasFragment()) {
             if (absoluteUrl.fragment()
@@ -427,10 +429,16 @@ public final class ItemscriptSystem implements JsonSystem {
         if (isNotMemSchemeAndHasFragment(fullUrl)) { throw ItemscriptError.internalError(this,
                 "put.url.with.fragment.not.supported", fullUrl + ""); }
         Connector connector = getConnector(fullUrl);
-        if (fullUrl.hasQuery() && fullUrl.query()
-                .isLoadQuery() && connector instanceof SyncLoadConnector) {
-            ((SyncLoadConnector) connector).load(fullUrl, value.asObject());
-            return createNull();
+        if (fullUrl.hasQuery()) {
+            if (fullUrl.query()
+                    .isLoadQuery() && connector instanceof SyncLoadConnector) {
+                ((SyncLoadConnector) connector).load(fullUrl, value.asObject());
+                return createNull();
+            } else {
+                if (!(connector instanceof SyncPostConnector)) { throw ItemscriptError.internalError(this,
+                        "put.had.query.but.connector.did.not.implement.post.connector.type"); }
+                return ((SyncPostConnector) connector).post(fullUrl, value);
+            }
         } else {
             return ((SyncPutConnector) connector).put(fullUrl, value);
         }

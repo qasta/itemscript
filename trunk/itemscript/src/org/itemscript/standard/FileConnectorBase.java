@@ -94,11 +94,6 @@ public abstract class FileConnectorBase extends ConnectorBase implements SyncGet
                 .value();
     }
 
-    // File connectors don't handle other queries.
-    public JsonValue otherQuery(Url url) {
-        return null;
-    }
-
     public final JsonValue pagedItems(Url url) {
         // FIXME
         return null;

@@ -36,8 +36,6 @@ import org.itemscript.core.values.JsonValue;
  * The interface to be implemented for a {@link Connector} that allows synchronous browse operations.
  * 
  * This is a convenience for synchronous connectors that implement some of the standard set of queries.
- * If the connector does not implement this interface but does implement SyncGetConnector, URLs containing
- * queries passed to the get method of the connector will simply be treated like other URLs.
  * 
  * If the connector implements this interface, the corresponding method from this interface will be called instead
  * of the simple {@link SyncGetConnector#get} method.
@@ -101,15 +99,6 @@ public interface SyncBrowseConnector extends Connector {
      * @return A JsonArray with the keys of sub-items as JsonStrings.
      */
     public JsonValue getKeys(Url url);
-
-    /**
-     * Called when a query does not contain any of the keys "countItems", "keys", "pagedKeys",
-     * or "pagedItems". Connectors may respond to other types of queries, or may simply return null.
-     * 
-     * @param url The URL to query.
-     * @return A JsonValue with the result of the query, or null if no other queries are supported.
-     */
-    public JsonValue otherQuery(Url url);
 
     /**
      * Called when the query contains the "pagedItems" key.
