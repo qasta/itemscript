@@ -29,6 +29,7 @@
 
 package org.itemscript.core.connectors;
 
+import org.itemscript.core.JsonSystem;
 import org.itemscript.core.url.Url;
 import org.itemscript.core.values.JsonValue;
 
