@@ -32,6 +32,8 @@ package org.itemscript.test;
 import java.util.Random;
 
 import org.itemscript.core.connectors.GetCallback;
+import org.itemscript.core.connectors.PutCallback;
+import org.itemscript.core.connectors.RemoveCallback;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Url;
 import org.itemscript.core.values.JsonArray;
@@ -343,5 +345,52 @@ public class JsonSystemTest extends ItemscriptTestBase {
         assertEquals('o', value.binaryValue()[0]);
         assertEquals('n', value.binaryValue()[1]);
         assertEquals('e', value.binaryValue()[2]);
+    }
+
+    static boolean getCompleted = false;
+    static boolean putCompleted = false;
+    static boolean removeCompleted = false;
+
+    @Test
+    public void testAsyncUseOfSyncConnector() {
+        system().put("/foo", system().createString("bar"), new PutCallback() {
+            @Override
+            public void onSuccess(JsonValue value) {
+                assertEquals("bar", value.stringValue());
+                putCompleted = true;
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                throw new RuntimeException(e);
+            }
+        });
+        assertTrue(putCompleted);
+        system().get("/foo", new GetCallback() {
+            @Override
+            public void onSuccess(JsonValue value) {
+                assertEquals("bar", value.stringValue());
+                getCompleted = true;
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                throw new RuntimeException(e);
+            }
+        });
+        assertTrue(getCompleted);
+        system().remove("/foo", new RemoveCallback() {
+            @Override
+            public void onSuccess() {
+                removeCompleted = true;
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                throw new RuntimeException(e);
+            }
+        });
+        assertTrue(removeCompleted);
+        assertNull(system().get("/foo"));
     }
 }

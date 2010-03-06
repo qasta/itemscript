@@ -302,7 +302,6 @@ public final class MemConnector extends ConnectorBase
         if (fragmentString == null) {
             fragmentString = "";
         }
-        System.err.println("value: " + value);
         node.item()
                 .put("#" + fragmentString, value);
         return value;

@@ -200,8 +200,8 @@ public final class ItemscriptSystem implements JsonSystem {
     }
 
     public JsonValue get(Url url) {
-        Url absoluteUrl = createRootRelativeUrl(url);
-        Url withoutFragmentUrl = absoluteUrl.withoutFragment();
+        Url fullUrl = createRootRelativeUrl(url);
+        Url withoutFragmentUrl = fullUrl.withoutFragment();
         JsonValue value = null;
         Connector connector = getConnector(withoutFragmentUrl);
         if (withoutFragmentUrl.hasQuery()) {
@@ -231,16 +231,18 @@ public final class ItemscriptSystem implements JsonSystem {
             }
         } else {
             // Otherwise just use the regular SyncGetConnector interface.
+            if (!(connector instanceof SyncGetConnector)) { throw ItemscriptError.internalError(this,
+                    "get.connector.did.not.implement.SyncGetConnector"); }
             value = ((SyncGetConnector) getConnector(withoutFragmentUrl)).get(withoutFragmentUrl);
         }
-        if (absoluteUrl.hasFragment()) {
-            if (absoluteUrl.fragment()
+        if (fullUrl.hasFragment()) {
+            if (fullUrl.fragment()
                     .size() == 0) { return value; }
             if (value.isContainer()) {
-                return ((ItemscriptContainer) value).getByFragment(absoluteUrl.fragment());
+                return ((ItemscriptContainer) value).getByFragment(fullUrl.fragment());
             } else {
                 throw ItemscriptError.internalError(this, "get.had.fragment.but.value.was.not.a.container",
-                        new Params().p("url", absoluteUrl + "")
+                        new Params().p("url", fullUrl + "")
                                 .p("value", value + ""));
             }
         } else {
@@ -249,27 +251,18 @@ public final class ItemscriptSystem implements JsonSystem {
     }
 
     public void get(Url url, final GetCallback callback) {
-        Url finalUrl = createRootRelativeUrl(url);
-        Connector connector = getConnector(finalUrl);
-        if (connector instanceof AsyncGetConnector) {
-            ((AsyncGetConnector) connector).get(finalUrl, new GetCallback() {
-                public void onError(Throwable e) {
-                    callback.onError(e);
-                }
-
-                public void onSuccess(JsonValue value) {
-                    callback.onSuccess(value);
-                }
-            });
-        } else if (connector instanceof SyncGetConnector) {
+        Url fullUrl = createRootRelativeUrl(url);
+        Connector connector = getConnector(fullUrl);
+        if (connector instanceof SyncGetConnector) {
             try {
-                callback.onSuccess(get(url));
+                callback.onSuccess(get(fullUrl));
             } catch (ItemscriptError e) {
                 callback.onError(e);
             }
         } else {
-            throw ItemscriptError.internalError(this,
-                    "get.connector.was.not.AsyncGetConnector.or.SyncGetConnector");
+            if (!(connector instanceof AsyncGetConnector)) { throw ItemscriptError.internalError(this,
+                    "get.connector.did.not.implement.AsyncGetConnector"); }
+            ((AsyncGetConnector) connector).get(fullUrl, callback);
         }
     }
 
@@ -441,6 +434,8 @@ public final class ItemscriptSystem implements JsonSystem {
                 return ((SyncPostConnector) connector).post(fullUrl, value);
             }
         } else {
+            if (!(connector instanceof SyncPutConnector)) { throw ItemscriptError.internalError(this,
+                    "put.connector.did.not.implement.SyncPutConnector"); }
             return ((SyncPutConnector) connector).put(fullUrl, value);
         }
     }
@@ -452,14 +447,18 @@ public final class ItemscriptSystem implements JsonSystem {
         Connector connector = getConnector(fullUrl);
         if (connector instanceof SyncPutConnector) {
             try {
-                callback.onSuccess(((SyncPutConnector) connector).put(fullUrl, value));
+                callback.onSuccess(put(fullUrl, value));
             } catch (ItemscriptError e) {
                 callback.onError(e);
             }
         } else {
             if (fullUrl.hasQuery()) {
+                if (!(connector instanceof AsyncPostConnector)) { throw ItemscriptError.internalError(this,
+                        "put.url.had.query.but.connector.did.not.implement.post.connector"); }
                 ((AsyncPostConnector) connector).post(fullUrl, value, callback);
             } else {
+                if (!(connector instanceof AsyncPutConnector)) { throw ItemscriptError.internalError(this,
+                        "put.connector.did.not.implement.AsyncPutConnector"); }
                 ((AsyncPutConnector) connector).put(fullUrl, value, callback);
             }
         }
@@ -494,19 +493,19 @@ public final class ItemscriptSystem implements JsonSystem {
 
     public void remove(Url url) {
         Url fullUrl = createRootRelativeUrl(url);
-        if (isNotMemSchemeAndHasFragment(fullUrl)) { throw ItemscriptError.internalError(this,
-                "remove.url.with.fragment.not.supported", fullUrl + ""); }
+        checkFragmentForRemove(fullUrl);
+        checkQueryForRemove(fullUrl);
         ((SyncPutConnector) getConnector(fullUrl)).remove(fullUrl);
     }
 
     public void remove(final Url url, final RemoveCallback callback) {
         Url fullUrl = createRootRelativeUrl(url);
-        if (isNotMemSchemeAndHasFragment(fullUrl)) { throw ItemscriptError.internalError(this,
-                "remove.url.with.fragment.not.supported", fullUrl + ""); }
+        checkFragmentForRemove(fullUrl);
+        checkQueryForRemove(fullUrl);
         Connector connector = getConnector(fullUrl);
         if (connector instanceof SyncPutConnector) {
             try {
-                ((SyncPutConnector) connector).remove(fullUrl);
+                remove(fullUrl);
                 callback.onSuccess();
             } catch (ItemscriptError e) {
                 callback.onError(e);
@@ -514,6 +513,16 @@ public final class ItemscriptSystem implements JsonSystem {
         } else {
             ((AsyncPutConnector) connector).remove(fullUrl, callback);
         }
+    }
+
+    private void checkQueryForRemove(Url fullUrl) {
+        if (fullUrl.hasQuery()) { throw ItemscriptError.internalError(this, "remove.url.with.query.not.supported",
+                fullUrl + ""); }
+    }
+
+    private void checkFragmentForRemove(Url fullUrl) {
+        if (isNotMemSchemeAndHasFragment(fullUrl)) { throw ItemscriptError.internalError(this,
+                "remove.url.with.fragment.not.supported", fullUrl + ""); }
     }
 
     @Override
