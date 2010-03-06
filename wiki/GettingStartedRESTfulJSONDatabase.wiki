@@ -13,7 +13,7 @@ The API supports three basic operations:
 
 These correspond to the REST/HTTP methods `GET`, `PUT`, and `DELETE`. The same API can be used to access values via HTTP or other protocols.
 
-The result of `get` and `put` operations is always a `JsonValue` (unless an exception is thrown). `remove` does not return a result. All the methods are idempotent; that is, repeating an operation has the same result.
+The result of `get` and `put` operations is always a `JsonValue` (unless an exception is thrown). `remove` does not return a result. All the methods are idempotent; that is, repeating an operation has the same result. (The one exception is that `put` operations with a URL that contain a query string are mapped to HTTP `POST` operations and may not always return the same result.)
 
 == Create a `JsonSystem` ==
 
