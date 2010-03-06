@@ -17,7 +17,7 @@ if (the URL does not contain a query string) {
 }
 }}}
 
-== For asynchronous put operations ==
+== For synchronous put operations ==
 
 {{{
 if (the URL does not contain a query string) {
@@ -31,8 +31,27 @@ if (the URL does not contain a query string) {
 }
 }}}
 
-== For asynchronous remove operations ==
+== For synchronous remove operations ==
 
 {{{
 SyncPutConnector
+}}}
+
+== For asynchronous get operations ==
+
+{{{
+AsyncGetConnector
+}}}
+
+== For asynchronous put operations ==
+
+{{{
+AsyncPutConnector
+NOTE: This will be changed soon to look for a query string and call a new interface, AsyncPostConnector if present.
+}}}
+
+== For asynchronous remove operations ==
+
+{{{
+AsyncPutConnector
 }}}
