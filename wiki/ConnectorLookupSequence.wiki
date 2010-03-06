@@ -1,0 +1,17 @@
+#summary A summary of which Connector interfaces are called when.
+
+== For get operations ==
+
+{{{
+if (the URL does not contain a query string) {
+  SyncGetConnector
+} else {
+  if (the query string contains one of the keys from SyncBrowseConnector, AND the connector implements SyncBrowseConnector) {
+    SyncBrowseConnector
+  } else if (the query string contains the "dump" key, AND the connector implements SyncDumpConnector) {
+    SyncDumpConnector
+  } else {
+    SyncQueryConnector
+  }
+}
+}}}
