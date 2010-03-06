@@ -29,6 +29,8 @@
 
 package org.itemscript.core.values;
 
+import java.util.Arrays;
+
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.connectors.GetCallback;
 import org.itemscript.core.util.Base64;
@@ -43,7 +45,7 @@ final class ItemscriptString extends ItemscriptScalar implements JsonString {
     protected ItemscriptString(JsonSystem system, byte[] value) {
         super(system);
         this.stringValue = null;
-        this.binaryValue = value;
+        this.binaryValue = Arrays.copyOf(value, value.length);
     }
 
     protected ItemscriptString(JsonSystem system, String value) {

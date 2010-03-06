@@ -268,10 +268,10 @@ public final class MemConnector extends ConnectorBase
                 .value()
                 .copy());
         if (node.size() > 0) {
-            JsonObject subItems = dump.createObject(1);
+            JsonObject subItems = system().createObject();
+            dump.add(subItems);
             for (String key : node.keySet()) {
-                ItemNode subNode = node.get(key);
-                subItems.put(key, dumpNode(subNode));
+                subItems.put(key, dumpNode(node.get(key)));
             }
         } else {
             dump.add(system().createNull());

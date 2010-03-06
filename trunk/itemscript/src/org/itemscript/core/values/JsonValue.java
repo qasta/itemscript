@@ -115,8 +115,12 @@ public interface JsonValue extends HasSystem {
 
     /**
      * If this value is a JsonString, parse it as a base-64-encoded string and return the binary value.
-     * 
+     * <br>
      * If this value is not a JsonString, or cannot be parsed as a base-64-encoded string, an exception will be thrown.
+     * <br>
+     * Do not change the array returned from this operation. Changes to the array will not be reflected in the
+     * base-64-encoded string and the two may become inconsistent. If you want to change the returned array, make
+     * a copy of it first.
      * 
      * @return The binary value.
      */

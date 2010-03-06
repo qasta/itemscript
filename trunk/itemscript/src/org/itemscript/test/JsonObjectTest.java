@@ -32,6 +32,7 @@ package org.itemscript.test;
 import java.util.Map;
 import java.util.Set;
 
+import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
@@ -52,6 +53,20 @@ public class JsonObjectTest extends ItemscriptTestBase {
     public void testConstruction() {
         JsonObject object = system().createObject();
         assertNotNull(object);
+    }
+
+    @Test
+    public void testCycles() {
+        JsonObject a = system().createObject();
+        JsonObject b = system().createObject();
+        a.put("foo", b);
+        boolean errorThrown = false;
+        try {
+            b.put("bar", a);
+        } catch (ItemscriptError e) {
+            errorThrown = true;
+        }
+        assertTrue(errorThrown);
     }
 
     @Test
