@@ -51,7 +51,7 @@ public interface JsonSystem extends JsonAccess, JsonCreator {
     /**
      * The root URL for the system (<code>"mem:/"</code>).
      */
-    public static final Url ROOT_URL = Url.create(ROOT_URL_STRING);
+    static final Url ROOT_URL = Url.create(ROOT_URL_STRING);
 
     /**
      * Copy a value from one URL to another.
@@ -60,14 +60,6 @@ public interface JsonSystem extends JsonAccess, JsonCreator {
      * @param toUrl The URL to copy to.
      */
     public void copy(String fromUrl, String toUrl);
-
-    /**
-     * Copy a value from one URL to another.
-     * 
-     * @param fromUrl The URL to copy from.
-     * @param toUrl The URL to copy to.
-     */
-    public void copy(Url fromUrl, Url toUrl);
 
     /**
      * Generate a random UUID string.
@@ -97,28 +89,6 @@ public interface JsonSystem extends JsonAccess, JsonCreator {
       * @param callback Called when the value is returned.
       */
     public void get(String url, GetCallback callback);
-
-    /**
-     * Get a value from the given URL.
-     * 
-     * If the URL is relative, it will be interpreted as relative to the URL "mem:/".
-     * 
-     * @param url The URL to get the value from.
-     * @return The value returned from the URL.
-     */
-    public JsonValue get(Url url);
-
-    /**
-     * Get a value from the given URL, asynchronously.
-     * 
-     * If the URL is relative, it will be interpreted as relative to the URL "mem:/".
-     * 
-     * Calls the given callback when the value has been retrieved.
-     * 
-     * @param url The URL to get the value from.
-     * @param callback Called when the value is returned.
-     */
-    public void get(Url url, GetCallback callback);
 
     /**
      * Parse the contents of the given string as JSON.
@@ -159,24 +129,6 @@ public interface JsonSystem extends JsonAccess, JsonCreator {
     public void put(String url, JsonValue value, PutCallback callback);
 
     /**
-     * Put a value at the given URL.
-     * 
-     * @param url The URL where the value is to be put.
-     * @param value The value to put.
-     * @return The value returned by the put, which may not be the same as the value that was put.
-     */
-    public JsonValue put(Url url, JsonValue value);
-
-    /**
-     * Put a value at the given URL, calling the given callback when the operation is complete.
-     * 
-     * @param url The URL where the value is to be put.
-     * @param value The value to put.
-     * @param callback Called when the put operation is complete.
-     */
-    public void put(Url url, JsonValue value, PutCallback callback);
-
-    /**
      * Remove the value at the given URL.
      * 
      * @param url The URL of the value to remove.
@@ -190,19 +142,4 @@ public interface JsonSystem extends JsonAccess, JsonCreator {
      * @param callback Called when the remove operation has completed.
      */
     public void remove(String url, RemoveCallback callback);
-
-    /**
-     * Remove the value at the given URL.
-     * 
-     * @param url The URL of the value to remove.
-     */
-    public void remove(Url url);
-
-    /**
-     * Remove the value at the given URL, calling the given callback when the operation is complete.
-     * 
-     * @param url The URL of the value to remove.
-     * @param callback Called when the remove operation has completed.
-     */
-    public void remove(Url url, RemoveCallback callback);
 }

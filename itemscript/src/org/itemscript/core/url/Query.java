@@ -61,11 +61,13 @@ public final class Query extends HashMap<String, List<String>> implements Map<St
     /**
      * The key used to indicate a request for a page of sub-items for an item.
      */
-    public static final String PAGED_ITEMS = "pagedItems";
+    public static final String PAGED_ITEMS_KEY = "pagedItems";
     /**
      * The key used to indicate a request to count the number of keys for an item.
      */
-    public static final String COUNT_ITEMS = "countItems";
+    public static final String COUNT_ITEMS_KEY = "countItems";
+    public static final String DUMP_KEY = "dump";
+    public static final String LOAD_KEY = "load";
     private Pagination pagination;
 
     /**
@@ -81,7 +83,7 @@ public final class Query extends HashMap<String, List<String>> implements Map<St
      * @return True if this is a "count items" query, false otherwise.
      */
     public boolean isCountItemsQuery() {
-        return containsKey(COUNT_ITEMS);
+        return containsKey(COUNT_ITEMS_KEY);
     }
 
     /**
@@ -99,7 +101,7 @@ public final class Query extends HashMap<String, List<String>> implements Map<St
      * @return True if this is a "paged items" query, false otherwise.
      */
     public boolean isPagedItemsQuery() {
-        return containsKey(PAGED_ITEMS);
+        return containsKey(PAGED_ITEMS_KEY);
     }
 
     /**
@@ -109,6 +111,24 @@ public final class Query extends HashMap<String, List<String>> implements Map<St
      */
     public boolean isPagedKeysQuery() {
         return containsKey(PAGED_KEYS);
+    }
+
+    /**
+     * Test whether this is a "dump" query.
+     * 
+     * @return True if this is a "dump" query, false otherwise.
+     */
+    public boolean isDumpQuery() {
+        return containsKey(DUMP_KEY);
+    }
+
+    /**
+     * Test whether this is a "load" query.
+     * 
+     * @return True if this is a "load" query, false otherwise.
+     */
+    public boolean isLoadQuery() {
+        return containsKey(LOAD_KEY);
     }
 
     /**

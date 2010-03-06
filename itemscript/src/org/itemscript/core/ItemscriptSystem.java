@@ -38,7 +38,9 @@ import org.itemscript.core.connectors.MemConnector;
 import org.itemscript.core.connectors.PutCallback;
 import org.itemscript.core.connectors.RemoveCallback;
 import org.itemscript.core.connectors.SyncBrowseConnector;
+import org.itemscript.core.connectors.SyncDumpConnector;
 import org.itemscript.core.connectors.SyncGetConnector;
+import org.itemscript.core.connectors.SyncLoadConnector;
 import org.itemscript.core.connectors.SyncPutConnector;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Query;
@@ -87,7 +89,6 @@ public final class ItemscriptSystem implements JsonSystem {
         copy(Url.create(fromUrl), Url.create(toUrl));
     }
 
-    @Override
     public void copy(Url fromUrl, Url toUrl) {
         put(toUrl, get(fromUrl).copy());
     }
@@ -195,29 +196,37 @@ public final class ItemscriptSystem implements JsonSystem {
         get(Url.create(url), callback);
     }
 
-    @Override
     public JsonValue get(Url url) {
         Url absoluteUrl = createRootRelativeUrl(url);
         Url withoutFragment = absoluteUrl.withoutFragment();
-        JsonValue value;
+        JsonValue value = null;
         Connector connector = getConnector(withoutFragment);
         // If we have a query and the connector is an instance of a SyncBrowseConnector, use the methods
         // from that interface.
-        if (withoutFragment.hasQuery() && connector instanceof SyncBrowseConnector) {
-            Query query = withoutFragment.query();
-            SyncBrowseConnector browseConnector = (SyncBrowseConnector) connector;
-            if (query.isCountItemsQuery()) {
-                value = browseConnector.countItems(withoutFragment);
-            } else if (query.isPagedItemsQuery()) {
-                value = browseConnector.pagedItems(withoutFragment);
-            } else if (query.isPagedKeysQuery()) {
-                value = browseConnector.pagedKeys(withoutFragment);
-            } else if (query.isKeysQuery()) {
-                value = browseConnector.getKeys(withoutFragment);
-            } else {
-                value = browseConnector.otherQuery(withoutFragment);
+        boolean specialConnector = false;
+        if (withoutFragment.hasQuery()) {
+            if (withoutFragment.query()
+                    .isDumpQuery()) {
+                specialConnector = true;
+                value = ((SyncDumpConnector) connector).dump(withoutFragment);
+            } else if (connector instanceof SyncBrowseConnector) {
+                specialConnector = true;
+                Query query = withoutFragment.query();
+                SyncBrowseConnector browseConnector = (SyncBrowseConnector) connector;
+                if (query.isCountItemsQuery()) {
+                    value = browseConnector.countItems(withoutFragment);
+                } else if (query.isPagedItemsQuery()) {
+                    value = browseConnector.pagedItems(withoutFragment);
+                } else if (query.isPagedKeysQuery()) {
+                    value = browseConnector.pagedKeys(withoutFragment);
+                } else if (query.isKeysQuery()) {
+                    value = browseConnector.getKeys(withoutFragment);
+                } else {
+                    value = browseConnector.otherQuery(withoutFragment);
+                }
             }
-        } else {
+        }
+        if (!specialConnector) {
             // Otherwise just use the regular SyncGetConnector interface.
             value = ((SyncGetConnector) getConnector(withoutFragment)).get(withoutFragment);
         }
@@ -236,7 +245,6 @@ public final class ItemscriptSystem implements JsonSystem {
         }
     }
 
-    @Override
     public void get(Url url, final GetCallback callback) {
         Url finalUrl = createRootRelativeUrl(url);
         Connector connector = getConnector(finalUrl);
@@ -414,15 +422,20 @@ public final class ItemscriptSystem implements JsonSystem {
         return jsonValue;
     }
 
-    @Override
     public JsonValue put(Url url, JsonValue value) {
         Url fullUrl = createRootRelativeUrl(url);
         if (isNotMemSchemeAndHasFragment(fullUrl)) { throw ItemscriptError.internalError(this,
                 "put.url.with.fragment.not.supported", fullUrl + ""); }
-        return ((SyncPutConnector) getConnector(fullUrl)).put(fullUrl, value);
+        Connector connector = getConnector(fullUrl);
+        if (fullUrl.hasQuery() && fullUrl.query()
+                .isLoadQuery() && connector instanceof SyncLoadConnector) {
+            ((SyncLoadConnector) connector).load(fullUrl, value.asArray());
+            return createNull();
+        } else {
+            return ((SyncPutConnector) connector).put(fullUrl, value);
+        }
     }
 
-    @Override
     public void put(final Url url, final JsonValue value, final PutCallback callback) {
         Url fullUrl = createRootRelativeUrl(url);
         if (isNotMemSchemeAndHasFragment(fullUrl)) { throw ItemscriptError.internalError(this,
@@ -465,7 +478,6 @@ public final class ItemscriptSystem implements JsonSystem {
         remove(Url.create(url), callback);
     }
 
-    @Override
     public void remove(Url url) {
         Url fullUrl = createRootRelativeUrl(url);
         if (isNotMemSchemeAndHasFragment(fullUrl)) { throw ItemscriptError.internalError(this,
@@ -473,7 +485,6 @@ public final class ItemscriptSystem implements JsonSystem {
         ((SyncPutConnector) getConnector(fullUrl)).remove(fullUrl);
     }
 
-    @Override
     public void remove(final Url url, final RemoveCallback callback) {
         Url fullUrl = createRootRelativeUrl(url);
         if (isNotMemSchemeAndHasFragment(fullUrl)) { throw ItemscriptError.internalError(this,
@@ -494,5 +505,10 @@ public final class ItemscriptSystem implements JsonSystem {
     @Override
     public JsonItem createItem(String sourceUrl, JsonObject meta, JsonValue value) {
         return factory.createItem(sourceUrl, meta, value);
+    }
+
+    public JsonArray dump(String url) {
+        Url fullUrl = Url.createRelative(ROOT_URL_STRING, url);
+        return ((SyncDumpConnector) getConnector(fullUrl)).dump(fullUrl);
     }
 }

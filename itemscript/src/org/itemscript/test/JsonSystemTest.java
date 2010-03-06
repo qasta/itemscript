@@ -35,6 +35,7 @@ import org.itemscript.core.connectors.GetCallback;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Url;
 import org.itemscript.core.values.JsonArray;
+import org.itemscript.core.values.JsonNull;
 import org.itemscript.core.values.JsonNumber;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonString;
@@ -66,6 +67,29 @@ public class JsonSystemTest extends ItemscriptTestBase {
         assertEquals(system().get("/1")
                 .booleanValue(), system().get("/2")
                 .booleanValue());
+    }
+
+    @Test
+    public void testLoad() {
+        system().put("/xyz", "abc");
+        system().put("/xyz/one", "123");
+        system().put("/xyz/two", "456");
+        JsonValue dump = system().get("/xyz?dump");
+        system().put("/foo?load", dump);
+        assertEquals("abc", system().getString("/foo"));
+        assertEquals("123", system().getString("/foo/one"));
+        assertEquals("456", system().getString("/foo/two"));
+    }
+
+    @Test
+    public void testDump() {
+        JsonArray array = system().getArray("itemscript/connectors?dump");
+        assertEquals(2, array.size());
+        assertNotNull(array.getObject(0));
+        assertTrue(array.getObject(0)
+                .size() > 0);
+        assertEquals("null", array.get(1)
+                .toString());
     }
 
     @Test
@@ -277,9 +301,7 @@ public class JsonSystemTest extends ItemscriptTestBase {
 
     @Test
     public void testRootItem() {
-        system().put("mem:/", "foo");
-        assertEquals("foo", system().get("mem:/")
-                .stringValue());
+        assertTrue(system().get("mem:/") instanceof JsonNull);
     }
 
     @Test

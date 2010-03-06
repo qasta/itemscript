@@ -52,7 +52,9 @@ public final class MemConnector extends ConnectorBase
         implements
             SyncGetConnector,
             SyncPutConnector,
-            SyncBrowseConnector {
+            SyncBrowseConnector,
+            SyncDumpConnector,
+            SyncLoadConnector {
     /**
      * Create the MemConnector for an {@link JsonSystem}.
      * 
@@ -65,7 +67,7 @@ public final class MemConnector extends ConnectorBase
      */
     public static JsonObject create(JsonSystem system) {
         MemConnector connector = new MemConnector(system);
-        connector.root.put("itemscript", new ItemNode(system.createItem("mem:/itemscript", system.createObject())));
+        connector.root.put("itemscript", new ItemNode(system.createItem("mem:/itemscript", system.createNull())));
         JsonObject connectorsObject = system.createObject();
         connector.root.get("itemscript")
                 .put("connectors", new ItemNode(system.createItem("mem:/itemscript/connectors", connectorsObject)));
@@ -77,7 +79,7 @@ public final class MemConnector extends ConnectorBase
 
     private MemConnector(JsonSystem system) {
         super(system);
-        root = new ItemNode(system().createItem(JsonSystem.ROOT_URL_STRING, system.createObject()));
+        root = new ItemNode(system().createItem(JsonSystem.ROOT_URL_STRING, system.createNull()));
     }
 
     @Override
@@ -189,6 +191,7 @@ public final class MemConnector extends ConnectorBase
     public JsonValue put(Url url, JsonValue value) {
         ItemNode node = root;
         Path path = url.path();
+        if (path.size() <= 1) { throw ItemscriptError.internalError(this, "put.cannot.put.to.root.node"); }
         String nodeUrl = "mem:";
         // Starting at path index 1 to skip the initial "/" element...
         for (int i = 1; i < (path.size()); ++i) {
@@ -250,5 +253,42 @@ public final class MemConnector extends ConnectorBase
                 .toArray(keyArray);
         Arrays.sort(keyArray);
         return keyArray;
+    }
+
+    @Override
+    public JsonArray dump(Url url) {
+        ItemNode node = findNode(url);
+        if (node == null) { return system().createArray(); }
+        return dumpNode(node);
+    }
+
+    private JsonArray dumpNode(ItemNode node) {
+        JsonArray dump = system().createArray();
+        dump.add(node.item()
+                .value()
+                .copy());
+        if (node.size() > 0) {
+            JsonObject subItems = dump.createObject(1);
+            for (String key : node.keySet()) {
+                ItemNode subNode = node.get(key);
+                subItems.put(key, dumpNode(subNode));
+            }
+        } else {
+            dump.add(system().createNull());
+        }
+        return dump;
+    }
+
+    @Override
+    public void load(Url url, JsonArray value) {
+        if (value.size() != 2) { throw ItemscriptError.internalError(this, "load.value.size.was.not.2"); }
+        Url pathedUrl = Url.createRelative(JsonSystem.ROOT_URL_STRING, url.pathString());
+        put(pathedUrl, value.get(0));
+        JsonObject subItems = value.getObject(1);
+        if (subItems == null) { return; }
+        for (String key : subItems.keySet()) {
+            String subUrl = pathedUrl + "/" + Url.encode(key);
+            load(Url.create(subUrl), subItems.getArray(key));
+        }
     }
 }

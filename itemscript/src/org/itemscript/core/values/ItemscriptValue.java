@@ -210,31 +210,35 @@ abstract class ItemscriptValue implements JsonValue {
         return parent;
     }
 
-    protected final void setItem(JsonItem item) {
+    protected final void setItem(JsonItem newItem) {
         // It's okay to set item to null if it's not null, but not to any other value.
-        if (item != null && item() != null) {
+        if (newItem != null && item() != null) {
             // Should not occur, but just in case...
             throw ItemscriptError.internalError(this, "setItem.item.was.already.set");
         }
-        this.item = item;
+        this.item = newItem;
     }
 
-    protected final void setKey(String key) {
+    protected final void setKey(String newKey) {
         // It's okay to set key to null if it's not null, but not to any other value.
-        if (key != null && key() != null) {
+        if (newKey != null && key() != null) {
             // Should not occur, but just in case...
             throw ItemscriptError.internalError(this, "setKey.key.was.already.set");
         }
-        this.key = key;
+        this.key = newKey;
     }
 
-    protected final void setParent(JsonContainer parent) {
+    protected final void setParent(JsonContainer newParent) {
+        // It's not okay to change the parent of a value to a value from another item.
+        if (item() != null && newParent != null && item() != newParent.item()) { 
+            throw ItemscriptError.internalError(this, "setParent.new.parent.was.in.another.item");
+        }
         // It's okay to set parent to null if it's not null, but not to any other value.
-        if (parent != null && parent() != null) {
+        if (newParent != null && parent() != null) {
             // Should not occur, but just in case...
             throw ItemscriptError.internalError(this, "setParent.parent.was.already.set");
         }
-        this.parent = parent;
+        this.parent = newParent;
     }
 
     @Override
