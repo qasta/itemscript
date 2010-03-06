@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright notice,
  *       this list of conditions and the following disclaimer in the documentation
  *       and/or other materials provided with the distribution.
- *     * Neither the names of Kalinda Software, DBA Software, Data Base Architects,
+ *     * Neither the names of Kalinda Software, DBA Software, Data Base Architects, Itemscript
  *       nor the names of its contributors may be used to endorse or promote products derived
  *       from this software without specific prior written permission.
  * 
@@ -27,47 +27,25 @@
  * Author: Jacob Davies
  */
 
-package org.itemscript.core.values;
+package org.itemscript.core.connectors;
 
 import org.itemscript.core.JsonSystem;
+import org.itemscript.core.url.Url;
+import org.itemscript.core.values.JsonArray;
 
-class ItemscriptNative extends ItemscriptValue implements JsonNative {
-    private final Object value;
-
-    protected ItemscriptNative(JsonSystem system, Object value) {
-        super(system);
-        this.value = value;
-    }
-
-    @Override
-    public JsonNative asNative() {
-        return this;
-    }
-
-    @Override
-    public JsonValue copy() {
-        // JsonNative values are not copied even with a deep copy.
-        return system().createNative(null);
-    }
-
-    @Override
-    public boolean isNative() {
-        return true;
-    }
-
-    @Override
-    public Object nativeValue() {
-        return value;
-    }
-
-    @Override
-    public String toCompactJsonString() {
-        return toJsonString();
-    }
-
-    @Override
-    public String toJsonString() {
-        return ItemscriptCreator.quotedString("__NATIVE__ | class: "
-                + (value != null ? value.getClass() : "(null)"));
-    }
+/**
+ * The interface to be implemented for a {@link Connector} which is capable of loading a dump value.
+ * 
+ * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
+ */
+public interface SyncLoadConnector extends Connector {
+    /**
+     * Load the given value at the given URL.
+     * 
+     * See {@link JsonSystem} for the specification of what is to be supplied.
+     * 
+     * @param url The URL to dump.
+     * @param value The value to load.
+     */
+    public void load(Url url, JsonArray value);
 }

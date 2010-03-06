@@ -32,6 +32,7 @@ package org.itemscript.core.values;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.itemscript.core.ItemscriptSystem;
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.Params;
 import org.itemscript.core.connectors.GetCallback;
@@ -108,7 +109,7 @@ public final class ItemscriptItem implements JsonItem {
             if (fragment.size() == 0) { return value; }
             return ((ItemscriptContainer) value).getByFragment(fragment);
         } else {
-            return system.get(Url.createRelative(source, url));
+            return ((ItemscriptSystem) system).get(Url.createRelative(source, url));
         }
     }
 
@@ -120,7 +121,7 @@ public final class ItemscriptItem implements JsonItem {
                 callback.onError(e);
             }
         } else {
-            system.get(Url.createRelative(source, url), callback);
+            ((ItemscriptSystem) system).get(Url.createRelative(source, url), callback);
         }
     }
 
@@ -297,7 +298,7 @@ public final class ItemscriptItem implements JsonItem {
             }
         } else {
             // Otherwise interpret it as relative to the source URL of this item.
-            system.put(Url.createRelative(source, url), value, callback);
+            ((ItemscriptSystem) system).put(Url.createRelative(source, url), value, callback);
         }
     }
 
@@ -347,7 +348,7 @@ public final class ItemscriptItem implements JsonItem {
         } else {
             // If the URL was anything other than a fragment, interpret it as being relative to the source of this
             // item and put the value there.
-            return system.put(Url.createRelative(source, url), value);
+            return ((ItemscriptSystem) system).put(Url.createRelative(source, url), value);
         }
     }
 
@@ -382,7 +383,7 @@ public final class ItemscriptItem implements JsonItem {
             }
         } else {
             // Otherwise treat the URL as relative to the source of this item and call system.remove().
-            system.remove(Url.createRelative(source, url));
+            ((ItemscriptSystem) system).remove(Url.createRelative(source, url));
         }
     }
 
@@ -401,7 +402,7 @@ public final class ItemscriptItem implements JsonItem {
             }
         }
         // Otherwise treat the URL as relative to the source of this item and call system.remove().
-        system.remove(Url.createRelative(source, url), callback);
+        ((ItemscriptSystem) system).remove(Url.createRelative(source, url), callback);
     }
 
     @Override

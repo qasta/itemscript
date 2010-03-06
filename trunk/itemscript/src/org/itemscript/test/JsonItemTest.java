@@ -117,11 +117,9 @@ public class JsonItemTest extends ItemscriptTestBase {
 
     @Test
     public void testGetHttp() {
-        JsonValue value =
-                system().get(
-                        "http://itemscript.org/GoogleMaps/mapsgallery.script.json#contents/contents/0/borderLayout");
+        JsonValue value = system().get("http://itemscript.org/test.json#test-string");
         assertNotNull(value);
-        assertEquals("west", value.asString()
+        assertEquals("value", value.asString()
                 .stringValue());
         JsonItem item = value.item();
         assertNotNull(item);
