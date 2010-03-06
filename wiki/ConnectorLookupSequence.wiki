@@ -46,8 +46,11 @@ AsyncGetConnector
 == For asynchronous put operations ==
 
 {{{
-AsyncPutConnector
-NOTE: This will be changed soon to look for a query string and call a new interface, AsyncPostConnector if present.
+if (URL does not have a query string) {
+  AsyncPutConnector
+} else {
+  AsyncPostConnector
+}
 }}}
 
 == For asynchronous remove operations ==
