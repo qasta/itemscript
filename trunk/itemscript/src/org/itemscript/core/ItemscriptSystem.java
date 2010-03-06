@@ -31,6 +31,7 @@ package org.itemscript.core;
 
 import org.itemscript.core.config.JsonConfig;
 import org.itemscript.core.connectors.AsyncGetConnector;
+import org.itemscript.core.connectors.AsyncPostConnector;
 import org.itemscript.core.connectors.AsyncPutConnector;
 import org.itemscript.core.connectors.Connector;
 import org.itemscript.core.connectors.GetCallback;
@@ -448,15 +449,20 @@ public final class ItemscriptSystem implements JsonSystem {
         Url fullUrl = createRootRelativeUrl(url);
         if (isNotMemSchemeAndHasFragment(fullUrl)) { throw ItemscriptError.internalError(this,
                 "put.url.with.fragment.not.supported", fullUrl + ""); }
-        ((AsyncPutConnector) getConnector(fullUrl)).put(fullUrl, value, new PutCallback() {
-            public void onError(Throwable e) {
+        Connector connector = getConnector(fullUrl);
+        if (connector instanceof SyncPutConnector) {
+            try {
+                callback.onSuccess(((SyncPutConnector) connector).put(fullUrl, value));
+            } catch (ItemscriptError e) {
                 callback.onError(e);
             }
-
-            public void onSuccess(JsonValue value) {
-                callback.onSuccess(value);
+        } else {
+            if (fullUrl.hasQuery()) {
+                ((AsyncPostConnector) connector).post(fullUrl, value, callback);
+            } else {
+                ((AsyncPutConnector) connector).put(fullUrl, value, callback);
             }
-        });
+        }
     }
 
     private boolean isNotMemSchemeAndHasFragment(final Url url) {
@@ -497,7 +503,17 @@ public final class ItemscriptSystem implements JsonSystem {
         Url fullUrl = createRootRelativeUrl(url);
         if (isNotMemSchemeAndHasFragment(fullUrl)) { throw ItemscriptError.internalError(this,
                 "remove.url.with.fragment.not.supported", fullUrl + ""); }
-        ((AsyncPutConnector) getConnector(fullUrl)).remove(fullUrl, callback);
+        Connector connector = getConnector(fullUrl);
+        if (connector instanceof SyncPutConnector) {
+            try {
+                ((SyncPutConnector) connector).remove(fullUrl);
+                callback.onSuccess();
+            } catch (ItemscriptError e) {
+                callback.onError(e);
+            }
+        } else {
+            ((AsyncPutConnector) connector).remove(fullUrl, callback);
+        }
     }
 
     @Override
