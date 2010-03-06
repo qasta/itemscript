@@ -155,6 +155,7 @@ public class JsonSystemTest extends ItemscriptTestBase {
                 .size());
         assertEquals("123", system().getString("/abc#def"));
         system().remove("/abc#def");
+        System.out.println("abc: " + system().get("abc"));
         assertEquals(1, system().getObject("/abc")
                 .size());
         assertEquals("456", system().getString("/abc#ghi"));
