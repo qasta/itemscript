@@ -301,3 +301,86 @@ i: 7 uuidValue.item().source(): mem:/Test/0c3ce92e-1b90-4999-9ac0-1ef8e4c6840e
 i: 8 uuidValue.item().source(): mem:/Test/e674bbcd-5d75-43a6-ad1f-1c5d45e066bf
 i: 9 uuidValue.item().source(): mem:/Test/1682f797-a7bc-47c1-911a-0c9861cfe136
 }}}
+
+== Dump and load parts of the database ==
+
+You can dump parts of the database by adding the query-string "dump" to a base URL supplied to the `get()` method. This will copy the entire tree below the item pointed to by the URL into a `JsonObject` in a special format that includes both the value of that item under the key `value`, and under the key `subItems`, a map of the keys of the sub-items of that item to a dump of those items, and so on recursively.
+
+You can then load a dump object created in this way by adding the query-string "load" to a base URL giving the place to begin the loading at, and supplying that URL and the dump object to a call to `put()`. The items listed in the dump will be added relative to that location.
+
+When using a `?dump` URL, the values of the items under the given URL will be copied. This means that dumping cannot exactly duplicate an area that contains native objects, because native objects are not copied by the `copy()` method on `JsonValue`. The purpose of `dump` is to provide a serialized form of portions of the database, and since the Itemscript library does not attempt to serialize native values, it is not useful to copy their values.
+
+Here's an example that adds some values to a section of the database under `/foo`, then dumps them, then loads that dump back into the system under the URL `/bar/one/two/three`. The structure created under `/foo` will be duplicated there.
+
+The standalone code:
+{{{
+    public static void main(String[] args) {
+        JsonSystem system = StandardConfig.createSystem();
+        system.put("/foo", 1);
+        system.put("/foo/a", 2);
+        system.put("/foo/a/x", true);
+        system.put("/foo/b", 3);
+        JsonValue fooDump = system.get("/foo?dump");
+        System.out.println("fullDump: " + fooDump);
+        system.put("/bar/one/two/three?load", fooDump);
+        JsonValue barDump = system.get("/bar?dump");
+        System.out.println("barDump: " + barDump);
+    }
+}}}
+
+prints:
+
+{{{
+fullDump: {
+    "subItems" : {
+        "b" : {
+            "subItems" : {},
+            "value" : 3
+        },
+        "a" : {
+            "subItems" : {
+                "x" : {
+                    "subItems" : {},
+                    "value" : true
+                }
+            },
+            "value" : 2
+        }
+    },
+    "value" : 1
+}
+
+barDump: {
+    "subItems" : {
+        "one" : {
+            "subItems" : {
+                "two" : {
+                    "subItems" : {
+                        "three" : {
+                            "subItems" : {
+                                "b" : {
+                                    "subItems" : {},
+                                    "value" : 3
+                                },
+                                "a" : {
+                                    "subItems" : {
+                                        "x" : {
+                                            "subItems" : {},
+                                            "value" : true
+                                        }
+                                    },
+                                    "value" : 2
+                                }
+                            },
+                            "value" : 1
+                        }
+                    },
+                    "value" : {}
+                }
+            },
+            "value" : {}
+        }
+    },
+    "value" : {}
+}
+}}}
