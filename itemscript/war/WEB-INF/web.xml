@@ -4,7 +4,12 @@
     "http://java.sun.com/dtd/web-app_2_3.dtd">
 
 <web-app>
-	<welcome-file-list>
-		<welcome-file>index.html</welcome-file>
-	</welcome-file-list>
+	<filter>
+		<filter-name>NoCache</filter-name>
+		<filter-class>org.itemscript.server.NoCacheFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>NoCache</filter-name>
+		<url-pattern>/*.json</url-pattern>
+	</filter-mapping>
 </web-app>
