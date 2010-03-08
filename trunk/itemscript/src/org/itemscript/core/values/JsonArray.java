@@ -52,6 +52,12 @@ public interface JsonArray extends JsonContainer, List<JsonValue> {
      * Add a binary value to this array, returning this JsonArray.
      * 
      * This method can be used for inline initialization of an array.
+     * <p>
+     * Note: The JsonString object will point to the underlying byte[] that was supplied; it will
+     * not copy it. The internal operations of the JsonSystem will not change it, but it will
+     * be made directly available through the JsonString object's {@link JsonString#binaryValue}
+     * method. So, if you need to make sure that the original is not changed, you must copy it before
+     * supplying it to this method. 
      * 
      * @param value The binary value to be added.
      * @return This JsonArray object.
@@ -127,6 +133,12 @@ public interface JsonArray extends JsonContainer, List<JsonValue> {
 
     /**
      * Add a binary value to this array.
+     * <p>
+     * Note: The JsonString object will point to the underlying byte[] that was supplied; it will
+     * not copy it. The internal operations of the JsonSystem will not change it, but it will
+     * be made directly available through the JsonString object's {@link JsonString#binaryValue}
+     * method. So, if you need to make sure that the original is not changed, you must copy it before
+     * supplying it to this method. 
      * 
      * @param value The binary value to add.
      */
@@ -260,6 +272,12 @@ public interface JsonArray extends JsonContainer, List<JsonValue> {
 
     /**
      * Set a binary value at the given index.
+     * <p>
+     * Note: The JsonString object will point to the underlying byte[] that was supplied; it will
+     * not copy it. The internal operations of the JsonSystem will not change it, but it will
+     * be made directly available through the JsonString object's {@link JsonString#binaryValue}
+     * method. So, if you need to make sure that the original is not changed, you must copy it before
+     * supplying it to this method. 
      * 
      * @param index The index to set at.
      * @param value The binary value to set.
