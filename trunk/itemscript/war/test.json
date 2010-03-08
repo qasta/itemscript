@@ -18,7 +18,7 @@
         "three",
         true,
         1,
-        null
+        null,
         1.5,
         {
             "xyz" : "123"

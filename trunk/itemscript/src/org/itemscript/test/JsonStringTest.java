@@ -50,9 +50,6 @@ public class JsonStringTest extends ItemscriptTestBase {
         assertEquals(array[0], array2[0]);
         assertEquals(array[1], array2[1]);
         assertEquals(array[2], array2[2]);
-        // Make sure we can change the original without changing the JsonString:
-        array[0] = 0;
-        assertEquals(Byte.MIN_VALUE, string.binaryValue()[0]);
     }
 
     @Test
