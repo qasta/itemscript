@@ -1,0 +1,27 @@
+{
+    "test-string" : "value",
+    "test-int" : 1,
+    "test-float" : 1.5,
+    "test-boolean" : true,
+    "test-null" : null,
+    "test-object" : {
+        "abc" : "def",
+        "foo" : [
+            "x",
+            "y",
+            "z"
+        ]
+    },
+    "test-array" : [
+        "one",
+        "two",
+        "three",
+        true,
+        1,
+        null
+        1.5,
+        {
+            "xyz" : "123"
+        }
+    ]
+}
