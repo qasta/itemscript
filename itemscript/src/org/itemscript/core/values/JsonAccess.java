@@ -180,6 +180,12 @@ public interface JsonAccess {
 
     /**
      * Put a binary value. The value will be base64-encoded and stored in a JsonString.
+     * <p>
+     * Note: The JsonString object will point to the underlying byte[] that was supplied; it will
+     * not copy it. The internal operations of the JsonSystem will not change it, but it will
+     * be made directly available through the JsonString object's {@link JsonString#binaryValue}
+     * method. So, if you need to make sure that the original is not changed, you must copy it before
+     * supplying it to this method. 
      * 
      * @param key The key to put the value under.
      * @param value The binary value to store.

@@ -118,6 +118,12 @@ public interface JsonCreator {
 
     /**
      * Create a new JsonString with the given binary value.
+     * <p>
+     * Note: The JsonString object will point to the underlying byte[] that was supplied; it will
+     * not copy it. The internal operations of the JsonSystem will not change it, but it will
+     * be made directly available through the JsonString object's {@link JsonString#binaryValue}
+     * method. So, if you need to make sure that the original is not changed, you must copy it before
+     * supplying it to this method. 
      * 
      * @param value The binary value of the JsonString.
      * @return A new JsonString.
