@@ -114,7 +114,8 @@ Some of these are very basic and supported by almost all web servers; others are
 
 === HTTP POST ===
   * 3.1 - Change part of the value of a resource.
-  * 3.2 - Perform some other state-changing operation on the server.
+  * 3.2 - Remove part of the value of a resource.
+  * 3.3 - Perform some other state-changing operation on the server.
 
 === HTTP DELETE ===
   * 4.1 - Remove a resource.
@@ -133,10 +134,11 @@ These are mapped to the following combinations of methods and types of URL suppl
   * 2.1 - URL with no query string or fragment.
   * 2.2 - URL with a query string with the special "uuid" key and no fragment.
   * 3.1 - URL with no query string, with a fragment.
-  * 3.2 - URL with a query string without the special "uuid" key and no fragment.
+  * 3.3 - URL with a query string without the special "uuid" key and no fragment.
 
 === `remove` ===
   * 4.1 - URL with no query string or fragment.
+  * 3.2 - URL with no query string, with a fragment.
 
 == What do these operations do? ==
 
@@ -356,7 +358,96 @@ The expected state of the data model after the call:
 }
 }}}
 
+=== 3.2 - Remove part of the value of a resource. ===
 
+Itemscript `mem:` database call:
+{{{
+    system.remove("/def#a");
+}}}
 
+HTTP equivalent:
 
-===
+No standard equivalent exists, but Itemscript will implement (does not now) a standard version for when it encounters a call like:
+{{{
+    system.remove("http://example.com/def#a");
+}}}
+
+Again, the fragment must be translated to part of a POST request like so:
+
+{{{
+POST http://example.com/def
+with content of:
+{
+    "action" : "removeValue",
+    "fragment" : "#a"
+}
+}}}
+
+The expected state of the data model after the call:
+
+{{{
+{
+    "value" : "",
+    "subItems" : {
+        "abc" : {
+            "value" : "xyz",
+            "subItems" : {}
+        },
+        "def" : {
+            "value" : {},
+            "subItems" : {}
+        }
+    }
+}
+}}}
+
+=== 3.3 - Perform some other state-changing operation on the server. ===
+
+Itemscript `mem:` database call:
+
+There is no real equivalent, as the in-memory database only supports the changing of resources or parts of resources.
+
+HTTP equivalent:
+
+Any POST request falls into this category.
+
+Itemscript will implement (does not now) something to ease the creation of POST requests, by turning calls of the form:
+{{{
+    system.put("http://example.com?query=string
+}}}
+
+into HTTP calls like:
+{{{
+POST http://example.com
+with content of "query=string"
+}}}
+
+This may seem a little backwards, but it's there to shoehorn POST requests into the three-call API.
+
+=== 4.1 - Remove a resource. ===
+
+Itemscript `mem:` database call:
+{{{
+    system.remove("/abc");
+}}}
+
+HTTP equivalent:
+{{{
+DELETE http://example.com/abc
+}}}
+
+The expected state of the data model after the call:
+
+{{{
+{
+    "value" : "",
+    "subItems" : {
+        "def" : {
+            "value" : {
+                "a" : "b"
+            },
+            "subItems" : {}
+        }
+    }
+}
+}}}
