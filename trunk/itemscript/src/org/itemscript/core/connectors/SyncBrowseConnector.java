@@ -59,14 +59,22 @@ public interface SyncBrowseConnector extends Connector {
     /**
      * Called when the query contains the "countItems" key.
      * 
-     * It must return a JsonNumber with an integer value corresponding to
-     * the number of sub-items of the item given by the URL path.
+     * It must return a JsonObject with a "count" field with an integer value corresponding to
+     * the number of sub-items of the item given by the URL path, like this:
+     * 
+     * <pre>
+     * {
+     *     "count" : 1000000
+     * }
+     * </pre>
+     *
      * 
      * Connectors that cannot return a count of sub-items should return a JsonObject exactly like this:
      * 
      * <pre>
      * {
-     *     "countType":"unknown"
+     *     "countType":"unknown",
+     *     "count" : -1
      * }
      * </pre>
      * 
@@ -76,7 +84,7 @@ public interface SyncBrowseConnector extends Connector {
      * <pre>
      * {
      *     "countType":"approximate",
-     *     "countNumber":1000000
+     *     "count":1000000
      * }
      * </pre>
      * 
