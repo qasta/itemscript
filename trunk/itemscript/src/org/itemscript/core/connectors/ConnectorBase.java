@@ -31,6 +31,7 @@ package org.itemscript.core.connectors;
 
 import org.itemscript.core.HasSystem;
 import org.itemscript.core.JsonSystem;
+import org.itemscript.core.values.JsonObject;
 
 /**
  * A base class for {@link Connector}, implementing {@link HasSystem}.
@@ -53,5 +54,17 @@ public abstract class ConnectorBase implements Connector, HasSystem {
     @Override
     public final JsonSystem system() {
         return system;
+    }
+
+    /**
+     * Create a count object for a "countItems" query.
+     * 
+     * @param count The number of items.
+     * @return A <code>JsonObject</code> with the single field "count" set to the supplied count.
+     */
+    protected JsonObject countObject(int count) {
+        JsonObject countObject = system().createObject();
+        countObject.put("count", count);
+        return countObject;
     }
 }

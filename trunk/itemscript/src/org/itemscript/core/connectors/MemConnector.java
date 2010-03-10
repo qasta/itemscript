@@ -38,7 +38,6 @@ import org.itemscript.core.url.Path;
 import org.itemscript.core.url.Query;
 import org.itemscript.core.url.Url;
 import org.itemscript.core.values.JsonArray;
-import org.itemscript.core.values.JsonNumber;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 
@@ -84,10 +83,11 @@ public final class MemConnector extends ConnectorBase
     }
 
     @Override
-    public JsonValue countItems(Url url) {
+    public JsonObject countItems(Url url) {
         ItemNode node = findNode(url);
         if (node == null) { return null; }
-        JsonNumber count = system().createNumber(node.size());
+        JsonObject count = system().createObject();
+        count.put("count", node.size());
         system().createItem(url + "", count);
         return count;
     }
@@ -114,7 +114,7 @@ public final class MemConnector extends ConnectorBase
     }
 
     @Override
-    public JsonValue getKeys(Url url) {
+    public JsonArray getKeys(Url url) {
         ItemNode node = findNode(url);
         if (node == null) { return null; }
         JsonArray keys = system().createArray();
@@ -126,7 +126,7 @@ public final class MemConnector extends ConnectorBase
     }
 
     @Override
-    public JsonValue pagedItems(Url url) {
+    public JsonArray pagedItems(Url url) {
         ItemNode node = findNode(url);
         if (node == null) { return null; }
         String[] keyArray = sortedKeys(node);
@@ -158,7 +158,7 @@ public final class MemConnector extends ConnectorBase
     }
 
     @Override
-    public JsonValue pagedKeys(Url url) {
+    public JsonArray pagedKeys(Url url) {
         ItemNode node = findNode(url);
         if (node == null) { return null; }
         String[] keyArray = sortedKeys(node);

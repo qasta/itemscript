@@ -39,7 +39,7 @@ import org.itemscript.core.connectors.SyncGetConnector;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Url;
 import org.itemscript.core.values.JsonArray;
-import org.itemscript.core.values.JsonValue;
+import org.itemscript.core.values.JsonObject;
 
 /**
  * Base Connector class for file connectors.
@@ -56,8 +56,8 @@ public abstract class FileConnectorBase extends ConnectorBase implements SyncGet
     }
 
     @Override
-    public final JsonValue countItems(Url url) {
-        return system().createNumber(getKeys(url).asArray()
+    public final JsonObject countItems(Url url) {
+        return countObject(getKeys(url).asArray()
                 .size());
     }
 
@@ -84,22 +84,23 @@ public abstract class FileConnectorBase extends ConnectorBase implements SyncGet
         return file;
     }
 
-    public final JsonValue getKeys(Url url) {
+    public final JsonArray getKeys(Url url) {
         File file = getDirectory(url);
         JsonArray keys = system().createArray();
         for (String filename : file.list()) {
             keys.add(filename);
         }
         return system().createItem(url + "", keys)
-                .value();
+                .value()
+                .asArray();
     }
 
-    public final JsonValue pagedItems(Url url) {
+    public final JsonArray pagedItems(Url url) {
         // FIXME
         return null;
     }
 
-    public final JsonValue pagedKeys(Url url) {
+    public final JsonArray pagedKeys(Url url) {
         // FIXME
         return null;
     }
