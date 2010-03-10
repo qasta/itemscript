@@ -283,6 +283,31 @@ PUT http://example.com/abc/550e8400-e29b-41d4-a716-446655440000
 
 As you can see, we can translate this into an HTTP PUT to a specific resource name by generating the UUID for that resource.
 
+The expected state of the data model after the call:
+
+{{{
+{
+    "value" : "",
+    "subItems" : {
+        "abc" : {
+            "value" : "xyz",
+            "subItems" : {
+                "550e8400-e29b-41d4-a716-446655440000" : {
+                    "value" : "a new value",
+                    "subItems" : {}
+                }
+            }
+        },
+        "def" : {
+            "value" : {
+                "a" : "b"
+            },
+            "subItems" : {}
+        }
+    }
+}
+}}}
+
 === 3.1 - Change part of the value for a resource ===
 
 Itemscript `mem:` database call:
