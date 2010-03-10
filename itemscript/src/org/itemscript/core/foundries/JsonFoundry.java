@@ -69,7 +69,7 @@ public interface JsonFoundry<T> extends JsonFactory<T> {
      * 
      * @param factoryName The factory to be put in this foundry.
      */
-    public abstract void put(final FactoryName<T> factoryName);
+    public abstract void put(FactoryName<T> factoryName);
 
     /**
      * Put a {@link JsonFactory} into this foundry.
@@ -77,5 +77,13 @@ public interface JsonFoundry<T> extends JsonFactory<T> {
      * @param name The name of the factory.
      * @param factory The factory to be put in this foundry.
      */
-    public abstract void put(String name, final JsonFactory<T> factory);
+    public abstract void put(String name, JsonFactory<T> factory);
+
+    /**
+     * Put a {@link JsonObject} as a factory.
+     * 
+     * @param name The name of the factory.
+     * @param factoryObject The <code>JsonObject</code> describing the factory. 
+     */
+    public abstract void put(String name, JsonObject factoryObject);
 }

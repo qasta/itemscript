@@ -12,4 +12,13 @@
 		<filter-name>NoCache</filter-name>
 		<url-pattern>/*.json</url-pattern>
 	</filter-mapping>
+	<servlet>
+		<servlet-name>ReflectJson</servlet-name>
+		<servlet-class>org.itemscript.examples.gwt.server.ReflectJsonServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<url-pattern>/ReflectJson</url-pattern>
+		<servlet-name>ReflectJson</servlet-name>
+	</servlet-mapping>
 </web-app>

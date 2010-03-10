@@ -172,7 +172,7 @@ public class RequestUtils {
         Request request = null;
         try {
             RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, url);
-            builder.setHeader("content-type", "text/x-json");
+            builder.setHeader("content-type", "application/json");
             request = builder.sendRequest(json.toCompactJsonString(), callback);
         } catch (RequestException e) {
             if (callback != null) {
@@ -234,7 +234,7 @@ public class RequestUtils {
         Request request = null;
         try {
             RequestBuilder builder = new RequestBuilder(RequestBuilder.PUT, url);
-            builder.setHeader("content-type", "text/x-json");
+            builder.setHeader("content-type", "application/json");
             request = builder.sendRequest(json.toCompactJsonString(), callback);
         } catch (RequestException e) {
             if (callback != null) {

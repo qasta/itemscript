@@ -309,7 +309,8 @@ public class JsonSystemTest extends ItemscriptTestBase {
         JsonValue value = system().put("/foo?uuid", "foo");
         Url source = Url.create(value.item()
                 .source());
-        assertEquals("/foo/", source.pathString().substring(0, 5));
+        assertEquals("/foo/", source.pathString()
+                .substring(0, 5));
         String filename = source.filename();
         assertEquals(36, filename.length());
     }
@@ -394,4 +395,11 @@ public class JsonSystemTest extends ItemscriptTestBase {
         assertTrue(removeCompleted);
         assertNull(system().get("/foo"));
     }
+
+//    @Test
+//    public void testHttpPut() {
+//        JsonValue value = system().get("http://127.0.0.1:8888/test.json");
+//        JsonValue ret = system().put("http://127.0.0.1:8888/ReflectJson", value);
+//        system().remove("http://127.0.0.1:8888/ReflectJson");
+//    }
 }

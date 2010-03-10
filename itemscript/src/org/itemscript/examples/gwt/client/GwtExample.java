@@ -31,6 +31,7 @@ package org.itemscript.examples.gwt.client;
 
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.connectors.GetCallback;
+import org.itemscript.core.connectors.PutCallback;
 import org.itemscript.core.gwt.GwtSystem;
 import org.itemscript.core.values.JsonValue;
 
@@ -43,14 +44,25 @@ import com.google.gwt.user.client.Window;
  * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
-public class Example implements EntryPoint {
+public class GwtExample implements EntryPoint {
     @Override
     public void onModuleLoad() {
-        JsonSystem system = GwtSystem.SYSTEM;
+        final JsonSystem system = GwtSystem.SYSTEM;
         system.get(GWT.getHostPageBaseURL() + "test.json", new GetCallback() {
             @Override
             public void onSuccess(JsonValue value) {
                 Window.alert("Received value: " + value);
+                system.put(GWT.getHostPageBaseURL() + "ReflectJson", value, new PutCallback() {
+                    @Override
+                    public void onSuccess(JsonValue value) {
+                        Window.alert("Reflected value: " + value);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        throw new RuntimeException(e);
+                    }
+                });
             }
 
             @Override

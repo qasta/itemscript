@@ -34,6 +34,7 @@ import org.itemscript.core.JsonSystem;
 import org.itemscript.core.Params;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.values.JsonObject;
+import org.itemscript.core.values.JsonValue;
 
 /**
  * The implementation class for {@link JsonFoundry}. You can either instantiate a typed instance
@@ -48,6 +49,7 @@ public class ItemscriptFoundry<T> implements JsonFactory<T>, HasSystem, JsonFoun
     private final String location;
     private final JsonObject factoryObject;
     private final String nameKey;
+    public static final String EXTENDS_KEY = "extends";
 
     /**
      * Subclasses must call this constructor.
@@ -64,10 +66,13 @@ public class ItemscriptFoundry<T> implements JsonFactory<T>, HasSystem, JsonFoun
         system.put(location, factoryObject);
     }
 
+    public String findMissingName(JsonObject params) {
+        return null;
+    }
+
     @Override
     public T create(JsonObject params) {
-        return create(params.get(nameKey)
-                .stringValue(), params);
+        return create(params.getString(nameKey), params);
     }
 
     @Override
@@ -75,21 +80,34 @@ public class ItemscriptFoundry<T> implements JsonFactory<T>, HasSystem, JsonFoun
         return create(name, system().createObject());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public T create(String name, JsonObject params) {
-        if (params == null) { throw new ItemscriptError("error.foundry.create.params.was.null"); }
-        if (name == null) { throw new ItemscriptError("error.itemscript.Foundry.create.factoryName.was.null",
-                new Params().p("factoryNameParameter", nameKey)); }
-        JsonFactory<T> factory = get(name);
-        if (factory == null) { throw new ItemscriptError("error.foundry.create.factory.not.found", new Params().p(
-                "name", name)); }
-        return factory.create(params);
-    }
-
-    @SuppressWarnings("unchecked")
-    private final JsonFactory<T> get(String name) {
-        return (JsonFactory<T>) factoryObject.get(name)
-                .nativeValue();
+        if (params == null) { throw new ItemscriptError(
+                "error.itemscript.ItemscriptFoundry.create.params.was.null"); }
+        if (name == null) {
+            name = findMissingName(params);
+            if (name == null) { throw ItemscriptError.internalError(this,
+                    "create.no.name.supplied.and.no.name.could.be.found", params.toCompactJsonString()); }
+            return create(name, params);
+        }
+        JsonValue factoryValue = factoryObject.get(name);
+        if (factoryValue.isNative()) {
+            Object nativeValue = factoryValue.nativeValue();
+            JsonFactory<T> factory = (JsonFactory<T>) nativeValue;
+            return factory.create(params);
+        } else if (factoryValue.isObject()) {
+            JsonObject factoryObject = factoryValue.asObject();
+            String underlyingName = factoryObject.getString(EXTENDS_KEY);
+            JsonObject combinedFactory = factoryObject.copy()
+                    .asObject();
+            for (String key : params.keySet()) {
+                combinedFactory.put(key, params.get(key)
+                        .copy());
+            }
+            return create(underlyingName, combinedFactory);
+        }
+        throw ItemscriptError.internalError(this, "create.factory.not.found", new Params().p("name", name));
     }
 
     @Override
@@ -100,9 +118,18 @@ public class ItemscriptFoundry<T> implements JsonFactory<T>, HasSystem, JsonFoun
 
     @Override
     public final void put(String name, final JsonFactory<T> factory) {
-        if (name == null || name.length() == 0) { throw new IllegalArgumentException(
-                "error.itemscript.foundry.empty.name.in.put"); }
+        checkName(name);
         factoryObject.putNative(name, factory);
+    }
+
+    private void checkName(String name) {
+        if (name == null || name.length() == 0) { throw ItemscriptError.internalError(this, "empty.name.in.put"); }
+    }
+
+    @Override
+    public final void put(String name, JsonObject params) {
+        checkName(name);
+        factoryObject.put(name, params.copy());
     }
 
     @Override

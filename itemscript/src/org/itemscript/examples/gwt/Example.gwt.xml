@@ -18,5 +18,5 @@
 
 	<inherits name="org.itemscript.Itemscript" />
 
-	<entry-point class="org.itemscript.examples.gwt.client.Example" />
+	<entry-point class="org.itemscript.examples.gwt.client.GwtExample" />
 </module>
