@@ -25,7 +25,7 @@ For the purposes of this discussion, a "resource" is identified by the path sect
 
 We're not going to distinguish between "files" and "directories" initially, and therefore the presence or absence of a trailing slash on the path is irrelevant.
 
-All paths start with a slash and are therefore rooted at the base of the resources a server offers; the rest of the path is divided by slashes and URL-decoded to the names of sub-resources. The model corresponds roughly to a List<String> in Java, or symbolically in  JSON, the path string `/some/path/foo.gif` would correspond to:
+All paths start with a slash and are therefore rooted at the base of the resources a server offers; the rest of the path is divided by slashes and URL-decoded to the names of sub-resources. The model corresponds roughly to a List`<String>` in Java, or symbolically in  JSON, the path string `/some/path/foo.gif` would correspond to:
 
 {{{
 [
@@ -42,7 +42,7 @@ The initial "/" entry reminds us that all navigation starts from the root in an 
 
 A query is something asked of (or about) a given resource, indicated by the presence of a query-string in the URL after the path. A query does not necessarily return a given resource, but may return information _about_ resources.
 
-For the purposes of this discussion, a "query" is identified by the query-string section of a URL, everything between the end of the path and either the end of the URL or the beginning of the fragment section, and the actual query is decoded to an unordered set of keys and values, in which each key may have one or more string values. Keys with no value are assumed to have a value of an empty string. Roughly, this is a Map<String, List<String>> in Java. For instance, in the URL `http://example.com/abc?key=value&multiKey=foo&multiKey=bar&emptyKey` the query looks a bit like this in JSON:
+For the purposes of this discussion, a "query" is identified by the query-string section of a URL, everything between the end of the path and either the end of the URL or the beginning of the fragment section, and the actual query is decoded to an unordered set of keys and values, in which each key may have one or more string values. Keys with no value are assumed to have a value of an empty string. Roughly, this is a Map`<String, List<String>>` in Java. For instance, in the URL `http://example.com/abc?key=value&multiKey=foo&multiKey=bar&emptyKey` the query looks a bit like this in JSON:
 
 {{{
 {
