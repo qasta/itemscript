@@ -30,7 +30,8 @@
 package org.itemscript.core.connectors;
 
 import org.itemscript.core.url.Url;
-import org.itemscript.core.values.JsonValue;
+import org.itemscript.core.values.JsonArray;
+import org.itemscript.core.values.JsonObject;
 
 /**
  * The interface to be implemented for a {@link Connector} that allows synchronous browse operations.
@@ -84,7 +85,7 @@ public interface SyncBrowseConnector extends Connector {
      * @param url The URL to query.
      * @return A JsonNumber with the count of sub-items, or a JsonObject as above.
      */
-    public JsonValue countItems(Url url);
+    public JsonObject countItems(Url url);
 
     /**
      * Called when the query contains the "keys" key.
@@ -98,7 +99,7 @@ public interface SyncBrowseConnector extends Connector {
      * @param url The URL to query.
      * @return A JsonArray with the keys of sub-items as JsonStrings.
      */
-    public JsonValue getKeys(Url url);
+    public JsonArray getKeys(Url url);
 
     /**
      * Called when the query contains the "pagedItems" key.
@@ -134,7 +135,7 @@ public interface SyncBrowseConnector extends Connector {
      * @param url The URL to query.
      * @return A JsonArray with contents as specified above.
      */
-    public JsonValue pagedItems(Url url);
+    public JsonArray pagedItems(Url url);
 
     /**
      * Called when the query contains the "pagedKeys" key.
@@ -154,5 +155,5 @@ public interface SyncBrowseConnector extends Connector {
      * @param url The URL to query.
      * @return A JsonArray containing JsonStrings giving the keys of sub-items.
      */
-    public JsonValue pagedKeys(Url url);
+    public JsonArray pagedKeys(Url url);
 }

@@ -1,5 +1,5 @@
 <project name="JAR Itemscript" default="dist" basedir=".">
-	<property name="version" value="0.9.6" />
+	<property name="version" value="0.9.7" />
 	<target name="gwt-jar" description="Create the itemscript-gwt JAR file">
 		<jar destfile="dist/itemscript-gwt-${version}.jar" basedir="war/WEB-INF/classes" excludes="**/test/**,**/examples/**">
 			<fileset dir="src/" excludes="**/Itemscript.gwt.xml,**/examples/**,**/test/**" />

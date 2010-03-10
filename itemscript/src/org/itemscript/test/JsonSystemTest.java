@@ -157,7 +157,7 @@ public class JsonSystemTest extends ItemscriptTestBase {
         system().put("1", "x");
         system().put("2", "y");
         system().put("j", "z");
-        JsonNumber number = system().get("?countItems")
+        JsonNumber number = system().get("?countItems#count")
                 .asNumber();
         assertEquals((Integer) 4, number.intValue());
         assertEquals("mem:/?countItems", number.item()
@@ -278,7 +278,7 @@ public class JsonSystemTest extends ItemscriptTestBase {
     public void testQuery() {
         system().put("/foo/1", "foo");
         system().put("/foo/2", "bar");
-        system().get("/foo?countItems", new GetCallback() {
+        system().get("/foo?countItems#count", new GetCallback() {
             public void onError(Throwable e) {
                 fail(e.getMessage());
             }
@@ -293,8 +293,8 @@ public class JsonSystemTest extends ItemscriptTestBase {
     public void testQuerySync() {
         system().put("/foo/1", "foo");
         system().put("/foo/2", "bar");
-        assertEquals((Integer) 2, system().getInt("/foo?countItems"));
-        JsonValue val = system().get("/foo?countItems");
+        assertEquals((Integer) 2, system().getInt("/foo?countItems#count"));
+        JsonValue val = system().get("/foo?countItems#count");
         assertEquals("mem:/foo?countItems", val.item()
                 .source() + "");
     }
