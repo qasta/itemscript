@@ -1,8 +1,8 @@
 <project name="JAR Itemscript" default="dist" basedir=".">
-	<property name="version" value="0.9.5" />
+	<property name="version" value="0.9.6" />
 	<target name="gwt-jar" description="Create the itemscript-gwt JAR file">
 		<jar destfile="dist/itemscript-gwt-${version}.jar" basedir="war/WEB-INF/classes" excludes="**/test/**,**/examples/**">
-			<fileset dir="src/" excludes="**/Itemscript.gwt.xml" />
+			<fileset dir="src/" excludes="**/Itemscript.gwt.xml,**/examples/**,**/test/**" />
 		</jar>
 	</target>
 	<target name="standard-jar" description="Create the itemscript-standard JAR file">
@@ -22,13 +22,13 @@
 		</javadoc>
 	</target>
 	<target name="dist" description="Create the distribution ZIP file" depends="clean,gwt-jar,standard-jar,javadoc">
-		<mkdir dir="dist"/>
+		<mkdir dir="dist" />
 		<zip destfile="dist/itemscript-${version}.zip" basedir="." excludes="war/**,.settings/**,.classpath,.project,build.xml,itemscript-${version}.zip,dist/**">
 			<fileset dir="dist" includes="itemscript-standard-${version}.jar,itemscript-gwt-${version}.jar" />
 		</zip>
 	</target>
 	<target name="clean">
-		<mkdir dir="dist"/>
+		<mkdir dir="dist" />
 		<delete>
 			<fileset dir="dist" includes="*.jar,*.zip" />
 		</delete>
