@@ -90,24 +90,27 @@ Whether this is actually how it is implemented is not really the point; this is 
 
 Obviously most web servers don't allow just any old users to replace any resource they feel like, and the most common operation does not involve putting a new resource under a given path, but in sending some additional data and letting the server figure out a path to put it under. REST-style sites correspond most closely to the "put a whole resource" model; as do sites like Wikipedia that let you edit a resource and allow creation of hierarchically-organized sub-resources below any other resource.
 
-For the purposes of this discussion, we'll assume that permissions are irrelevant and that the user is allowed
+For the purposes of this discussion, we'll assume that permissions are irrelevant and that the user is allowed to perform any operation.
 
 == What operations are available? ==
 
-We're going to restrict the discussion to some common, simple operations. Some of these are very basic and supported by almost all web servers; others are implemented in various ways on various systems, but we're going to describe a common set of operations here and how they apply to an idealized server.
+We're going to restrict the discussion to some common, simple operations. Some of these are very basic and supported by almost all web servers; others are implemented in various ways on various systems, but we're going to describe a common set of operations here and how they apply to an idealized server. A couple of things are non-standard, but perhaps ought to be! This will have a parallel discussion of the operations provided by Itemscript and how they correspond to certain HTTP operations. (Specifically, when Itemscript sees a `mem:` URL it does things on the in-memory database that correspond to certain things it does when it sees an `http:` URL.)
 
 === HTTP GET ===
   * 1.1 - Get a particular resource.
   * 1.2 - Get part of a particular resource.
-  * 1.3 - Get the results of a query.
-  * 1.4 - Get part of the results of a query.
+  * 1.3 - Get the results of a query about a resource.
+  * 1.4 - Get part of the results of a query about a resource.
+  * 1.5 - Get the results of a query not about a specific resource.
+  * 1.6 - Get part of the results of a query not about a specific resource.
 
 === HTTP PUT ===
   * 2.1 - Put a new whole value for a resource, whether that resource existed before or not.
 
 === HTTP POST ===
-  * 3.1 - Change a sub-value of a resource.
-  * 3.2 - Perform some other state-changing operation on the server.
+  * 3.1 - Change part of the value of a resource.
+  * 3.2 - Add a new sub-resource to an existing resource under a generated UUID.
+  * 3.3 - Perform some other state-changing operation on the server.
 
 === HTTP DELETE ===
   * 4.1 - Remove a resource.
@@ -117,8 +120,10 @@ These are mapped to the following combinations of methods and types of URL suppl
 === `get` ===
   * 1.1 - URL with no query string or fragment.
   * 1.2 - URL with no query string, with a fragment.
-  * 1.3 - URL with a query string and no fragment.
-  * 1.4 - URL with a query string and a fragment.
+  * 1.3 - URL with a query string with a special key and no fragment.
+  * 1.4 - URL with a query string with a special key and a fragment.
+  * 1.5 - URL with a query string without a special key and no fragment.
+  * 1.6 - URL with a query string without a special key, with no fragment.
 
 === `put` ===
   * 2.1 - URL with no query string or fragment.
@@ -127,3 +132,54 @@ These are mapped to the following combinations of methods and types of URL suppl
 
 === `remove` ===
   * 4.1 - URL with no query string or fragment.
+
+== What do these operations do? ==
+
+For each of the following examples, we'll assume an initial data model state looking like this, starting at the root value:
+
+{{{
+{
+    "value" : "",
+    "subItems" : {
+        "abc" : {
+            "value" : "xyz",
+            "subItems" : {}
+        },
+        "def" : {
+            "value" : {
+                "a" : "b"
+            },
+            "subItems" : {}
+        }
+    }
+}
+}}}
+
+This might be in-memory or on a remote server, we'll show examples of both.
+
+=== 1.1 - Get a particular resource ===
+
+Itemscript call:
+{{{
+String value = system.getString("/abc"); // returns "xyz"
+}}}
+
+HTTP equivalent:
+{{{
+GET http://example.com/abc
+}}}
+
+=== 1.2 - Get part of a particular resource ===
+
+Itemscript call:
+{{{
+String value = system.getString("/def#a"); // returns "b"
+}}}
+
+HTTP equivalent:
+{{{
+GET http://example.com/abc
+[ locally navigate to #a value ]
+}}}
+
+=== 1.3 - 
