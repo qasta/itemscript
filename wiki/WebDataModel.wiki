@@ -94,7 +94,11 @@ For the purposes of this discussion, we'll assume that permissions are irrelevan
 
 == What operations are available? ==
 
-We're going to restrict the discussion to some common, simple operations. Some of these are very basic and supported by almost all web servers; others are implemented in various ways on various systems, but we're going to describe a common set of operations here and how they apply to an idealized server. A couple of things are non-standard, but perhaps ought to be! This will have a parallel discussion of the operations provided by Itemscript and how they correspond to certain HTTP operations. (Specifically, when Itemscript sees a `mem:` URL it does things on the in-memory database that correspond to certain things it does when it sees an `http:` URL.)
+We're going to restrict the discussion to some common, simple operations. Except for a basic GET operation, all of these would be optional.
+
+You can think of this section as an attempt to reconcile the differences between HTTP/REST, and a programming language API with a Java Map-style interface with only three main methods, and all querying performed through the use of special URLs.
+
+Some of these are very basic and supported by almost all web servers; others are implemented in various ways on various systems, but we're going to describe a common set of operations here and how they apply to an idealized server. A couple of things are non-standard, but perhaps ought to be! This will have a parallel discussion of the operations provided by Itemscript and how they correspond to certain HTTP operations. (Specifically, when Itemscript sees a `mem:` URL it does things on the in-memory database that correspond to certain things it does when it sees an `http:` URL.)
 
 === HTTP GET ===
   * 1.1 - Get a particular resource.
@@ -106,11 +110,11 @@ We're going to restrict the discussion to some common, simple operations. Some o
 
 === HTTP PUT ===
   * 2.1 - Put a new whole value for a resource, whether that resource existed before or not.
+  * 2.2 - Add a new sub-resource to an existing resource under a generated UUID.
 
 === HTTP POST ===
   * 3.1 - Change part of the value of a resource.
-  * 3.2 - Add a new sub-resource to an existing resource under a generated UUID.
-  * 3.3 - Perform some other state-changing operation on the server.
+  * 3.2 - Perform some other state-changing operation on the server.
 
 === HTTP DELETE ===
   * 4.1 - Remove a resource.
@@ -127,8 +131,9 @@ These are mapped to the following combinations of methods and types of URL suppl
 
 === `put` ===
   * 2.1 - URL with no query string or fragment.
+  * 2.2 - URL with a query string with the special "uuid" key and no fragment.
   * 3.1 - URL with no query string, with a fragment.
-  * 3.2 - URL with a query string and no fragment.
+  * 3.2 - URL with a query string without the special "uuid" key and no fragment.
 
 === `remove` ===
   * 4.1 - URL with no query string or fragment.
@@ -159,7 +164,7 @@ This might be in-memory or on a remote server, we'll show examples of both.
 
 === 1.1 - Get a particular resource ===
 
-Itemscript call:
+Itemscript `mem:` database call:
 {{{
 String value = system.getString("/abc"); // returns "xyz"
 }}}
@@ -171,7 +176,7 @@ GET http://example.com/abc
 
 === 1.2 - Get part of a particular resource ===
 
-Itemscript call:
+Itemscript `mem:` database call:
 {{{
 String value = system.getString("/def#a"); // returns "b"
 }}}
@@ -182,4 +187,151 @@ GET http://example.com/abc
 [ locally navigate to #a value ]
 }}}
 
-=== 1.3 - 
+=== 1.3 & 1.4 - Get the results of a query about a particular resource ===
+
+The "special keys" I am suggesting (and that are supported in Itemscript) are these:
+
+  * "countItems" - Count the sub-resources of a given resource.
+  * "keys" - Give the keys of the sub-resources of a given resource as a list.
+  * "pagedKeys" - Give just some of the keys of a given resource as a list.
+  * "pagedItems" - Give both the keys and the contents of some of the sub-resources of a given resource as a list.
+  * "dump" - Dump the given resource and all of its sub-resources as an object.
+
+Itemscript `mem:` database call:
+{{{
+int count = system.getInt("/?countItems#count"); // returns 2
+}}}
+
+HTTP equivalent:
+
+{{{
+GET http://example.com/?countItems
+}}}
+
+=== 1.5 & 1.6 - Get the results of a query not about a particular resource ===
+
+All other queries that do not change state fall into this category.
+
+There is no specific `mem:` database Itemscript call since the database doesn't support any other queries at present.
+
+HTTP equivalent:
+
+{{{
+GET http://example.com/?someQuery=someValue
+}}}
+
+=== 2.1 - Put a new whole value for a resource, whether that resource existed before or not. ===
+
+Itemscript `mem:` database call:
+
+{{{
+    system.put("/ghi", "a new value");
+}}}
+
+HTTP equivalent:
+
+{{{
+PUT http://example.com/ghi
+with content of "a new value"
+}}}
+
+The expected state of the data model after the call:
+
+{{{
+{
+    "value" : "",
+    "subItems" : {
+        "abc" : {
+            "value" : "xyz",
+            "subItems" : {}
+        },
+        "def" : {
+            "value" : {
+                "a" : "b"
+            },
+            "subItems" : {}
+        },
+        "ghi" : {
+            "value" : "a new value",
+            "subItems" : {}
+        }
+    }
+}
+}}}
+
+=== 2.2 - Add a new sub-resource to an existing resource under a generated UUID. ===
+
+Itemscript `mem:` database call:
+
+{{{
+    system.put("/abc?uuid", "a new value");
+}}}
+
+HTTP equivalent:
+
+Itemscript translates a request like:
+
+{{{
+    system.put("http://example.com/abc?uuid", "a new value");
+}}}
+
+First, it creates a UUID and appends it to the existing path. Then it does:
+
+{{{
+PUT http://example.com/abc/550e8400-e29b-41d4-a716-446655440000
+}}}
+
+As you can see, we can translate this into an HTTP PUT to a specific resource name by generating the UUID for that resource.
+
+=== 3.1 - Change part of the value for a resource ===
+
+Itemscript `mem:` database call:
+
+{{{
+    system.put("/def#c", "d");
+}}}
+
+HTTP equivalent:
+
+No standard equivalent exists, but many non-standard ones do. Itemscript will implement (does not yet) a standard version for when it encounters a call like:
+
+{{{
+    system.put("http://example.com/def#c", "d");
+}}}
+
+The fragment, having no meaning in a POST URL, must be translated to some sort of field in the POST request. So what Itemscript will generate is a request like this:
+{{{
+POST http://example.com/def
+with content of:
+    [
+        "action" : ["changeValue"],
+        "fragment" : ["#c"],
+        "value" : ["d"]
+    ]
+}}}
+
+The expected state of the data model after the call:
+
+{{{
+{
+    "value" : "",
+    "subItems" : {
+        "abc" : {
+            "value" : "xyz",
+            "subItems" : {}
+        },
+        "def" : {
+            "value" : {
+                "a" : "b",
+                "c" : "d"
+            },
+            "subItems" : {}
+        }
+    }
+}
+}}}
+
+
+
+
+===
