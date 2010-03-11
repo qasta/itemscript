@@ -11,11 +11,11 @@ Obviously, real sites differ in various ways from the idealized variation descri
 
 We're going to assume that the URLs we're talking about are of typical generic form as described in [http://www.ietf.org/rfc/rfc2396.txt RFC2396]. We will assume that any relative URL has been converted to absolute form first. As far as we're concerned URLs have only four components - the "server" (identified as scheme + host + port), the path, the query string, and the fragment.
 
-== What is a website? ==
+== What is a server? ==
 
-A website is a server that contains resources and makes them available to clients. It may support certain types of queries on resources, or queries that answer other questions. It may allow specific resources to be changed in whole, or it may accept certain other kinds of changes that don't specifically affect a single resource, or affect only a sub-part of them.
+A server is some reachable service that contains resources and makes them available to clients. It may support certain types of queries on resources, or queries that answer other questions. It may allow specific resources to be changed in whole, or it may accept certain other kinds of changes that don't specifically affect a single resource, or affect only a sub-part of them.
 
-For the purposes of this discussion, a "website" is identified by everything up to and including the server name and port number in a URL - the scheme, hostname, and port number. For instance, `http://example.com`, or `ftp://foo.com:2323`. The internal details of the "website" part can be ignored.
+For the purposes of this discussion, a "server" is identified by everything up to and including the server name and port number in a URL - the scheme, hostname, and port number. For instance, `http://example.com`, or `ftp://foo.com:2323`. The internal details of the "server" part can be ignored.
 
 == What is a resource? ==
 
