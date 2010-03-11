@@ -107,11 +107,11 @@ We're going to restrict the discussion to some common, simple operations. Except
   * DELETE
   * POST
 
-You can think of this section as an attempt to reconcile the differences between HTTP/REST, and a programming language API with a Java Map-style interface with only three main methods, and all querying performed through the use of special URLs.
+You can think of this section as an attempt to reconcile the differences between HTTP/REST, and a programming language API with a Java Map-style interface with only three main methods, with all querying performed through the use of special URLs supplied to the `get` operation.
 
 Some of these are very basic and supported by almost all web servers; others are implemented in various ways on various systems, but we're going to describe a common set of operations here and how they apply to an idealized server. A couple of things are non-standard, but perhaps ought to be! This will have a parallel discussion of the operations provided by Itemscript and how they correspond to certain HTTP operations. (Specifically, when Itemscript sees a `mem:` URL it does things on the in-memory database that correspond to certain things it does when it sees an `http:` URL.)
 
-In some ways this is similar to something like WebDAV; the idea here is to create something simpler, with many fewer features, designed to specifically support data resources. The intention is also to be able to interact with all existing web servers, regardless of their support for all of the described operations, by treating them as if they supported this basic data model.
+In some ways this is similar to something like WebDAV; the idea here is to create something simpler, with many fewer features, designed to specifically support data resources. The intention is also to be able to interact with all existing web servers, regardless of their support for all of the described operations, by treating them as if they supported this basic data model. The same interface can be mapped to a local filesystem quite accurately, and other data sources can be represented in a very similar way, with the main differences being exactly which resources are allowed to contain sub-resources.
 
 === HTTP GET ===
   * 1.1 - Get a particular resource.
