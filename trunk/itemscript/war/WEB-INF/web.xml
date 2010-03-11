@@ -3,7 +3,12 @@
     PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
     "http://java.sun.com/dtd/web-app_2_3.dtd">
 
+<!--  This web app configuration is solely for internal testing purposes and ABSOLUTELY SHOULD NOT
+be used as an example configuration for any production system. Doing so may expose you to serious security problems. -->
 <web-app>
+    <!-- This filter attempts to prevent JSON files from being cached. It is useful during development, and quite safe, but
+    in production you probably want to figure out what your real caching strategy needs to be. It's unlikely
+    to be as simple as just saying "never cache JSON". -->
 	<filter>
 		<filter-name>NoCache</filter-name>
 		<filter-class>org.itemscript.server.NoCacheFilter</filter-class>
@@ -12,11 +17,12 @@
 		<filter-name>NoCache</filter-name>
 		<url-pattern>/*.json</url-pattern>
 	</filter-mapping>
+	<!--  This servlet reflects JSON back to the client. It should ABSOLUTELY NOT be installed as-is on
+	ANY production server. It may expose you to serious security problems. -->
 	<servlet>
 		<servlet-name>ReflectJson</servlet-name>
 		<servlet-class>org.itemscript.examples.gwt.server.ReflectJsonServlet</servlet-class>
 	</servlet>
-
 	<servlet-mapping>
 		<url-pattern>/ReflectJson</url-pattern>
 		<servlet-name>ReflectJson</servlet-name>
