@@ -391,8 +391,8 @@ Again, the fragment must be translated to part of a POST request like so:
 POST http://example.com/def
 with content of:
 {
-    "action" : "removeValue",
-    "fragment" : "#a"
+    "action" : ["removeValue"],
+    "fragment" : ["#a"]
 }
 }}}
 
