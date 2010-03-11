@@ -9,7 +9,7 @@ Obviously, real sites differ in various ways from the idealized variation descri
 
 == What is a URL? ==
 
-We're going to assume that the URLs we're talking about are of typical generic form as described in [http://www.ietf.org/rfc/rfc2396.txt RFC2396]. We will assume that any relative URL has been converted to absolute form first. As far as we're concerned 
+We're going to assume that the URLs we're talking about are of typical generic form as described in [http://www.ietf.org/rfc/rfc2396.txt RFC2396]. We will assume that any relative URL has been converted to absolute form first. As far as we're concerned URLs have only four components - the "server" (identified as scheme + host + port), the path, the query string, and the fragment.
 
 == What is a website? ==
 
