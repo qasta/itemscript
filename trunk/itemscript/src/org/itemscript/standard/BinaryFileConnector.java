@@ -43,10 +43,11 @@ import org.itemscript.core.values.JsonValue;
 /**
  * Connector that allows you to read a file into a byte[] stored in a JsonString.
  * <p>
- * Associated with the <code>file:</code> scheme in the standard-Java configuration.
+ * TODO: This needs to be rolled into the single file connector.
  *  
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
+@Deprecated
 public final class BinaryFileConnector extends FileConnectorBase implements HasSystem {
     /**
      * Create a new BinaryFileConnector.

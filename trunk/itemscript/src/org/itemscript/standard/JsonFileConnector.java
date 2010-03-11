@@ -43,10 +43,14 @@ import org.itemscript.core.values.JsonValue;
 /**
  * Connector for reading a JSON file in the standard-Java environment.
  * <p>
- * Associated with the <code>json-file:</code> scheme in the standard-Java configuration.
+ * Associated with the <code>file:</code> scheme in the standard-Java configuration.
+ * <p>
+ * TODO: This needs to be rolled into a single file connector that does different things depending on file
+ * extension...
  * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
+@Deprecated
 public final class JsonFileConnector extends FileConnectorBase implements HasSystem {
     /**
      * Create a new JsonFileConnector.

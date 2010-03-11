@@ -690,14 +690,6 @@ public final class Url {
      * The cookie scheme.
      */
     private final static String COOKIE_SCHEME = "cookie";
-    /**
-     * The json-file scheme.
-     */
-    private final static String JSON_FILE_SCHEME = "json-file";
-    /**
-     * The text-file scheme.
-     */
-    private final static String TEXT_FILE_SCHEME = "text-file";
     private final static String NO_SCHEME = "NO SCHEME";
     private final static String UNKNOWN_SCHEME = "UNKNOWN SCHEME";
     private final static Map<String, SchemeParserFactory> parserFactories =
@@ -735,8 +727,6 @@ public final class Url {
         parserFactories.put(HTTPS_SCHEME, httpLike);
         parserFactories.put(FILE_SCHEME, httpLike);
         parserFactories.put(COOKIE_SCHEME, httpLike);
-        parserFactories.put(JSON_FILE_SCHEME, httpLike);
-        parserFactories.put(TEXT_FILE_SCHEME, httpLike);
         SchemeParserFactory unknown = new SchemeParserFactory() {
             public SchemeParser create() {
                 return new UnknownSchemeParser();

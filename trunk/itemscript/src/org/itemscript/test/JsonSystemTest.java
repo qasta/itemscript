@@ -324,30 +324,30 @@ public class JsonSystemTest extends ItemscriptTestBase {
 
     @Test
     public void testJsonFileGet() {
-        JsonArray array = system().get("json-file:" + basePath + "?keys")
+        JsonArray array = system().get("file:" + basePath + "?keys")
                 .asArray();
         assertTrue(array.contains(system().createString("test.json")));
-        JsonObject value = system().get("json-file:" + basePath + "test.json")
+        JsonObject value = system().get("file:" + basePath + "test.json")
                 .asObject();
         assertEquals("bar", value.getString("foo"));
-        assertEquals("bar", system().getString("json-file:" + basePath + "test.json#foo"));
+        assertEquals("bar", system().getString("file:" + basePath + "test.json#foo"));
     }
 
-    @Test
-    public void testTextFileGet() {
-        JsonArray array = system().get("text-file:" + basePath + "test.txt")
-                .asArray();
-        assertEquals("two", array.getString(1));
-    }
+//    @Test
+//    public void testTextFileGet() {
+//        JsonArray array = system().get("file:" + basePath + "test.txt")
+//                .asArray();
+//        assertEquals("two", array.getString(1));
+//    }
 
-    @Test
-    public void testBinaryFileGet() {
-        JsonString value = system().get("file:" + basePath + "test.txt")
-                .asString();
-        assertEquals('o', value.binaryValue()[0]);
-        assertEquals('n', value.binaryValue()[1]);
-        assertEquals('e', value.binaryValue()[2]);
-    }
+//    @Test
+//    public void testBinaryFileGet() {
+//        JsonString value = system().get("file:" + basePath + "test.txt")
+//                .asString();
+//        assertEquals('o', value.binaryValue()[0]);
+//        assertEquals('n', value.binaryValue()[1]);
+//        assertEquals('e', value.binaryValue()[2]);
+//    }
 
     static boolean getCompleted = false;
     static boolean putCompleted = false;

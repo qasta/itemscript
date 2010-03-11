@@ -46,10 +46,11 @@ import org.itemscript.core.values.JsonValue;
  * The returned value will be a JsonArray, where each line in the file corresponds to a JsonString entry in the
  * array, with line endings removed.
  * <p>
- * Associated with the <code>text-file:</code> scheme in the standard-Java configuration. 
+ * TODO: This needs to be rolled into the single file connector. 
  * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
+@Deprecated
 public final class TextFileConnector extends FileConnectorBase {
     /**
      * Create a new TextFileConnector.
