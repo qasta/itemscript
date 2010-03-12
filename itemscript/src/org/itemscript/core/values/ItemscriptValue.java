@@ -138,7 +138,8 @@ abstract class ItemscriptValue implements JsonValue {
 
     @Override
     public Integer intValue() {
-        throw ItemscriptError.internalError(this, "intValue.called.on.a.value.that.was.not.a.number", toCompactJsonString());
+        throw ItemscriptError.internalError(this, "intValue.called.on.a.value.that.was.not.a.number",
+                toCompactJsonString());
     }
 
     @Override
@@ -211,12 +212,17 @@ abstract class ItemscriptValue implements JsonValue {
     }
 
     protected final void setItem(JsonItem newItem) {
-        // It's okay to set item to null if it's not null, but not to any other value.
-        if (newItem != null && item() != null) {
-            // Should not occur, but just in case...
-            throw ItemscriptError.internalError(this, "setItem.item.was.already.set");
+        // If this item has a parent we need to set item on the parent, not on this...
+        if (parent() != null) {
+            ((ItemscriptValue) parent()).setItem(newItem);
+        } else {
+            // It's okay to set item to null if it's not null, but not to any other value.
+            if (newItem != null && item() != null) {
+                // Should not occur, but just in case...
+                throw ItemscriptError.internalError(this, "setItem.item.was.already.set");
+            }
+            this.item = newItem;
         }
-        this.item = newItem;
     }
 
     protected final void setKey(String newKey) {
