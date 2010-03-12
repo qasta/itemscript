@@ -42,6 +42,8 @@ import org.itemscript.core.values.JsonNumber;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonString;
 import org.itemscript.core.values.JsonValue;
+import org.itemscript.core.values.PutResponse;
+import org.itemscript.core.values.RemoveResponse;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -101,8 +103,9 @@ public class JsonSystemTest extends ItemscriptTestBase {
             }
 
             @Override
-            public void onSuccess(JsonValue value) {
-                assertEquals("bar", value.stringValue());
+            public void onSuccess(PutResponse p) {
+                assertEquals("bar", p.value()
+                        .stringValue());
                 putCompleted = true;
             }
         });
@@ -127,7 +130,7 @@ public class JsonSystemTest extends ItemscriptTestBase {
             }
 
             @Override
-            public void onSuccess() {
+            public void onSuccess(RemoveResponse r) {
                 removeCompleted = true;
             }
         });
@@ -325,7 +328,8 @@ public class JsonSystemTest extends ItemscriptTestBase {
 
     @Test
     public void testPutReturn() {
-        JsonValue val = system().put("mem:/one/two/three", system().createString("foo"));
+        JsonValue val = system().put("mem:/one/two/three", system().createString("foo"))
+                .value();
         assertEquals("foo", val.stringValue());
         assertEquals("mem:/one/two/three", val.item()
                 .source() + "");
@@ -384,7 +388,8 @@ public class JsonSystemTest extends ItemscriptTestBase {
 
     @Test
     public void testUuidPut() {
-        JsonValue value = system().put("/foo?uuid", "foo");
+        JsonValue value = system().put("/foo?uuid", "foo")
+                .value();
         Url source = Url.create(system(), value.item()
                 .source());
         assertEquals("/foo/", source.pathString()

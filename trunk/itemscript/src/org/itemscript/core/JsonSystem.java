@@ -32,9 +32,12 @@ package org.itemscript.core;
 import org.itemscript.core.connectors.GetCallback;
 import org.itemscript.core.connectors.PutCallback;
 import org.itemscript.core.connectors.RemoveCallback;
-import org.itemscript.core.values.JsonAccess;
 import org.itemscript.core.values.JsonCreator;
+import org.itemscript.core.values.JsonGetAccess;
+import org.itemscript.core.values.JsonPutAccess;
 import org.itemscript.core.values.JsonValue;
+import org.itemscript.core.values.PutResponse;
+import org.itemscript.core.values.RemoveResponse;
 
 /**
  * A JsonSystem provides access to facilities for parsing, storing, and manipulating JSON values.
@@ -42,7 +45,7 @@ import org.itemscript.core.values.JsonValue;
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  *
  */
-public interface JsonSystem extends JsonAccess, JsonCreator {
+public interface JsonSystem extends JsonGetAccess, JsonPutAccess, HasSystem, JsonCreator {
     /**
      * The root URL for the system (<code>"mem:/"</code>).
      */
@@ -110,9 +113,9 @@ public interface JsonSystem extends JsonAccess, JsonCreator {
      * 
      * @param url The URL where the value is to be put.
      * @param value The value to put.
-     * @return The value returned by the put, which may not be the same as the value that was put.
+     * @return The PutResponse returned by the put operation.
      */
-    public JsonValue put(String url, JsonValue value);
+    public PutResponse put(String url, JsonValue value);
 
     /**
      * Put a value at the given URL, calling the given callback when the operation is complete.
@@ -127,8 +130,9 @@ public interface JsonSystem extends JsonAccess, JsonCreator {
      * Remove the value at the given URL.
      * 
      * @param url The URL of the value to remove.
+     * @return The RemoveResponse returned by the remove operation.
      */
-    public void remove(String url);
+    public RemoveResponse remove(String url);
 
     /**
      * Remove the value at the given URL, calling the given callback when the operation is complete.

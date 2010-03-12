@@ -185,9 +185,8 @@ final class ItemscriptObject extends ItemscriptContainer implements JsonObject {
     }
 
     @Override
-    public JsonValue putValue(String key, JsonValue value) {
+    public void putValue(String key, JsonValue value) {
         put(key, value);
-        return value;
     }
 
     @Override

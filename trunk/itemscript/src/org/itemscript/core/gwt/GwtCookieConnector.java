@@ -8,7 +8,11 @@ import org.itemscript.core.JsonSystem;
 import org.itemscript.core.connectors.SyncGetConnector;
 import org.itemscript.core.connectors.SyncPutConnector;
 import org.itemscript.core.url.Url;
+import org.itemscript.core.values.ItemscriptPutResponse;
+import org.itemscript.core.values.ItemscriptRemoveResponse;
 import org.itemscript.core.values.JsonValue;
+import org.itemscript.core.values.PutResponse;
+import org.itemscript.core.values.RemoveResponse;
 
 import com.google.gwt.user.client.Cookies;
 
@@ -44,17 +48,18 @@ public class GwtCookieConnector implements SyncGetConnector, SyncPutConnector, H
     }
 
     @Override
-    public JsonValue put(Url url, JsonValue value) {
+    public PutResponse put(Url url, JsonValue value) {
         Cookies.setCookie(url.pathString(), value.toCompactJsonString(), new Date(new Date().getTime()
                 + TEN_YEARS_MILLIS));
         JsonValue setValue = value.copy();
         system().createItem(url + "", setValue);
-        return setValue;
+        return new ItemscriptPutResponse(url + "", null, null);
     }
 
     @Override
-    public void remove(Url url) {
+    public RemoveResponse remove(Url url) {
         Cookies.removeCookie(url.pathString());
+        return new ItemscriptRemoveResponse(null);
     }
 
     @Override

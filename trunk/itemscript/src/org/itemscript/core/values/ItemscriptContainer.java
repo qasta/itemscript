@@ -330,7 +330,7 @@ public abstract class ItemscriptContainer extends ItemscriptValue implements Jso
     }
 
     @Override
-    public abstract JsonValue putValue(String key, JsonValue value);
+    public abstract void putValue(String key, JsonValue value);
 
     public abstract String toJsonString(int indent);
 

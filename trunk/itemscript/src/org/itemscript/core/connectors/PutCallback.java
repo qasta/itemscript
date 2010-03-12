@@ -29,7 +29,7 @@
 
 package org.itemscript.core.connectors;
 
-import org.itemscript.core.values.JsonValue;
+import org.itemscript.core.values.PutResponse;
 
 /**
  * The callback interface to be implemented for asynchronous put operations.
@@ -40,7 +40,7 @@ public interface PutCallback extends ConnectorCallback {
     /**
      * Called when the value has been successfully put.
      * 
-     * @param value The value returned by the put operation.
+     * @param putResponse The PutResponse returned by the put operation.
      */
-    public void onSuccess(JsonValue value);
+    public void onSuccess(PutResponse putResponse);
 }

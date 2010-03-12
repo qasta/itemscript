@@ -37,9 +37,13 @@ import org.itemscript.core.url.Pagination;
 import org.itemscript.core.url.Path;
 import org.itemscript.core.url.Query;
 import org.itemscript.core.url.Url;
+import org.itemscript.core.values.ItemscriptPutResponse;
+import org.itemscript.core.values.ItemscriptRemoveResponse;
 import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
+import org.itemscript.core.values.PutResponse;
+import org.itemscript.core.values.RemoveResponse;
 
 /**
  * Implements the in-memory item store.
@@ -218,7 +222,7 @@ public final class MemConnector extends ConnectorBase
     }
 
     @Override
-    public JsonValue post(Url url, JsonValue value) {
+    public PutResponse post(Url url, JsonValue value) {
         Query query = url.query();
         if (query.containsKey("uuid")) {
             String uuid = system().generateUuid();
@@ -231,7 +235,7 @@ public final class MemConnector extends ConnectorBase
     }
 
     @Override
-    public JsonValue put(Url url, JsonValue value) {
+    public PutResponse put(Url url, JsonValue value) {
         ItemNode node = root;
         Path path = url.path();
         if (path.size() <= 1) { throw ItemscriptError.internalError(this, "put.cannot.put.to.root.node"); }
@@ -254,11 +258,11 @@ public final class MemConnector extends ConnectorBase
         }
         node.item()
                 .put("#" + fragmentString, value);
-        return value;
+        return new ItemscriptPutResponse(url + "", null, value);
     }
 
     @Override
-    public void remove(Url url) {
+    public RemoveResponse remove(Url url) {
         ItemNode node = root;
         Path path = url.path();
         // Path must have at least one component as well as the root component...
@@ -267,7 +271,7 @@ public final class MemConnector extends ConnectorBase
         for (int i = 1; i < (path.size() - 1); ++i) {
             String key = path.get(i);
             node = node.get(key);
-            if (node == null) { return; }
+            if (node == null) { return new ItemscriptRemoveResponse(null); }
         }
         if (url.hasFragment()) {
             node = node.get(path.lastKey());
@@ -278,6 +282,7 @@ public final class MemConnector extends ConnectorBase
         } else {
             node.remove(path.lastKey());
         }
+        return new ItemscriptRemoveResponse(null);
     }
 
     private String[] sortedKeys(ItemNode node) {

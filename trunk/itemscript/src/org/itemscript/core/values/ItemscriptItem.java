@@ -230,44 +230,44 @@ public final class ItemscriptItem implements JsonItem {
     }
 
     @Override
-    public JsonBoolean put(String url, Boolean value) {
+    public PutResponse put(String url, Boolean value) {
         JsonBoolean jsonValue = system().createBoolean(value);
         putValue(url, jsonValue);
-        return jsonValue;
+        return new ItemscriptPutResponse(url, null, jsonValue);
     }
 
     @Override
-    public JsonString put(String url, byte[] value) {
+    public PutResponse put(String url, byte[] value) {
         JsonString jsonValue = system().createString(value);
         putValue(url, jsonValue);
-        return jsonValue;
+        return new ItemscriptPutResponse(url, null, jsonValue);
     }
 
     @Override
-    public JsonNumber put(String url, Double value) {
+    public PutResponse put(String url, Double value) {
         JsonNumber jsonValue = system().createNumber(value);
         putValue(url, jsonValue);
-        return jsonValue;
+        return new ItemscriptPutResponse(url, null, jsonValue);
     }
 
     @Override
-    public JsonNumber put(String url, Float value) {
+    public PutResponse put(String url, Float value) {
         JsonNumber jsonValue = system().createNumber(value);
         putValue(url, jsonValue);
-        return jsonValue;
+        return new ItemscriptPutResponse(url, null, jsonValue);
     }
 
     @Override
-    public JsonNumber put(String url, Integer value) {
+    public PutResponse put(String url, Integer value) {
         JsonNumber jsonValue = system().createNumber(value);
         putValue(url, jsonValue);
-        return jsonValue;
+        return new ItemscriptPutResponse(url, null, jsonValue);
     }
 
     @Override
-    public JsonValue put(String url, JsonValue value) {
+    public PutResponse put(String url, JsonValue value) {
         putValue(Url.create(system(), url), value);
-        return value;
+        return new ItemscriptPutResponse(url, null, value);
     }
 
     @Override
@@ -276,31 +276,25 @@ public final class ItemscriptItem implements JsonItem {
     }
 
     @Override
-    public JsonString put(String url, Long value) {
+    public PutResponse put(String url, Long value) {
         JsonString jsonValue = system().createString(value);
         putValue(url, jsonValue);
-        return jsonValue;
+        return new ItemscriptPutResponse(url, null, jsonValue);
     }
 
     @Override
-    public JsonString put(String url, String value) {
+    public PutResponse put(String url, String value) {
         JsonString jsonValue = system().createString(value);
         putValue(url, jsonValue);
-        return jsonValue;
+        return new ItemscriptPutResponse(url, null, jsonValue);
     }
 
-    JsonValue put(Url url, JsonValue value) {
-        putValue(url, value);
-        return value;
-    }
-
-    void put(Url url, JsonValue value, PutCallback callback) {
+    private void put(Url url, JsonValue value, PutCallback callback) {
         if (isFragmentOnly(url)) {
             // If it's only a fragment, put the value inside the root value of this item and call
             // the callback immediately.
             try {
-                put(url, value);
-                callback.onSuccess(value);
+                callback.onSuccess(putValue(url, value));
             } catch (ItemscriptError e) {
                 callback.onError(e);
             }
@@ -311,18 +305,18 @@ public final class ItemscriptItem implements JsonItem {
     }
 
     @Override
-    public JsonNative putNative(String url, Object value) {
+    public PutResponse putNative(String url, Object value) {
         JsonNative jsonValue = system().createNative(value);
         put(url, jsonValue);
-        return jsonValue;
+        return new ItemscriptPutResponse(url, null, jsonValue);
     }
 
     @Override
-    public JsonValue putValue(String url, JsonValue value) {
+    public PutResponse putValue(String url, JsonValue value) {
         return putValue(Url.create(system(), url), value);
     }
 
-    JsonValue putValue(Url url, JsonValue value) {
+    private PutResponse putValue(Url url, JsonValue value) {
         // First, determine if the URL was just a fragment, or whether it was something to be interpreted as
         // relative to the source of this item.
         if (isFragmentOnly(url)) {
@@ -352,7 +346,7 @@ public final class ItemscriptItem implements JsonItem {
                 this.value = value;
                 notifyPut("#", value);
             }
-            return value;
+            return new ItemscriptPutResponse(Url.createRelative(system, source(), url + "") + "", null, value);
         } else {
             // If the URL was anything other than a fragment, interpret it as being relative to the source of this
             // item and put the value there.
@@ -361,8 +355,8 @@ public final class ItemscriptItem implements JsonItem {
     }
 
     @Override
-    public void remove(String url) {
-        remove(Url.create(system(), url));
+    public RemoveResponse remove(String url) {
+        return remove(Url.create(system(), url));
     }
 
     @Override
@@ -370,7 +364,7 @@ public final class ItemscriptItem implements JsonItem {
         remove(Url.create(system(), url), callback);
     }
 
-    void remove(Url url) {
+    private RemoveResponse remove(Url url) {
         if (isFragmentOnly(url)) {
             // If it's a fragment only, and has at least one key, remove the corresponding value from this item.
             Fragment fragment = url.fragment();
@@ -381,7 +375,7 @@ public final class ItemscriptItem implements JsonItem {
                     String key = fragment.get(i);
                     JsonContainer next = getNext(url, container, key).asContainer();
                     // If the next container is null, just return.
-                    if (next == null) { return; }
+                    if (next == null) { return new ItemscriptRemoveResponse(null); }
                     container = next;
                 }
                 container.removeValue(fragment.lastKey());
@@ -393,16 +387,16 @@ public final class ItemscriptItem implements JsonItem {
             // Otherwise treat the URL as relative to the source of this item and call system.remove().
             ((ItemscriptSystem) system).remove(Url.createRelative(system(), source, url));
         }
+        return new ItemscriptRemoveResponse(null);
     }
 
-    void remove(Url url, RemoveCallback callback) {
+    private void remove(Url url, RemoveCallback callback) {
         // If it's a fragment only, and has at least one key, remove that value from this item.
         if (isFragmentOnly(url)) {
             if (url.fragment()
                     .size() > 0) {
                 try {
-                    remove(url);
-                    callback.onSuccess();
+                    callback.onSuccess(remove(url));
                 } catch (ItemscriptError e) {
                     callback.onError(e);
                 }
@@ -414,8 +408,9 @@ public final class ItemscriptItem implements JsonItem {
     }
 
     @Override
-    public void removeValue(String url) {
+    public RemoveResponse removeValue(String url) {
         remove(url);
+        return new ItemscriptRemoveResponse(null);
     }
 
     @Override

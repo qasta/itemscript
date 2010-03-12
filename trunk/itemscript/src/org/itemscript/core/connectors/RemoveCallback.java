@@ -29,6 +29,8 @@
 
 package org.itemscript.core.connectors;
 
+import org.itemscript.core.values.RemoveResponse;
+
 /**
  * The callback to be implemented for asynchronous remove operations.
  * 
@@ -37,6 +39,8 @@ package org.itemscript.core.connectors;
 public interface RemoveCallback extends ConnectorCallback {
     /**
      * Called when the remove operation completed successfully.
+     * 
+     * @param removeResponse The RemoveResponse returned by the remove operation.
      */
-    public void onSuccess();
+    public void onSuccess(RemoveResponse removeResponse);
 }

@@ -245,7 +245,8 @@ public class Examples {
             int count = system.getInt("mem:/abc?countItems"); // 2
             JsonArray keys = system.getArray("mem:/abc?keys"); // ["def", "ghi"]
             JsonArray pagedItems = system.getArray("mem:/abc?pagedItems&numRows=2&startRow=0"); // [["def", "123"], ["ghi", "456"]]
-            JsonValue value = system.put("mem:/?uuid", "123");
+            JsonValue value = system.put("mem:/?uuid", "123")
+                    .value();
             String url = value.item()
                     .source(); // generated UUID location: e.g. "mem:/2b231beb-2408-4550-8bfd-21cac5c92d8c"
             system.remove("mem:/abc");

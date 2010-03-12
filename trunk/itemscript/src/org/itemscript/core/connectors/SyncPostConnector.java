@@ -32,6 +32,7 @@ package org.itemscript.core.connectors;
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.url.Url;
 import org.itemscript.core.values.JsonValue;
+import org.itemscript.core.values.PutResponse;
 
 /**
  * The interface to be implemented by a {@link Connector} that allows synchronous post operations.
@@ -49,7 +50,7 @@ public interface SyncPostConnector extends Connector {
      * 
      * @param url The URL to post the value to.
      * @param value The value to post.
-     * @return The value returned by the post operation.
+     * @return The PutResponse returned by the post operation.
      */
-    public JsonValue post(Url url, JsonValue value);
+    public PutResponse post(Url url, JsonValue value);
 }
