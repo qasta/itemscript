@@ -340,8 +340,8 @@ public final class ItemscriptItem implements JsonItem {
                 // If the fragment was of zero length, replace the root value of this item with the supplied value.
                 JsonValue prevValue = value();
                 ((ItemscriptValue) prevValue).setItem(null);
-                this.value = value;
                 ((ItemscriptValue) value).setItem(this);
+                this.value = value;
                 notifyPut("#", value);
             }
             return value;

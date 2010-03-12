@@ -195,7 +195,8 @@ public final class MemConnector extends ConnectorBase
             nodeUrl += "/" + Url.encode(key);
             ItemNode next = node.get(key);
             if (next == null) {
-                next = new ItemNode(system().createItem(nodeUrl, system().createObject()));
+                JsonObject createObject = system().createObject();
+                next = new ItemNode(system().createItem(nodeUrl, createObject));
                 node.put(key, next);
             }
             node = next;
@@ -264,7 +265,8 @@ public final class MemConnector extends ConnectorBase
     public void load(Url url, JsonObject value) {
         if (value.size() == 0) { return; }
         Url pathedUrl = Url.createRelative(JsonSystem.ROOT_URL_STRING, url.pathString());
-        put(pathedUrl, value.get("value"));
+        put(pathedUrl, value.get("value")
+                .copy());
         JsonObject subItems = value.getObject("subItems");
         if (subItems == null) { return; }
         for (String key : subItems.keySet()) {

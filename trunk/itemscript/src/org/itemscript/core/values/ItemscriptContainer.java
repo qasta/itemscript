@@ -268,9 +268,9 @@ public abstract class ItemscriptContainer extends ItemscriptValue implements Jso
     protected void prepareValueForPut(String key, JsonValue value) {
         if (value.parent() != null) { throw ItemscriptError.internalError(this,
                 "prepareValueForPut.value.is.in.another.container"); }
+        ((ItemscriptValue) value).setItem(null);
         ((ItemscriptValue) value).setParent(this);
         ((ItemscriptValue) value).setKey(key);
-        ((ItemscriptValue) value).setItem(null);
     }
 
     @Override
