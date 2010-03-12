@@ -405,6 +405,20 @@ public class JsonSystemTest extends ItemscriptTestBase {
     }
 
     @Test
+    public void testB64idPut() {
+        PutResponse response = system().put("/foo?b64id", "foo");
+        Url source = Url.create(system(), response.url());
+        assertEquals("/foo/", source.pathString()
+                .substring(0, 5));
+        String filename = source.filename();
+        assertEquals(22, filename.length());
+        JsonValue get = system().get(response.url());
+        assertEquals(response.url(), get.item()
+                .source());
+        System.err.println(response.url());
+    }
+
+    @Test
     public void testValidate() {
         system().get("classpath:org/itemscript/test/validate.json");
     }

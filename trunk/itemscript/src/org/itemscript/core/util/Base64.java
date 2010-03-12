@@ -32,6 +32,7 @@ package org.itemscript.core.util;
 public final class Base64 {
     // Mapping table from 6-bit nibbles to Base64 characters.
     private static char[] map1 = new char[64];
+    private static char[] urlMap1 = new char[64];
     // Mapping table from Base64 characters to 6-bit nibbles.
     private static byte[] map2 = new byte[128];
     static {
@@ -44,6 +45,17 @@ public final class Base64 {
             map1[i++] = c;
         map1[i++] = '+';
         map1[i++] = '/';
+    }
+    static {
+        int i = 0;
+        for (char c = 'A'; c <= 'Z'; c++)
+            urlMap1[i++] = c;
+        for (char c = 'a'; c <= 'z'; c++)
+            urlMap1[i++] = c;
+        for (char c = '0'; c <= '9'; c++)
+            urlMap1[i++] = c;
+        urlMap1[i++] = '-';
+        urlMap1[i++] = '_';
     }
     static {
         for (int i = 0; i < map2.length; i++)
@@ -143,6 +155,32 @@ public final class Base64 {
         return out;
     }
 
-    // Dummy constructor.
-    private Base64() {}
-} // end class Base64Coder
+    public static char[] encodeForUrl(byte[] in) {
+        int iLen = in.length;
+        int oDataLen = (iLen * 4 + 2) / 3; // output length without padding
+        int oLen = ((iLen + 2) / 3) * 4; // output length including padding
+        char[] out = new char[oDataLen];
+        int ip = 0;
+        int op = 0;
+        while (ip < iLen) {
+            int i0 = in[ip++] & 0xff;
+            int i1 = ip < iLen ? in[ip++] & 0xff : 0;
+            int i2 = ip < iLen ? in[ip++] & 0xff : 0;
+            int o0 = i0 >>> 2;
+            int o1 = ((i0 & 3) << 4) | (i1 >>> 4);
+            int o2 = ((i1 & 0xf) << 2) | (i2 >>> 6);
+            int o3 = i2 & 0x3F;
+            out[op++] = urlMap1[o0];
+            out[op++] = urlMap1[o1];
+            if (op < oDataLen) {
+                out[op] = urlMap1[o2];
+            }
+            op++;
+            if (op < oDataLen) {
+                out[op] = urlMap1[o3];
+            }
+            op++;
+        }
+       return out;
+    }
+}

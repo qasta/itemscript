@@ -66,8 +66,22 @@ public final class Query extends HashMap<String, List<String>> implements Map<St
      * The key used to indicate a request to count the number of keys for an item.
      */
     public static final String COUNT_ITEMS_KEY = "countItems";
+    /**
+     * The key used to indicate a dump request.
+     */
     public static final String DUMP_KEY = "dump";
+    /**
+     * The key used to indicate a load request.
+     */
     public static final String LOAD_KEY = "load";
+    /**
+     * The key used to indicate a uuid request.
+     */
+    public static final String UUID_KEY = "uuid";
+    /**
+     * The key used to indicate a b64id request.
+     */
+    public static final String B64ID_KEY = "b64id";
     private Pagination pagination;
 
     /**
@@ -78,12 +92,30 @@ public final class Query extends HashMap<String, List<String>> implements Map<St
     }
 
     /**
-     * Test whether this is a "count items" query.
+     * Test whether this is a "countItems" query.
      * 
-     * @return True if this is a "count items" query, false otherwise.
+     * @return True if this is a "countItems" query, false otherwise.
      */
     public boolean isCountItemsQuery() {
         return containsKey(COUNT_ITEMS_KEY);
+    }
+
+    /**
+     * Test whether this is a "uuid" query.
+     * 
+     * @return True if this is a "uuid" query, false otherwise.
+     */
+    public boolean isUuidQuery() {
+        return containsKey(UUID_KEY);
+    }
+
+    /**
+     * Test whether this is a "b64id" query.
+     * 
+     * @return True if thsi is a "b64id" query, false otherwise.
+     */
+    public boolean isB64idQuery() {
+        return containsKey(B64ID_KEY);
     }
 
     /**
@@ -114,18 +146,18 @@ public final class Query extends HashMap<String, List<String>> implements Map<St
     }
 
     /**
-     * Test whether this is a "paged items" query.
+     * Test whether this is a "pagedItems" query.
      * 
-     * @return True if this is a "paged items" query, false otherwise.
+     * @return True if this is a "pagedItems" query, false otherwise.
      */
     public boolean isPagedItemsQuery() {
         return containsKey(PAGED_ITEMS_KEY);
     }
 
     /**
-     * Test whether this is a "paged keys" query.
+     * Test whether this is a "pagedKeys" query.
      * 
-     * @return True if this is a "paged keys" query, false otherwise.
+     * @return True if this is a "pagedKeys" query, false otherwise.
      */
     public boolean isPagedKeysQuery() {
         return containsKey(PAGED_KEYS);

@@ -31,6 +31,7 @@ package org.itemscript.core.gwt;
 
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.config.JsonConfig;
+import org.itemscript.core.util.Base64;
 import org.itemscript.core.values.JsonCreator;
 
 /**
@@ -77,6 +78,15 @@ public class GwtConfig implements JsonConfig {
         // Insert '-'s
         s[8] = s[13] = s[18] = s[23] = '-';
         return new String(s);
+    }
+
+    @Override
+    public String generateB64id() {
+        byte[] s = new byte[16];
+        for (int i = 0; i < 16; ++i) {
+            s[i] = (byte) (Math.abs(nextRandomInt()) % 256);
+        }
+        return new String(Base64.encodeForUrl(s));
     }
 
     @Override
