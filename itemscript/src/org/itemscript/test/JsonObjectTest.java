@@ -56,6 +56,80 @@ public class JsonObjectTest extends ItemscriptTestBase {
     }
 
     @Test
+    public void testCycles() {
+        JsonObject a = system().createObject();
+        JsonObject b = system().createObject();
+        a.put("foo", b);
+        boolean errorThrown = false;
+        try {
+            b.put("bar", a);
+        } catch (ItemscriptError e) {
+            errorThrown = true;
+        }
+        assertTrue(errorThrown);
+    }
+
+    @Test
+    public void testEntrySet() {
+        JsonObject object = system().createObject()
+                .p("1", "foo")
+                .p("2", "bar");
+        for (Map.Entry<String, JsonValue> entry : object.entrySet()) {
+            if (entry.getKey()
+                    .equals("1")) {
+                assertEquals("foo", entry.getValue()
+                        .asString()
+                        .stringValue());
+            } else if (entry.getKey()
+                    .equals("2")) {
+                assertEquals("bar", entry.getValue()
+                        .asString()
+                        .stringValue());
+            } else {
+                fail();
+            }
+        }
+    }
+
+    public void testFragment() {
+        JsonObject object = system().createObject()
+                .p("foo", system().createArray()
+                        .a("value"));
+        JsonValue value = object.getArray("foo")
+                .get(0);
+        assertEquals("value", value.asString()
+                .stringValue());
+        assertEquals("#foo.0", value.fragment());
+        JsonObject obj2 = system().createObject()
+                .p("foo", system().createObject()
+                        .p("bar", "value"));
+        JsonObject obj3 = system().createObject()
+                .p("baz", obj2);
+        assertEquals("#baz.foo.bar", obj3.getObject("baz")
+                .getObject("foo")
+                .get("bar")
+                .fragment());
+    }
+
+    @Test
+    public void testGetOrCreateArray() {
+        JsonObject object = system().createObject();
+        JsonArray array = object.getOrCreateArray("foo");
+        array.add(1);
+        assertEquals((Integer) 1, object.getArray("foo")
+                .getInt(0));
+    }
+
+    @Test
+    public void testGetOrCreateObject() {
+        JsonObject object = system().createObject();
+        JsonObject object2 = object.getOrCreateObject("foo");
+        object2.put("bar", "baz");
+        assertEquals("baz", object.getObject("foo")
+                .getString("bar"));
+    }
+
+    @Test
     public void testGetRequired() {
         JsonObject object = system().createObject()
                 .p("a", true)
@@ -130,80 +204,6 @@ public class JsonObjectTest extends ItemscriptTestBase {
             failedArray = true;
         }
         assertTrue(failedArray);
-    }
-
-    @Test
-    public void testCycles() {
-        JsonObject a = system().createObject();
-        JsonObject b = system().createObject();
-        a.put("foo", b);
-        boolean errorThrown = false;
-        try {
-            b.put("bar", a);
-        } catch (ItemscriptError e) {
-            errorThrown = true;
-        }
-        assertTrue(errorThrown);
-    }
-
-    @Test
-    public void testEntrySet() {
-        JsonObject object = system().createObject()
-                .p("1", "foo")
-                .p("2", "bar");
-        for (Map.Entry<String, JsonValue> entry : object.entrySet()) {
-            if (entry.getKey()
-                    .equals("1")) {
-                assertEquals("foo", entry.getValue()
-                        .asString()
-                        .stringValue());
-            } else if (entry.getKey()
-                    .equals("2")) {
-                assertEquals("bar", entry.getValue()
-                        .asString()
-                        .stringValue());
-            } else {
-                fail();
-            }
-        }
-    }
-
-    public void testFragment() {
-        JsonObject object = system().createObject()
-                .p("foo", system().createArray()
-                        .a("value"));
-        JsonValue value = object.getArray("foo")
-                .get(0);
-        assertEquals("value", value.asString()
-                .stringValue());
-        assertEquals("#foo.0", value.fragment());
-        JsonObject obj2 = system().createObject()
-                .p("foo", system().createObject()
-                        .p("bar", "value"));
-        JsonObject obj3 = system().createObject()
-                .p("baz", obj2);
-        assertEquals("#baz.foo.bar", obj3.getObject("baz")
-                .getObject("foo")
-                .get("bar")
-                .fragment());
-    }
-
-    @Test
-    public void testGetOrCreateArray() {
-        JsonObject object = system().createObject();
-        JsonArray array = object.getOrCreateArray("foo");
-        array.add(1);
-        assertEquals((Integer) 1, object.getArray("foo")
-                .getInt(0));
-    }
-
-    @Test
-    public void testGetOrCreateObject() {
-        JsonObject object = system().createObject();
-        JsonObject object2 = object.getOrCreateObject("foo");
-        object2.put("bar", "baz");
-        assertEquals("baz", object.getObject("foo")
-                .getString("bar"));
     }
 
     public void testHasOptional() {

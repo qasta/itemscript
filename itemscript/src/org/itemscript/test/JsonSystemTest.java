@@ -53,6 +53,24 @@ public class JsonSystemTest extends ItemscriptTestBase {
             letters[l - 'a'] = l;
         }
     }
+    final static String basePath = "/d:/workspace/Itemscript/src/org/itemscript/test/";
+    //    @Test
+    //    public void testTextFileGet() {
+    //        JsonArray array = system().get("file:" + basePath + "test.txt")
+    //                .asArray();
+    //        assertEquals("two", array.getString(1));
+    //    }
+    //    @Test
+    //    public void testBinaryFileGet() {
+    //        JsonString value = system().get("file:" + basePath + "test.txt")
+    //                .asString();
+    //        assertEquals('o', value.binaryValue()[0]);
+    //        assertEquals('n', value.binaryValue()[1]);
+    //        assertEquals('e', value.binaryValue()[2]);
+    //    }
+    static boolean getCompleted = false;
+    static boolean putCompleted = false;
+    static boolean removeCompleted = false;
 
     private String randomString() {
         StringBuffer sb = new StringBuffer();
@@ -62,6 +80,74 @@ public class JsonSystemTest extends ItemscriptTestBase {
         return sb.toString();
     }
 
+    private String randomUrl() {
+        StringBuffer sb = new StringBuffer("mem:/foo");
+        //        for (int i = 0; i <= (Math.abs(random.nextInt()) % 20); ++i) {
+        //            sb.append("/" + randomString());
+        //        }
+        sb.append("#" + randomString());
+        for (int i = 0; i <= 1000; ++i) {
+            sb.append("." + randomString());
+        }
+        return sb.toString();
+    }
+
+    @Test
+    public void testAsyncUseOfSyncConnector() {
+        system().put("/foo", system().createString("bar"), new PutCallback() {
+            @Override
+            public void onError(Throwable e) {
+                throw new RuntimeException(e);
+            }
+
+            @Override
+            public void onSuccess(JsonValue value) {
+                assertEquals("bar", value.stringValue());
+                putCompleted = true;
+            }
+        });
+        assertTrue(putCompleted);
+        system().get("/foo", new GetCallback() {
+            @Override
+            public void onError(Throwable e) {
+                throw new RuntimeException(e);
+            }
+
+            @Override
+            public void onSuccess(JsonValue value) {
+                assertEquals("bar", value.stringValue());
+                getCompleted = true;
+            }
+        });
+        assertTrue(getCompleted);
+        system().remove("/foo", new RemoveCallback() {
+            @Override
+            public void onError(Throwable e) {
+                throw new RuntimeException(e);
+            }
+
+            @Override
+            public void onSuccess() {
+                removeCompleted = true;
+            }
+        });
+        assertTrue(removeCompleted);
+        assertNull(system().get("/foo"));
+    }
+
+    //    @Test
+    //    public void testHttpPut() {
+    //        JsonValue value = system().get("http://127.0.0.1:8888/test.json");
+    //        JsonValue ret = system().put("http://127.0.0.1:8888/ReflectJson", value);
+    //        system().remove("http://127.0.0.1:8888/ReflectJson");
+    //    }
+    @Test
+    public void testClasspathGet() {
+        JsonValue value = system().get("classpath:org/itemscript/test/test.json");
+        assertEquals("bar", value.asObject()
+                .getString("foo"));
+    }
+
     @Test
     public void testCopy() {
         system().put("/1", true);
@@ -69,6 +155,48 @@ public class JsonSystemTest extends ItemscriptTestBase {
         assertEquals(system().get("/1")
                 .booleanValue(), system().get("/2")
                 .booleanValue());
+    }
+
+    @Test
+    public void testCountItems() {
+        system().put("1", "x");
+        system().put("2", "y");
+        system().put("j", "z");
+        JsonNumber number = system().get("?countItems#count")
+                .asNumber();
+        assertEquals((Integer) 4, number.intValue());
+        assertEquals("mem:/?countItems", number.item()
+                .source() + "");
+    }
+
+    @Test
+    public void testCtor() {
+        Assert.assertNotNull(system());
+    }
+
+    @Test
+    public void testDump() {
+        JsonObject object = system().getObject("/itemscript/connectors?dump");
+        assertEquals(2, object.size());
+        assertNotNull(object.getObject("value"));
+        assertTrue(object.getObject("value")
+                .containsKey("mem"));
+    }
+
+    @Test
+    public void testGet() {
+        Assert.assertNotNull(system().get("mem:/itemscript"));
+    }
+
+    @Test
+    public void testJsonFileGet() {
+        JsonArray array = system().get("file:" + basePath + "?keys")
+                .asArray();
+        assertTrue(array.contains(system().createString("test.json")));
+        JsonObject value = system().get("file:" + basePath + "test.json")
+                .asObject();
+        assertEquals("bar", value.getString("foo"));
+        assertEquals("bar", system().getString("file:" + basePath + "test.json#foo"));
     }
 
     @Test
@@ -83,13 +211,28 @@ public class JsonSystemTest extends ItemscriptTestBase {
         assertEquals("456", system().getString("/foo/two"));
     }
 
+    //    @Test
+    //    public void testStress() {
+    //        String url = randomUrl();
+    //        System.err.println("url: " + url);
+    //        system().put(url, randomString());
+    //        System.err.println(system().get("mem:/foo")
+    //                .toCompactJsonString());
+    //        System.err.println(system().get(url)
+    //                .fragment());
+    //    }
+    //
     @Test
-    public void testDump() {
-        JsonObject object = system().getObject("/itemscript/connectors?dump");
-        assertEquals(2, object.size());
-        assertNotNull(object.getObject("value"));
-        assertTrue(object.getObject("value")
-                .containsKey("mem"));
+    public void testMemPut() {
+        system().put("mem:/one/two/three", system().createArray()
+                .a("foo"));
+        Assert.assertEquals("foo", system().get("one/two/three#0")
+                .asString()
+                .stringValue());
+        system().put("mem:/foo/bar/baz#one.two.three", "test");
+        Assert.assertEquals("test", system().get("mem:/foo/bar/baz#one.two.three")
+                .asString()
+                .stringValue());
     }
 
     @Test
@@ -150,91 +293,6 @@ public class JsonSystemTest extends ItemscriptTestBase {
                 .asArray();
         assertEquals(1, array3.size());
         assertEquals("2", array3.getString(0));
-    }
-
-    @Test
-    public void testCountItems() {
-        system().put("1", "x");
-        system().put("2", "y");
-        system().put("j", "z");
-        JsonNumber number = system().get("?countItems#count")
-                .asNumber();
-        assertEquals((Integer) 4, number.intValue());
-        assertEquals("mem:/?countItems", number.item()
-                .source() + "");
-    }
-
-    @Test
-    public void testRemove() {
-        system().put("/abc/def", "123");
-        system().put("/abc/ghi", "456");
-        assertEquals("123", system().getString("/abc/def"));
-        assertEquals("456", system().getString("/abc/ghi"));
-        system().remove("/abc");
-        assertNull(system().get("/abc/def"));
-        assertNull(system().get("/abc/ghi"));
-        system().put("/abc#def", "123");
-        system().put("/abc#ghi", "456");
-        assertEquals(2, system().getObject("/abc")
-                .size());
-        assertEquals("123", system().getString("/abc#def"));
-        system().remove("/abc#def");
-        assertEquals(1, system().getObject("/abc")
-                .size());
-        assertEquals("456", system().getString("/abc#ghi"));
-    }
-
-    private String randomUrl() {
-        StringBuffer sb = new StringBuffer("mem:/foo");
-        //        for (int i = 0; i <= (Math.abs(random.nextInt()) % 20); ++i) {
-        //            sb.append("/" + randomString());
-        //        }
-        sb.append("#" + randomString());
-        for (int i = 0; i <= 1000; ++i) {
-            sb.append("." + randomString());
-        }
-        return sb.toString();
-    }
-
-    @Test
-    public void testClasspathGet() {
-        JsonValue value = system().get("classpath:org/itemscript/test/test.json");
-        assertEquals("bar", value.asObject()
-                .getString("foo"));
-    }
-
-    @Test
-    public void testCtor() {
-        Assert.assertNotNull(system());
-    }
-
-    @Test
-    public void testGet() {
-        Assert.assertNotNull(system().get("mem:/itemscript"));
-    }
-
-    //    @Test
-    //    public void testStress() {
-    //        String url = randomUrl();
-    //        System.err.println("url: " + url);
-    //        system().put(url, randomString());
-    //        System.err.println(system().get("mem:/foo")
-    //                .toCompactJsonString());
-    //        System.err.println(system().get(url)
-    //                .fragment());
-    //    }
-    //
-    @Test
-    public void testMemPut() {
-        system().put("mem:/one/two/three", system().createArray()
-                .a("foo"));
-        Assert.assertEquals("foo", system().get("one/two/three#0")
-                .asString()
-                .stringValue());
-        system().put("mem:/foo/bar/baz#one.two.three", "test");
-        Assert.assertEquals("test", system().get("mem:/foo/bar/baz#one.two.three")
-                .asString()
-                .stringValue());
     }
 
     @Test
@@ -300,6 +358,26 @@ public class JsonSystemTest extends ItemscriptTestBase {
     }
 
     @Test
+    public void testRemove() {
+        system().put("/abc/def", "123");
+        system().put("/abc/ghi", "456");
+        assertEquals("123", system().getString("/abc/def"));
+        assertEquals("456", system().getString("/abc/ghi"));
+        system().remove("/abc");
+        assertNull(system().get("/abc/def"));
+        assertNull(system().get("/abc/ghi"));
+        system().put("/abc#def", "123");
+        system().put("/abc#ghi", "456");
+        assertEquals(2, system().getObject("/abc")
+                .size());
+        assertEquals("123", system().getString("/abc#def"));
+        system().remove("/abc#def");
+        assertEquals(1, system().getObject("/abc")
+                .size());
+        assertEquals("456", system().getString("/abc#ghi"));
+    }
+
+    @Test
     public void testRootItem() {
         assertTrue(system().get("mem:/") instanceof JsonNull);
     }
@@ -307,7 +385,7 @@ public class JsonSystemTest extends ItemscriptTestBase {
     @Test
     public void testUuidPut() {
         JsonValue value = system().put("/foo?uuid", "foo");
-        Url source = Url.create(value.item()
+        Url source = Url.create(system(), value.item()
                 .source());
         assertEquals("/foo/", source.pathString()
                 .substring(0, 5));
@@ -319,87 +397,4 @@ public class JsonSystemTest extends ItemscriptTestBase {
     public void testValidate() {
         system().get("classpath:org/itemscript/test/validate.json");
     }
-
-    final static String basePath = "/d:/workspace/Itemscript/src/org/itemscript/test/";
-
-    @Test
-    public void testJsonFileGet() {
-        JsonArray array = system().get("file:" + basePath + "?keys")
-                .asArray();
-        assertTrue(array.contains(system().createString("test.json")));
-        JsonObject value = system().get("file:" + basePath + "test.json")
-                .asObject();
-        assertEquals("bar", value.getString("foo"));
-        assertEquals("bar", system().getString("file:" + basePath + "test.json#foo"));
-    }
-
-//    @Test
-//    public void testTextFileGet() {
-//        JsonArray array = system().get("file:" + basePath + "test.txt")
-//                .asArray();
-//        assertEquals("two", array.getString(1));
-//    }
-
-//    @Test
-//    public void testBinaryFileGet() {
-//        JsonString value = system().get("file:" + basePath + "test.txt")
-//                .asString();
-//        assertEquals('o', value.binaryValue()[0]);
-//        assertEquals('n', value.binaryValue()[1]);
-//        assertEquals('e', value.binaryValue()[2]);
-//    }
-
-    static boolean getCompleted = false;
-    static boolean putCompleted = false;
-    static boolean removeCompleted = false;
-
-    @Test
-    public void testAsyncUseOfSyncConnector() {
-        system().put("/foo", system().createString("bar"), new PutCallback() {
-            @Override
-            public void onSuccess(JsonValue value) {
-                assertEquals("bar", value.stringValue());
-                putCompleted = true;
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                throw new RuntimeException(e);
-            }
-        });
-        assertTrue(putCompleted);
-        system().get("/foo", new GetCallback() {
-            @Override
-            public void onSuccess(JsonValue value) {
-                assertEquals("bar", value.stringValue());
-                getCompleted = true;
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                throw new RuntimeException(e);
-            }
-        });
-        assertTrue(getCompleted);
-        system().remove("/foo", new RemoveCallback() {
-            @Override
-            public void onSuccess() {
-                removeCompleted = true;
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                throw new RuntimeException(e);
-            }
-        });
-        assertTrue(removeCompleted);
-        assertNull(system().get("/foo"));
-    }
-
-//    @Test
-//    public void testHttpPut() {
-//        JsonValue value = system().get("http://127.0.0.1:8888/test.json");
-//        JsonValue ret = system().put("http://127.0.0.1:8888/ReflectJson", value);
-//        system().remove("http://127.0.0.1:8888/ReflectJson");
-//    }
 }

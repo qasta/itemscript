@@ -66,6 +66,16 @@ public class JsonFoundryTest extends ItemscriptTestBase {
             return "cat";
         }
     }
+    class CatFactory implements JsonFactory<Animal> {
+        public Cat create(JsonObject parameters) {
+            String name = parameters.getString("name");
+            Cat cat = new Cat(name);
+            if (parameters.hasBoolean("indoor")) {
+                cat.setIndoor(parameters.getBoolean("indoor"));
+            }
+            return cat;
+        }
+    }
     class Dog implements Animal {
         private final String name;
         private boolean shaggy;
@@ -89,16 +99,6 @@ public class JsonFoundryTest extends ItemscriptTestBase {
 
         public String species() {
             return "dog";
-        }
-    }
-    class CatFactory implements JsonFactory<Animal> {
-        public Cat create(JsonObject parameters) {
-            String name = parameters.getString("name");
-            Cat cat = new Cat(name);
-            if (parameters.hasBoolean("indoor")) {
-                cat.setIndoor(parameters.getBoolean("indoor"));
-            }
-            return cat;
         }
     }
     class DogFactory implements JsonFactory<Animal> {

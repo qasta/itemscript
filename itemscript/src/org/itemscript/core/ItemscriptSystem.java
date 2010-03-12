@@ -67,10 +67,11 @@ import org.itemscript.core.values.JsonValue;
  * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
-public final class ItemscriptSystem implements JsonSystem {
+public final class ItemscriptSystem implements JsonSystem, HasSystem {
     private final JsonCreator factory;
     private final JsonConfig config;
     private final JsonObject connectors;
+    private final Url rootUrl;
 
     /**
      * Create a new JsonSystem implementation using the supplied JsonConfig.
@@ -81,15 +82,26 @@ public final class ItemscriptSystem implements JsonSystem {
      * @param config The JsonConfig object used to set up this system.
      */
     public ItemscriptSystem(JsonConfig config) {
+        rootUrl = Url.create(this, JsonSystem.ROOT_URL);
         this.config = config;
         factory = config.createJsonCreator(this);
         connectors = MemConnector.create(this);
         config.seedSystem(this);
     }
 
+    private void checkFragmentForRemove(Url fullUrl) {
+        if (isNotMemSchemeAndHasFragment(fullUrl)) { throw ItemscriptError.internalError(this,
+                "remove.url.with.fragment.not.supported", fullUrl + ""); }
+    }
+
+    private void checkQueryForRemove(Url fullUrl) {
+        if (fullUrl.hasQuery()) { throw ItemscriptError.internalError(this, "remove.url.with.query.not.supported",
+                fullUrl + ""); }
+    }
+
     @Override
     public void copy(String fromUrl, String toUrl) {
-        copy(Url.create(fromUrl), Url.create(toUrl));
+        copy(Url.create(system(), fromUrl), Url.create(system(), toUrl));
     }
 
     public void copy(Url fromUrl, Url toUrl) {
@@ -104,6 +116,11 @@ public final class ItemscriptSystem implements JsonSystem {
     @Override
     public JsonBoolean createBoolean(Boolean value) {
         return factory().createBoolean(value);
+    }
+
+    @Override
+    public JsonItem createItem(String sourceUrl, JsonObject meta, JsonValue value) {
+        return factory.createItem(sourceUrl, meta, value);
     }
 
     @Override
@@ -142,7 +159,7 @@ public final class ItemscriptSystem implements JsonSystem {
     }
 
     private Url createRootRelativeUrl(Url url) {
-        return Url.createRelative(ROOT_URL, url);
+        return Url.createRelative(system(), rootUrl, url);
     }
 
     @Override
@@ -169,13 +186,13 @@ public final class ItemscriptSystem implements JsonSystem {
     public final void dereference(String key, final GetCallback callback) {
         get(key, new GetCallback() {
             @Override
-            public void onSuccess(JsonValue value) {
-                value.dereference(callback);
+            public void onError(Throwable e) {
+                callback.onError(e);
             }
 
             @Override
-            public void onError(Throwable e) {
-                callback.onError(e);
+            public void onSuccess(JsonValue value) {
+                value.dereference(callback);
             }
         });
     }
@@ -191,12 +208,12 @@ public final class ItemscriptSystem implements JsonSystem {
 
     @Override
     public JsonValue get(String url) {
-        return get(Url.create(url));
+        return get(Url.create(system(), url));
     }
 
     @Override
     public void get(final String url, final GetCallback callback) {
-        get(Url.create(url), callback);
+        get(Url.create(system(), url), callback);
     }
 
     public JsonValue get(Url url) {
@@ -342,6 +359,11 @@ public final class ItemscriptSystem implements JsonSystem {
         return get(url);
     }
 
+    private boolean isNotMemSchemeAndHasFragment(final Url url) {
+        return !url.scheme()
+                .equals(Url.MEM_SCHEME) && url.hasFragment();
+    }
+
     /**
      * Get a random int.
      * 
@@ -398,12 +420,12 @@ public final class ItemscriptSystem implements JsonSystem {
 
     @Override
     public JsonValue put(String url, JsonValue value) {
-        return put(Url.create(url), value);
+        return put(Url.create(system(), url), value);
     }
 
     @Override
     public void put(String url, JsonValue value, PutCallback callback) {
-        put(Url.create(url), value, callback);
+        put(Url.create(system(), url), value, callback);
     }
 
     @Override
@@ -466,11 +488,6 @@ public final class ItemscriptSystem implements JsonSystem {
         }
     }
 
-    private boolean isNotMemSchemeAndHasFragment(final Url url) {
-        return !url.scheme()
-                .equals(Url.MEM_SCHEME) && url.hasFragment();
-    }
-
     @Override
     public JsonNative putNative(String url, Object nativeValue) {
         JsonNative jsonValue = factory().createNative(nativeValue);
@@ -485,12 +502,12 @@ public final class ItemscriptSystem implements JsonSystem {
 
     @Override
     public void remove(String url) {
-        remove(Url.create(url));
+        remove(Url.create(system(), url));
     }
 
     @Override
     public void remove(final String url, final RemoveCallback callback) {
-        remove(Url.create(url), callback);
+        remove(Url.create(system(), url), callback);
     }
 
     public void remove(Url url) {
@@ -517,28 +534,18 @@ public final class ItemscriptSystem implements JsonSystem {
         }
     }
 
-    private void checkQueryForRemove(Url fullUrl) {
-        if (fullUrl.hasQuery()) { throw ItemscriptError.internalError(this, "remove.url.with.query.not.supported",
-                fullUrl + ""); }
-    }
-
-    private void checkFragmentForRemove(Url fullUrl) {
-        if (isNotMemSchemeAndHasFragment(fullUrl)) { throw ItemscriptError.internalError(this,
-                "remove.url.with.fragment.not.supported", fullUrl + ""); }
-    }
-
     @Override
     public void removeValue(String url) {
         remove(url);
     }
 
     @Override
-    public String toString() {
-        return "[JsonSystem]";
+    public JsonSystem system() {
+        return this;
     }
 
     @Override
-    public JsonItem createItem(String sourceUrl, JsonObject meta, JsonValue value) {
-        return factory.createItem(sourceUrl, meta, value);
+    public String toString() {
+        return "[JsonSystem]";
     }
 }

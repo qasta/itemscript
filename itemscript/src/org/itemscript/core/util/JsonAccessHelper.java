@@ -20,94 +20,6 @@ import org.itemscript.core.values.JsonValue;
  *
  */
 public final class JsonAccessHelper {
-    public static JsonArray getRequiredArray(JsonContainer container, Object key, JsonValue value) {
-        if (value == null) { throw ItemscriptError.internalError(container, "getRequiredArray.not.present", key
-                + ""); }
-        if (value.isArray()) { return value.asArray(); }
-        throw ItemscriptError.internalError(container, "getRequiredArray.existed.but.was.not.array",
-                keyValueParams(key, value));
-    }
-
-    public static Boolean getRequiredBoolean(JsonContainer container, Object key, JsonValue value) {
-        if (value == null) { throw ItemscriptError.internalError(container, "getRequiredBoolean.not.present", key
-                + ""); }
-        if (value.isBoolean()) { return value.asBoolean()
-                .booleanValue(); }
-        throw ItemscriptError.internalError(container, "getRequiredBoolean.existed.but.was.not.boolean",
-                keyValueParams(key, value));
-    }
-
-    public static byte[] getRequiredBinary(JsonContainer container, Object key, JsonValue value) {
-        if (value == null) { throw ItemscriptError.internalError(container, "getRequiredByteArray.not.present",
-                key + ""); }
-        if (value.isString()) { return value.asString()
-                .binaryValue(); }
-        throw ItemscriptError.internalError(container, "getRequiredByteArray.existed.but.was.not.string",
-                keyValueParams(key, value));
-    }
-
-    public static Double getRequiredDouble(JsonContainer container, Object key, JsonValue value) {
-        if (value == null) { throw ItemscriptError.internalError(container, "getRequiredFloat.not.present", key
-                + ""); }
-        if (value.isNumber()) { return value.asNumber()
-                .doubleValue(); }
-        throw new ItemscriptError("getRequiredFloat.existed.but.was.not.number", keyValueParams(key, value));
-    }
-
-    public static Float getRequiredFloat(JsonContainer container, Object key, JsonValue value) {
-        if (value == null) { throw ItemscriptError.internalError(container, "getRequiredFloat.not.present", key
-                + ""); }
-        if (value.isNumber()) { return value.asNumber()
-                .floatValue(); }
-        throw ItemscriptError.internalError(container, "getRequiredFloat.existed.but.was.not.number",
-                keyValueParams(key, value));
-    }
-
-    public static Integer getRequiredInt(JsonContainer container, Object key, JsonValue value) {
-        if (value == null) { throw ItemscriptError.internalError(container, "getRequiredInt.not.present", key + ""); }
-        if (value.isNumber()) { return value.asNumber()
-                .intValue(); }
-        throw ItemscriptError.internalError(container, "getRequiredInt.existed.but.was.not.number",
-                keyValueParams(key, value));
-    }
-
-    public static Long getRequiredLong(JsonContainer container, Object key, JsonValue value) {
-        if (value == null) { throw ItemscriptError.internalError("getRequiredLong.not.present", key + ""); }
-        if (value.isString()) {
-            try {
-                return Long.parseLong(value.asString()
-                        .stringValue());
-            } catch (NumberFormatException e) {
-                throw ItemscriptError.internalError(container,
-                        "getRequiredLong.existed.but.could.not.parse.as.long", keyValueParams(key, value));
-            }
-        }
-        throw ItemscriptError.internalError(container, "getRequiredLong.existed.but.was.not.string",
-                keyValueParams(key, value));
-    }
-
-    public static Params keyValueParams(Object key, JsonValue value) {
-        return new Params().p("key", key + "")
-                .p("value", value.toCompactJsonString());
-    }
-
-    public static String getRequiredString(JsonContainer container, Object key, JsonValue value) {
-        if (value == null) { throw ItemscriptError.internalError(container, "getRequiredString.not.present", key
-                + ""); }
-        if (value.isString()) { return value.asString()
-                .stringValue(); }
-        throw ItemscriptError.internalError(container, "getRequiredString.existed.but.was.not.string",
-                keyValueParams(key, value));
-    }
-
-    public static JsonObject getRequiredObject(JsonContainer container, Object key, JsonValue value) {
-        if (value == null) { throw ItemscriptError.internalError(container, "getRequiredObject.not.present", key
-                + ""); }
-        if (value.isObject()) { return value.asObject(); }
-        throw ItemscriptError.internalError(container, "getRequiredObject.existed.but.was.not.object",
-                keyValueParams(key, value));
-    }
-
     public static JsonArray asArray(JsonValue value) {
         if (value == null) { return null; }
         return value.asArray();
@@ -176,5 +88,93 @@ public final class JsonAccessHelper {
         if (value == null) { throw new ItemscriptError(
                 "error.itemscript.JsonAccessHelper.dereference.value.was.null"); }
         value.dereference(callback);
+    }
+
+    public static JsonArray getRequiredArray(JsonContainer container, Object key, JsonValue value) {
+        if (value == null) { throw ItemscriptError.internalError(container, "getRequiredArray.not.present", key
+                + ""); }
+        if (value.isArray()) { return value.asArray(); }
+        throw ItemscriptError.internalError(container, "getRequiredArray.existed.but.was.not.array",
+                keyValueParams(key, value));
+    }
+
+    public static byte[] getRequiredBinary(JsonContainer container, Object key, JsonValue value) {
+        if (value == null) { throw ItemscriptError.internalError(container, "getRequiredByteArray.not.present",
+                key + ""); }
+        if (value.isString()) { return value.asString()
+                .binaryValue(); }
+        throw ItemscriptError.internalError(container, "getRequiredByteArray.existed.but.was.not.string",
+                keyValueParams(key, value));
+    }
+
+    public static Boolean getRequiredBoolean(JsonContainer container, Object key, JsonValue value) {
+        if (value == null) { throw ItemscriptError.internalError(container, "getRequiredBoolean.not.present", key
+                + ""); }
+        if (value.isBoolean()) { return value.asBoolean()
+                .booleanValue(); }
+        throw ItemscriptError.internalError(container, "getRequiredBoolean.existed.but.was.not.boolean",
+                keyValueParams(key, value));
+    }
+
+    public static Double getRequiredDouble(JsonContainer container, Object key, JsonValue value) {
+        if (value == null) { throw ItemscriptError.internalError(container, "getRequiredFloat.not.present", key
+                + ""); }
+        if (value.isNumber()) { return value.asNumber()
+                .doubleValue(); }
+        throw new ItemscriptError("getRequiredFloat.existed.but.was.not.number", keyValueParams(key, value));
+    }
+
+    public static Float getRequiredFloat(JsonContainer container, Object key, JsonValue value) {
+        if (value == null) { throw ItemscriptError.internalError(container, "getRequiredFloat.not.present", key
+                + ""); }
+        if (value.isNumber()) { return value.asNumber()
+                .floatValue(); }
+        throw ItemscriptError.internalError(container, "getRequiredFloat.existed.but.was.not.number",
+                keyValueParams(key, value));
+    }
+
+    public static Integer getRequiredInt(JsonContainer container, Object key, JsonValue value) {
+        if (value == null) { throw ItemscriptError.internalError(container, "getRequiredInt.not.present", key + ""); }
+        if (value.isNumber()) { return value.asNumber()
+                .intValue(); }
+        throw ItemscriptError.internalError(container, "getRequiredInt.existed.but.was.not.number",
+                keyValueParams(key, value));
+    }
+
+    public static Long getRequiredLong(JsonContainer container, Object key, JsonValue value) {
+        if (value == null) { throw ItemscriptError.internalError("getRequiredLong.not.present", key + ""); }
+        if (value.isString()) {
+            try {
+                return Long.parseLong(value.asString()
+                        .stringValue());
+            } catch (NumberFormatException e) {
+                throw ItemscriptError.internalError(container,
+                        "getRequiredLong.existed.but.could.not.parse.as.long", keyValueParams(key, value));
+            }
+        }
+        throw ItemscriptError.internalError(container, "getRequiredLong.existed.but.was.not.string",
+                keyValueParams(key, value));
+    }
+
+    public static JsonObject getRequiredObject(JsonContainer container, Object key, JsonValue value) {
+        if (value == null) { throw ItemscriptError.internalError(container, "getRequiredObject.not.present", key
+                + ""); }
+        if (value.isObject()) { return value.asObject(); }
+        throw ItemscriptError.internalError(container, "getRequiredObject.existed.but.was.not.object",
+                keyValueParams(key, value));
+    }
+
+    public static String getRequiredString(JsonContainer container, Object key, JsonValue value) {
+        if (value == null) { throw ItemscriptError.internalError(container, "getRequiredString.not.present", key
+                + ""); }
+        if (value.isString()) { return value.asString()
+                .stringValue(); }
+        throw ItemscriptError.internalError(container, "getRequiredString.existed.but.was.not.string",
+                keyValueParams(key, value));
+    }
+
+    public static Params keyValueParams(Object key, JsonValue value) {
+        return new Params().p("key", key + "")
+                .p("value", value.toCompactJsonString());
     }
 }

@@ -32,7 +32,6 @@ package org.itemscript.core;
 import org.itemscript.core.connectors.GetCallback;
 import org.itemscript.core.connectors.PutCallback;
 import org.itemscript.core.connectors.RemoveCallback;
-import org.itemscript.core.url.Url;
 import org.itemscript.core.values.JsonAccess;
 import org.itemscript.core.values.JsonCreator;
 import org.itemscript.core.values.JsonValue;
@@ -47,11 +46,7 @@ public interface JsonSystem extends JsonAccess, JsonCreator {
     /**
      * The root URL for the system (<code>"mem:/"</code>).
      */
-    public static final String ROOT_URL_STRING = "mem:/";
-    /**
-     * The root URL for the system (<code>"mem:/"</code>).
-     */
-    static final Url ROOT_URL = Url.create(ROOT_URL_STRING);
+    public static final String ROOT_URL = "mem:/";
 
     /**
      * Copy a value from one URL to another.

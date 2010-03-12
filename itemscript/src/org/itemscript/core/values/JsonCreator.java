@@ -52,15 +52,6 @@ public interface JsonCreator {
     public JsonBoolean createBoolean(Boolean value);
 
     /**
-     * Create a new JsonItem with the given source URL and value.
-     * 
-     * @param sourceUrl The source URL for this item.
-     * @param value The value of this item.
-     * @return A new JsonItem.
-     */
-    public JsonItem createItem(String sourceUrl, JsonValue value);
-
-    /**
      * Create a new JsonItem with the given source URL, metadata, and value.
      * 
      * @param sourceUrl The source URL for this item.
@@ -69,6 +60,15 @@ public interface JsonCreator {
      * @return A new JsonItem.
      */
     public JsonItem createItem(String sourceUrl, JsonObject meta, JsonValue value);
+
+    /**
+     * Create a new JsonItem with the given source URL and value.
+     * 
+     * @param sourceUrl The source URL for this item.
+     * @param value The value of this item.
+     * @return A new JsonItem.
+     */
+    public JsonItem createItem(String sourceUrl, JsonValue value);
 
     /**
      * Create a new JsonNative.

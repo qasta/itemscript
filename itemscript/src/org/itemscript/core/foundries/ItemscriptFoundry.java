@@ -36,7 +36,6 @@ import org.itemscript.core.HasSystem;
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.Params;
 import org.itemscript.core.exceptions.ItemscriptError;
-import org.itemscript.core.util.ChainObject;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 
@@ -69,8 +68,8 @@ public class ItemscriptFoundry<T> implements JsonFactory<T>, HasSystem, JsonFoun
         system.put(location, factoryObject);
     }
 
-    public String findMissingName(JsonObject params) {
-        return null;
+    private void checkName(String name) {
+        if (name == null || name.length() == 0) { throw ItemscriptError.internalError(this, "empty.name.in.put"); }
     }
 
     @Override
@@ -117,6 +116,10 @@ public class ItemscriptFoundry<T> implements JsonFactory<T>, HasSystem, JsonFoun
         throw ItemscriptError.internalError(this, "create.factory.not.found", new Params().p("name", name));
     }
 
+    public String findMissingName(JsonObject params) {
+        return null;
+    }
+
     @Override
     public final void put(final FactoryName<T> factoryName) {
         final String name = factoryName.getName();
@@ -127,10 +130,6 @@ public class ItemscriptFoundry<T> implements JsonFactory<T>, HasSystem, JsonFoun
     public final void put(String name, final JsonFactory<T> factory) {
         checkName(name);
         factoryObject.putNative(name, factory);
-    }
-
-    private void checkName(String name) {
-        if (name == null || name.length() == 0) { throw ItemscriptError.internalError(this, "empty.name.in.put"); }
     }
 
     @Override

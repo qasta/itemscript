@@ -70,22 +70,6 @@ public class JsonArrayTest extends ItemscriptTestBase {
     }
 
     @Test
-    public void testCopy() {
-        JsonArray array = system().createArray()
-                .a(1)
-                .a(2)
-                .a(3);
-        JsonObject object = array.createObject(3);
-        object.put("foo", "bar");
-        JsonArray array2 = array.copy()
-                .asArray();
-        assertEquals(array.get(0), array2.get(0));
-        assertEquals(array.getObject(3)
-                .getString("foo"), array2.getObject(3)
-                .getString("foo"));
-    }
-
-    @Test
     public void testChaining() {
         JsonArray array = system().createArray()
                 .a(1)
@@ -105,6 +89,22 @@ public class JsonArrayTest extends ItemscriptTestBase {
     }
 
     @Test
+    public void testCopy() {
+        JsonArray array = system().createArray()
+                .a(1)
+                .a(2)
+                .a(3);
+        JsonObject object = array.createObject(3);
+        object.put("foo", "bar");
+        JsonArray array2 = array.copy()
+                .asArray();
+        assertEquals(array.get(0), array2.get(0));
+        assertEquals(array.getObject(3)
+                .getString("foo"), array2.getObject(3)
+                .getString("foo"));
+    }
+
+    @Test
     public void testCreateArray() {
         JsonArray array = system().createArray();
         JsonArray array2 = array.createArray(0);
@@ -120,6 +120,35 @@ public class JsonArrayTest extends ItemscriptTestBase {
         object.put("foo", "bar");
         assertEquals("bar", array.getObject(0)
                 .getString("foo"));
+    }
+
+    @Test
+    public void testDetectAttemptToPutValueAlreadyInAnotherContainer() {
+        JsonArray array1 = system().createArray()
+                .a(true);
+        JsonValue val = array1.get(0);
+        JsonArray array2 = system().createArray();
+        boolean failed = false;
+        try {
+            array2.add(val);
+        } catch (ItemscriptError e) {
+            failed = true;
+        }
+        assertTrue(failed);
+        failed = false;
+        try {
+            array2.set(0, val);
+        } catch (ItemscriptError e) {
+            failed = true;
+        }
+        assertTrue(failed);
+        array1.remove(0);
+        assertNotNull(val);
+        assertNull(val.item());
+        assertNull(val.key());
+        assertNull(val.parent());
+        array2.add(val);
+        assertSame(val, array2.get(0));
     }
 
     @Test
@@ -205,38 +234,9 @@ public class JsonArrayTest extends ItemscriptTestBase {
                 .a(123L);
         assertEquals("foo", array.getString(0));
         assertEquals((Integer) 1, array.getInt(1));
-        assertEquals((Double) 1.5, array.getDouble(2));
-        assertEquals((Float) 1.5f, array.getFloat(2));
+        assertEquals(1.5, array.getDouble(2));
+        assertEquals(1.5f, array.getFloat(2));
         assertEquals((Boolean) true, array.getBoolean(3));
         assertEquals((Long) 123L, array.getLong(4));
-    }
-
-    @Test
-    public void testDetectAttemptToPutValueAlreadyInAnotherContainer() {
-        JsonArray array1 = system().createArray()
-                .a(true);
-        JsonValue val = array1.get(0);
-        JsonArray array2 = system().createArray();
-        boolean failed = false;
-        try {
-            array2.add(val);
-        } catch (ItemscriptError e) {
-            failed = true;
-        }
-        assertTrue(failed);
-        failed = false;
-        try {
-            array2.set(0, val);
-        } catch (ItemscriptError e) {
-            failed = true;
-        }
-        assertTrue(failed);
-        array1.remove(0);
-        assertNotNull(val);
-        assertNull(val.item());
-        assertNull(val.key());
-        assertNull(val.parent());
-        array2.add(val);
-        assertSame(val, array2.get(0));
     }
 }

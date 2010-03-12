@@ -181,13 +181,13 @@ public abstract class ItemscriptContainer extends ItemscriptValue implements Jso
     }
 
     @Override
-    public final Boolean getRequiredBoolean(String key) {
-        return JsonAccessHelper.getRequiredBoolean(this, key, getValue(key));
+    public final byte[] getRequiredBinary(String key) {
+        return JsonAccessHelper.getRequiredBinary(this, key, getValue(key));
     }
 
     @Override
-    public final byte[] getRequiredBinary(String key) {
-        return JsonAccessHelper.getRequiredBinary(this, key, getValue(key));
+    public final Boolean getRequiredBoolean(String key) {
+        return JsonAccessHelper.getRequiredBoolean(this, key, getValue(key));
     }
 
     @Override

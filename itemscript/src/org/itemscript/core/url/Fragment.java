@@ -42,6 +42,33 @@ import java.util.List;
  */
 public final class Fragment extends ArrayList<String> implements List<String> {
     /**
+     * Decode the given fragment string.
+     * 
+     * @param fragmentString The fragment string to decode.
+     * @return The decoded Fragment.
+     */
+    public static Fragment decodeFragment(String fragmentString) {
+        Fragment fragment = new Fragment();
+        int startOfComponent = 0;
+        for (int i = 0; i <= fragmentString.length(); ++i) {
+            char c;
+            if (i == fragmentString.length()) {
+                c = 0;
+            } else {
+                c = fragmentString.charAt(i);
+            }
+            if (c == '/' || c == 0) {
+                if (i > startOfComponent) {
+                    String component = fragmentString.substring(startOfComponent, i);
+                    fragment.add(Url.decode(component));
+                    startOfComponent = i + 1;
+                }
+            }
+        }
+        return fragment;
+    }
+
+    /**
      * Create a new fragment.
      */
     public Fragment() {

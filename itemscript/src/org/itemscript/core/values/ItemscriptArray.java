@@ -58,32 +58,6 @@ final class ItemscriptArray extends ItemscriptContainer implements JsonArray {
         super(system);
     }
 
-    @Override
-    public final JsonArray getOrCreateArray(int index) {
-        if (index < size()) {
-            JsonArray array = getArray(index);
-            if (array == null) { throw ItemscriptError.internalError(this,
-                    "getOrCreateArray.value.existed.but.was.not.an.array", JsonAccessHelper.keyValueParams(index
-                            + "", get(index))); }
-            return array;
-        } else {
-            return createArray(index);
-        }
-    }
-
-    @Override
-    public final JsonObject getOrCreateObject(int index) {
-        if (index < size()) {
-            JsonObject object = getObject(index);
-            if (object == null) { throw ItemscriptError.internalError(this,
-                    "getOrCreateObject.value.existed.but.was.not.an.object", JsonAccessHelper.keyValueParams(index
-                            + "", get(index))); }
-            return object;
-        } else {
-            return createObject(index);
-        }
-    }
-
     /**
      * Create a new ItemscriptArray with the given initial list of values.
      * 
@@ -342,6 +316,32 @@ final class ItemscriptArray extends ItemscriptContainer implements JsonArray {
     @Override
     public JsonObject getObject(int index) {
         return JsonAccessHelper.asObject(get(index));
+    }
+
+    @Override
+    public final JsonArray getOrCreateArray(int index) {
+        if (index < size()) {
+            JsonArray array = getArray(index);
+            if (array == null) { throw ItemscriptError.internalError(this,
+                    "getOrCreateArray.value.existed.but.was.not.an.array", JsonAccessHelper.keyValueParams(index
+                            + "", get(index))); }
+            return array;
+        } else {
+            return createArray(index);
+        }
+    }
+
+    @Override
+    public final JsonObject getOrCreateObject(int index) {
+        if (index < size()) {
+            JsonObject object = getObject(index);
+            if (object == null) { throw ItemscriptError.internalError(this,
+                    "getOrCreateObject.value.existed.but.was.not.an.object", JsonAccessHelper.keyValueParams(index
+                            + "", get(index))); }
+            return object;
+        } else {
+            return createObject(index);
+        }
     }
 
     @Override

@@ -130,6 +130,12 @@ final class ItemscriptObject extends ItemscriptContainer implements JsonObject {
     }
 
     @Override
+    public JsonObject p(String key, Float value) {
+        put(key, value);
+        return this;
+    }
+
+    @Override
     public JsonObject p(String key, Integer value) {
         put(key, value);
         return this;
@@ -143,12 +149,6 @@ final class ItemscriptObject extends ItemscriptContainer implements JsonObject {
 
     @Override
     public JsonObject p(String key, Long value) {
-        put(key, value);
-        return this;
-    }
-
-    @Override
-    public JsonObject p(String key, Float value) {
         put(key, value);
         return this;
     }

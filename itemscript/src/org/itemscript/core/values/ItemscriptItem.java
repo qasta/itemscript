@@ -58,10 +58,6 @@ public final class ItemscriptItem implements JsonItem {
     private final JsonObject meta;
     private List<Handler> handlers;
 
-    protected ItemscriptItem(JsonSystem system, Url source, JsonValue value) {
-        this(system, source, null, value);
-    }
-
     protected ItemscriptItem(JsonSystem system, Url source, JsonObject meta, JsonValue value) {
         this.system = system;
         this.value = value;
@@ -70,17 +66,8 @@ public final class ItemscriptItem implements JsonItem {
         ((ItemscriptValue) value).setItem(this);
     }
 
-    /**
-     * Detach the value from this JsonItem. Only called by {@link ItemscriptValue#detachFromItem}.
-     */
-    void detachFromValue() {
-        this.value = null;
-        this.handlers = null;
-    }
-
-    @Override
-    public JsonObject meta() {
-        return meta;
+    protected ItemscriptItem(JsonSystem system, Url source, JsonValue value) {
+        this(system, source, null, value);
     }
 
     @Override
@@ -101,14 +88,22 @@ public final class ItemscriptItem implements JsonItem {
         JsonAccessHelper.dereference(getValue(key), callback);
     }
 
+    /**
+     * Detach the value from this JsonItem. Only called by {@link ItemscriptValue#detachFromItem}.
+     */
+    void detachFromValue() {
+        this.value = null;
+        this.handlers = null;
+    }
+
     @Override
     public JsonValue get(String url) {
-        return get(Url.create(url));
+        return get(Url.create(system(), url));
     }
 
     @Override
     public void get(String url, GetCallback callback) {
-        get(Url.create(url), callback);
+        get(Url.create(system(), url), callback);
     }
 
     JsonValue get(Url url) {
@@ -117,7 +112,7 @@ public final class ItemscriptItem implements JsonItem {
             if (fragment.size() == 0) { return value; }
             return ((ItemscriptContainer) value).getByFragment(fragment);
         } else {
-            return ((ItemscriptSystem) system).get(Url.createRelative(source, url));
+            return ((ItemscriptSystem) system).get(Url.createRelative(system(), source, url));
         }
     }
 
@@ -129,7 +124,7 @@ public final class ItemscriptItem implements JsonItem {
                 callback.onError(e);
             }
         } else {
-            ((ItemscriptSystem) system).get(Url.createRelative(source, url), callback);
+            ((ItemscriptSystem) system).get(Url.createRelative(system(), source, url), callback);
         }
     }
 
@@ -209,6 +204,11 @@ public final class ItemscriptItem implements JsonItem {
         return (url.fragment() != null) && (!url.hasScheme()) && (!url.hasPath()) && (!url.hasQuery());
     }
 
+    @Override
+    public JsonObject meta() {
+        return meta;
+    }
+
     void notifyPut(String fragment, JsonValue newValue) {
         if (handlers != null) {
             Event event = new Event(EventType.PUT, fragment, newValue);
@@ -266,13 +266,13 @@ public final class ItemscriptItem implements JsonItem {
 
     @Override
     public JsonValue put(String url, JsonValue value) {
-        putValue(Url.create(url), value);
+        putValue(Url.create(system(), url), value);
         return value;
     }
 
     @Override
     public void put(String url, JsonValue value, PutCallback callback) {
-        put(Url.create(url), value, callback);
+        put(Url.create(system(), url), value, callback);
     }
 
     @Override
@@ -306,7 +306,7 @@ public final class ItemscriptItem implements JsonItem {
             }
         } else {
             // Otherwise interpret it as relative to the source URL of this item.
-            ((ItemscriptSystem) system).put(Url.createRelative(source, url), value, callback);
+            ((ItemscriptSystem) system).put(Url.createRelative(system(), source, url), value, callback);
         }
     }
 
@@ -319,7 +319,7 @@ public final class ItemscriptItem implements JsonItem {
 
     @Override
     public JsonValue putValue(String url, JsonValue value) {
-        return putValue(Url.create(url), value);
+        return putValue(Url.create(system(), url), value);
     }
 
     JsonValue putValue(Url url, JsonValue value) {
@@ -356,18 +356,18 @@ public final class ItemscriptItem implements JsonItem {
         } else {
             // If the URL was anything other than a fragment, interpret it as being relative to the source of this
             // item and put the value there.
-            return ((ItemscriptSystem) system).put(Url.createRelative(source, url), value);
+            return ((ItemscriptSystem) system).put(Url.createRelative(system(), source, url), value);
         }
     }
 
     @Override
     public void remove(String url) {
-        remove(Url.create(url));
+        remove(Url.create(system(), url));
     }
 
     @Override
     public void remove(String url, RemoveCallback callback) {
-        remove(Url.create(url), callback);
+        remove(Url.create(system(), url), callback);
     }
 
     void remove(Url url) {
@@ -391,7 +391,7 @@ public final class ItemscriptItem implements JsonItem {
             }
         } else {
             // Otherwise treat the URL as relative to the source of this item and call system.remove().
-            ((ItemscriptSystem) system).remove(Url.createRelative(source, url));
+            ((ItemscriptSystem) system).remove(Url.createRelative(system(), source, url));
         }
     }
 
@@ -410,7 +410,7 @@ public final class ItemscriptItem implements JsonItem {
             }
         }
         // Otherwise treat the URL as relative to the source of this item and call system.remove().
-        ((ItemscriptSystem) system).remove(Url.createRelative(source, url), callback);
+        ((ItemscriptSystem) system).remove(Url.createRelative(system(), source, url), callback);
     }
 
     @Override

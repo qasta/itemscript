@@ -1,5 +1,5 @@
 
-package org.itemscript.core.util;
+package org.itemscript.core.foundries;
 
 import java.util.Collection;
 import java.util.List;
@@ -9,6 +9,7 @@ import java.util.Set;
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.connectors.GetCallback;
 import org.itemscript.core.exceptions.ItemscriptError;
+import org.itemscript.core.util.JsonAccessHelper;
 import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonBoolean;
 import org.itemscript.core.values.JsonContainer;
@@ -53,38 +54,79 @@ public class ChainObject implements JsonObject {
     }
 
     @Override
-    public JsonObject p(String key, Boolean value) {
+    public JsonArray asArray() {
+        return null;
+    }
+
+    @Override
+    public JsonBoolean asBoolean() {
+        return null;
+    }
+
+    @Override
+    public JsonContainer asContainer() {
+        return this;
+    }
+
+    @Override
+    public JsonNative asNative() {
+        return null;
+    }
+
+    @Override
+    public JsonNull asNull() {
+        return null;
+    }
+
+    @Override
+    public JsonNumber asNumber() {
+        return null;
+    }
+
+    @Override
+    public JsonObject asObject() {
+        return this;
+    }
+
+    @Override
+    public JsonString asString() {
+        return null;
+    }
+
+    @Override
+    public byte[] binaryValue() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public JsonObject p(String key, Double value) {
+    public Boolean booleanValue() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public JsonObject p(String key, Integer value) {
+    public void clear() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public JsonObject p(String key, JsonValue value) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public JsonObject p(String key, Long value) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public JsonObject p(String key, String value) {
-        throw new UnsupportedOperationException();
+    public boolean containsKey(Object key) {
+        if (!(key instanceof String)) { return false; }
+        return getValue((String) key) != null;
     }
 
     @Override
     public boolean containsKey(String key) {
         return getValue(key) != null;
+    }
+
+    @Override
+    public boolean containsValue(Object arg0) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public JsonValue copy() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -95,6 +137,102 @@ public class ChainObject implements JsonObject {
     @Override
     public JsonObject createObject(String key) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public JsonValue dereference() {
+        return this;
+    }
+
+    @Override
+    public void dereference(GetCallback callback) {
+        callback.onSuccess(this);
+    }
+
+    @Override
+    public final JsonValue dereference(String key) {
+        return JsonAccessHelper.dereference(getValue(key));
+    }
+
+    @Override
+    public final void dereference(String key, GetCallback callback) {
+        JsonAccessHelper.dereference(getValue(key), callback);
+    }
+
+    @Override
+    public void detachFromItem() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Double doubleValue() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Set<java.util.Map.Entry<String, JsonValue>> entrySet() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Float floatValue() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String fragment() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public JsonValue get(Object key) {
+        if (!(key instanceof String)) { return null; }
+        return getValue((String) key);
+    }
+
+    @Override
+    public final JsonArray getArray(String key) {
+        return JsonAccessHelper.asArray(getValue(key));
+    }
+
+    @Override
+    public final byte[] getBinary(String key) {
+        return JsonAccessHelper.asBinary(getValue(key));
+    }
+
+    @Override
+    public final Boolean getBoolean(String key) {
+        return JsonAccessHelper.asBoolean(getValue(key));
+    }
+
+    @Override
+    public final Double getDouble(String key) {
+        return JsonAccessHelper.asDouble(getValue(key));
+    }
+
+    @Override
+    public final Float getFloat(String key) {
+        return JsonAccessHelper.asFloat(getValue(key));
+    }
+
+    @Override
+    public final Integer getInt(String key) {
+        return JsonAccessHelper.asInt(getValue(key));
+    }
+
+    @Override
+    public final Long getLong(String key) {
+        return JsonAccessHelper.asLong(getValue(key));
+    }
+
+    @Override
+    public final Object getNative(String key) {
+        return JsonAccessHelper.asNative(getValue(key));
+    }
+
+    @Override
+    public final JsonObject getObject(String key) {
+        return JsonAccessHelper.asObject(getValue(key));
     }
 
     @Override
@@ -113,13 +251,13 @@ public class ChainObject implements JsonObject {
     }
 
     @Override
-    public final Boolean getRequiredBoolean(String key) {
-        return JsonAccessHelper.getRequiredBoolean(this, key, getValue(key));
+    public final byte[] getRequiredBinary(String key) {
+        return JsonAccessHelper.getRequiredBinary(this, key, getValue(key));
     }
 
     @Override
-    public final byte[] getRequiredBinary(String key) {
-        return JsonAccessHelper.getRequiredBinary(this, key, getValue(key));
+    public final Boolean getRequiredBoolean(String key) {
+        return JsonAccessHelper.getRequiredBoolean(this, key, getValue(key));
     }
 
     @Override
@@ -203,101 +341,6 @@ public class ChainObject implements JsonObject {
     }
 
     @Override
-    public Set<String> keySet() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void removeValue(String key) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public int size() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public JsonArray asArray() {
-        return null;
-    }
-
-    @Override
-    public JsonBoolean asBoolean() {
-        return null;
-    }
-
-    @Override
-    public JsonContainer asContainer() {
-        return this;
-    }
-
-    @Override
-    public JsonNative asNative() {
-        return null;
-    }
-
-    @Override
-    public JsonNull asNull() {
-        return null;
-    }
-
-    @Override
-    public JsonNumber asNumber() {
-        return null;
-    }
-
-    @Override
-    public JsonObject asObject() {
-        return this;
-    }
-
-    @Override
-    public JsonString asString() {
-        return null;
-    }
-
-    @Override
-    public byte[] binaryValue() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Boolean booleanValue() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public JsonValue copy() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public JsonValue dereference() {
-        return this;
-    }
-
-    @Override
-    public void dereference(GetCallback callback) {
-        callback.onSuccess(this);
-    }
-
-    @Override
-    public Double doubleValue() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Float floatValue() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String fragment() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public Integer intValue() {
         throw new UnsupportedOperationException();
     }
@@ -315,6 +358,11 @@ public class ChainObject implements JsonObject {
     @Override
     public boolean isContainer() {
         return true;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -353,6 +401,11 @@ public class ChainObject implements JsonObject {
     }
 
     @Override
+    public Set<String> keySet() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public Long longValue() {
         throw new UnsupportedOperationException();
     }
@@ -363,83 +416,43 @@ public class ChainObject implements JsonObject {
     }
 
     @Override
+    public JsonObject p(String key, Boolean value) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public JsonObject p(String key, Double value) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public JsonObject p(String key, Float value) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public JsonObject p(String key, Integer value) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public JsonObject p(String key, JsonValue value) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public JsonObject p(String key, Long value) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public JsonObject p(String key, String value) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public JsonContainer parent() {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String stringValue() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public JsonSystem system() {
-        return system;
-    }
-
-    @Override
-    public String toCompactJsonString() {
-        return toString();
-    }
-
-    @Override
-    public String toJsonString() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public final JsonValue dereference(String key) {
-        return JsonAccessHelper.dereference(getValue(key));
-    }
-
-    @Override
-    public final void dereference(String key, GetCallback callback) {
-        JsonAccessHelper.dereference(getValue(key), callback);
-    }
-
-    @Override
-    public final JsonArray getArray(String key) {
-        return JsonAccessHelper.asArray(getValue(key));
-    }
-
-    @Override
-    public final byte[] getBinary(String key) {
-        return JsonAccessHelper.asBinary(getValue(key));
-    }
-
-    @Override
-    public final Boolean getBoolean(String key) {
-        return JsonAccessHelper.asBoolean(getValue(key));
-    }
-
-    @Override
-    public final Double getDouble(String key) {
-        return JsonAccessHelper.asDouble(getValue(key));
-    }
-
-    @Override
-    public final Float getFloat(String key) {
-        return JsonAccessHelper.asFloat(getValue(key));
-    }
-
-    @Override
-    public final Integer getInt(String key) {
-        return JsonAccessHelper.asInt(getValue(key));
-    }
-
-    @Override
-    public final Long getLong(String key) {
-        return JsonAccessHelper.asLong(getValue(key));
-    }
-
-    @Override
-    public final Object getNative(String key) {
-        return JsonAccessHelper.asNative(getValue(key));
-    }
-
-    @Override
-    public final JsonObject getObject(String key) {
-        return JsonAccessHelper.asObject(getValue(key));
     }
 
     @Override
@@ -468,12 +481,22 @@ public class ChainObject implements JsonObject {
     }
 
     @Override
+    public JsonValue put(String arg0, JsonValue arg1) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public JsonString put(String key, Long value) {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public JsonString put(String key, String value) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void putAll(Map<? extends String, ? extends JsonValue> arg0) {
         throw new UnsupportedOperationException();
     }
 
@@ -488,59 +511,37 @@ public class ChainObject implements JsonObject {
     }
 
     @Override
-    public void clear() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean containsKey(Object key) {
-        if (!(key instanceof String)) { return false; }
-        return getValue((String) key) != null;
-    }
-
-    @Override
-    public boolean containsValue(Object arg0) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Set<java.util.Map.Entry<String, JsonValue>> entrySet() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public JsonValue get(Object key) {
-        if (!(key instanceof String)) { return null; }
-        return getValue((String) key);
-    }
-
-    @Override
-    public boolean isEmpty() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public JsonValue put(String arg0, JsonValue arg1) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void putAll(Map<? extends String, ? extends JsonValue> arg0) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public JsonValue remove(Object arg0) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Collection<JsonValue> values() {
+    public void removeValue(String key) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public JsonObject p(String key, Float value) {
+    public int size() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String stringValue() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public JsonSystem system() {
+        return system;
+    }
+
+    @Override
+    public String toCompactJsonString() {
+        return toString();
+    }
+
+    @Override
+    public String toJsonString() {
         throw new UnsupportedOperationException();
     }
 
@@ -564,7 +565,7 @@ public class ChainObject implements JsonObject {
     }
 
     @Override
-    public void detachFromItem() {
+    public Collection<JsonValue> values() {
         throw new UnsupportedOperationException();
     }
 }

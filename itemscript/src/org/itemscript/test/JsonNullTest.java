@@ -29,7 +29,6 @@
 
 package org.itemscript.test;
 
-
 import org.itemscript.core.values.JsonNull;
 import org.junit.Test;
 

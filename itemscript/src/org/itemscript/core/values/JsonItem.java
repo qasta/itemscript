@@ -86,6 +86,13 @@ public interface JsonItem extends HasSystem, JsonAccess {
     public void get(String url, GetCallback callback);
 
     /**
+     * Retrieve optional metadata about this item.
+     * 
+     * @return A JsonObject containing metadata about this item, or null if no metadata is available.
+     */
+    public JsonObject meta();
+
+    /**
      * Put a value in (or relative to) this item by URL.
      * 
      * The URL will be interpreted the same way as in {@link #get(String)}.
@@ -143,11 +150,4 @@ public interface JsonItem extends HasSystem, JsonAccess {
      * @return The JsonValue of this item.
      */
     public JsonValue value();
-
-    /**
-     * Retrieve optional metadata about this item.
-     * 
-     * @return A JsonObject containing metadata about this item, or null if no metadata is available.
-     */
-    public JsonObject meta();
 }

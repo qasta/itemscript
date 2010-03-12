@@ -52,6 +52,7 @@ final class ItemscriptString extends ItemscriptScalar implements JsonString {
         this.binaryValue = null;
     }
 
+    @Override
     public JsonString asString() {
         return this;
     }
@@ -91,7 +92,7 @@ final class ItemscriptString extends ItemscriptScalar implements JsonString {
     @Override
     public boolean equals(Object other) {
         if (other instanceof JsonString) { return stringValue.equals(((JsonString) other).stringValue()); }
-        if (other instanceof String) { return stringValue.equals((String) other); }
+        if (other instanceof String) { return stringValue.equals(other); }
         return false;
     }
 

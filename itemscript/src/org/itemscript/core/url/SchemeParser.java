@@ -29,6 +29,8 @@
 
 package org.itemscript.core.url;
 
+import org.itemscript.core.JsonSystem;
+
 /**
  * The interface for classes that parse a URL string for a given scheme.
  * 
@@ -42,5 +44,5 @@ public interface SchemeParser {
      * @param endOfScheme The index of the first character after the scheme, or 0 if the URL did not include a scheme.
      * @return A new Url object.
      */
-    public Url parse(String urlString, int endOfScheme);
+    public Url parse(JsonSystem system, String urlString, int endOfScheme);
 }

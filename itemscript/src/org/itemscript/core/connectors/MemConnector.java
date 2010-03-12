@@ -79,7 +79,7 @@ public final class MemConnector extends ConnectorBase
 
     private MemConnector(JsonSystem system) {
         super(system);
-        root = new ItemNode(system().createItem(JsonSystem.ROOT_URL_STRING, system.createNull()));
+        root = new ItemNode(system().createItem(JsonSystem.ROOT_URL, system.createNull()));
     }
 
     @Override
@@ -90,6 +90,26 @@ public final class MemConnector extends ConnectorBase
         count.put("count", node.size());
         system().createItem(url + "", count);
         return count;
+    }
+
+    @Override
+    public JsonObject dump(Url url) {
+        ItemNode node = findNode(url);
+        if (node == null) { return null; }
+        return dumpNode(node);
+    }
+
+    private JsonObject dumpNode(ItemNode node) {
+        JsonObject dump = system().createObject();
+        dump.put("value", node.item()
+                .value()
+                .copy());
+        JsonObject subItems = system().createObject();
+        dump.put("subItems", subItems);
+        for (String key : node.keySet()) {
+            subItems.put(key, dumpNode(node.get(key)));
+        }
+        return dump;
     }
 
     private ItemNode findNode(Url url) {
@@ -123,6 +143,20 @@ public final class MemConnector extends ConnectorBase
         }
         system().createItem(url + "", keys);
         return keys;
+    }
+
+    @Override
+    public void load(Url url, JsonObject value) {
+        if (value.size() == 0) { return; }
+        Url pathedUrl = url.withoutQueryOrFragment();
+        put(pathedUrl, value.get("value")
+                .copy());
+        JsonObject subItems = value.getObject("subItems");
+        if (subItems == null) { return; }
+        for (String key : subItems.keySet()) {
+            String subUrl = pathedUrl + "/" + Url.encode(key);
+            load(Url.create(system(), subUrl), subItems.getObject(key));
+        }
     }
 
     @Override
@@ -184,6 +218,19 @@ public final class MemConnector extends ConnectorBase
     }
 
     @Override
+    public JsonValue post(Url url, JsonValue value) {
+        Query query = url.query();
+        if (query.containsKey("uuid")) {
+            String uuid = system().generateUuid();
+            Url generatedUrl =
+                    Url.createRelative(system(), JsonSystem.ROOT_URL, url.withoutQueryOrFragment() + "/" + uuid);
+            return put(generatedUrl, value);
+        } else {
+            throw ItemscriptError.internalError(this, "post.unknown.query.type");
+        }
+    }
+
+    @Override
     public JsonValue put(Url url, JsonValue value) {
         ItemNode node = root;
         Path path = url.path();
@@ -239,51 +286,5 @@ public final class MemConnector extends ConnectorBase
                 .toArray(keyArray);
         Arrays.sort(keyArray);
         return keyArray;
-    }
-
-    @Override
-    public JsonObject dump(Url url) {
-        ItemNode node = findNode(url);
-        if (node == null) { return null; }
-        return dumpNode(node);
-    }
-
-    private JsonObject dumpNode(ItemNode node) {
-        JsonObject dump = system().createObject();
-        dump.put("value", node.item()
-                .value()
-                .copy());
-        JsonObject subItems = system().createObject();
-        dump.put("subItems", subItems);
-        for (String key : node.keySet()) {
-            subItems.put(key, dumpNode(node.get(key)));
-        }
-        return dump;
-    }
-
-    @Override
-    public void load(Url url, JsonObject value) {
-        if (value.size() == 0) { return; }
-        Url pathedUrl = Url.createRelative(JsonSystem.ROOT_URL_STRING, url.pathString());
-        put(pathedUrl, value.get("value")
-                .copy());
-        JsonObject subItems = value.getObject("subItems");
-        if (subItems == null) { return; }
-        for (String key : subItems.keySet()) {
-            String subUrl = pathedUrl + "/" + Url.encode(key);
-            load(Url.create(subUrl), subItems.getObject(key));
-        }
-    }
-
-    @Override
-    public JsonValue post(Url url, JsonValue value) {
-        Query query = url.query();
-        if (query.containsKey("uuid")) {
-            String uuid = system().generateUuid();
-            Url generatedUrl = Url.createRelative(JsonSystem.ROOT_URL_STRING, url.pathString() + "/" + uuid);
-            return put(generatedUrl, value);
-        } else {
-            throw ItemscriptError.internalError(this, "post.unknown.query.type");
-        }
     }
 }

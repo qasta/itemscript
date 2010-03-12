@@ -80,8 +80,19 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
     }
 
     @Override
-    public JsonSystem system() {
-        return system;
+    public void post(final Url url, JsonValue value, final PutCallback callback) {
+        RequestUtils.sendJsonPostRequest(url + "", value, new RequestCallback() {
+            @Override
+            public void onError(Request request, Throwable exception) {
+                callback.onError(exception);
+            }
+
+            @Override
+            public void onResponseReceived(Request request, Response response) {
+                callback.onSuccess(system().createItem(url + "", system().parse(response.getText()))
+                        .value());
+            }
+        });
     }
 
     @Override
@@ -116,18 +127,7 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
     }
 
     @Override
-    public void post(final Url url, JsonValue value, final PutCallback callback) {
-        RequestUtils.sendJsonPostRequest(url + "", value, new RequestCallback() {
-            @Override
-            public void onError(Request request, Throwable exception) {
-                callback.onError(exception);
-            }
-
-            @Override
-            public void onResponseReceived(Request request, Response response) {
-                callback.onSuccess(system().createItem(url + "", system().parse(response.getText()))
-                        .value());
-            }
-        });
+    public JsonSystem system() {
+        return system;
     }
 }

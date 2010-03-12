@@ -29,7 +29,6 @@
 
 package org.itemscript.test;
 
-
 import org.itemscript.core.values.JsonBoolean;
 import org.junit.Test;
 
