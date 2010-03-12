@@ -138,7 +138,7 @@ abstract class ItemscriptValue implements JsonValue {
 
     @Override
     public Integer intValue() {
-        throw new UnsupportedOperationException("intValue() called on a value that was not a JsonNumber");
+        throw ItemscriptError.internalError(this, "intValue.called.on.a.value.that.was.not.a.number", toCompactJsonString());
     }
 
     @Override

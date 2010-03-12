@@ -153,9 +153,9 @@ public abstract class ItemscriptContainer extends ItemscriptValue implements Jso
     public final JsonArray getOrCreateArray(String key) {
         if (containsKey(key)) {
             JsonArray array = getArray(key);
-            if (array == null) { throw new ItemscriptError(
-                    "error.itemscript.ItemscriptContainer.getOrCreateArray.value.existed.but.was.not.an.array",
-                    getValue(key) + ""); }
+            if (array == null) { throw ItemscriptError.internalError(this,
+                    "getOrCreateArray.value.existed.but.was.not.an.array", JsonAccessHelper.keyValueParams(key,
+                            getValue(key))); }
             return array;
         } else {
             return createArray(key);
@@ -166,9 +166,9 @@ public abstract class ItemscriptContainer extends ItemscriptValue implements Jso
     public final JsonObject getOrCreateObject(String key) {
         if (containsKey(key)) {
             JsonObject object = getObject(key);
-            if (object == null) { throw new ItemscriptError(
-                    "error.itemscript.ItemscriptContainer.getOrCreateObject.value.existed.but.was.not.an.object",
-                    getValue(key) + ""); }
+            if (object == null) { throw ItemscriptError.internalError(this,
+                    "getOrCreateObject.value.existed.but.was.not.an.object", JsonAccessHelper.keyValueParams(key,
+                            getValue(key))); }
             return object;
         } else {
             return createObject(key);
@@ -177,106 +177,47 @@ public abstract class ItemscriptContainer extends ItemscriptValue implements Jso
 
     @Override
     public final JsonArray getRequiredArray(String key) {
-        JsonValue value = getValue(key);
-        if (value == null) { throw new ItemscriptError(
-                "error.itemscript.ItemscriptContainer.getRequiredArray.not.present", key); }
-        if (value.isArray()) { return value.asArray(); }
-        throw new ItemscriptError(
-                "error.itemscript.ItemscriptContainer.getRequiredArray.existed.but.was.not.array", value + "");
+        return JsonAccessHelper.getRequiredArray(this, key, getValue(key));
     }
 
     @Override
     public final Boolean getRequiredBoolean(String key) {
-        JsonValue value = getValue(key);
-        if (value == null) { throw new ItemscriptError(
-                "error.itemscript.ItemscriptContainer.getRequiredBoolean.not.present", key); }
-        if (value.isBoolean()) { return value.asBoolean()
-                .booleanValue(); }
-        throw new ItemscriptError(
-                "error.itemscript.ItemscriptContainer.getRequiredBoolean.existed.but.was.not.boolean", value + "");
+        return JsonAccessHelper.getRequiredBoolean(this, key, getValue(key));
     }
 
     @Override
-    public final byte[] getRequiredByteArray(String key) {
-        JsonValue value = getValue(key);
-        if (value == null) { throw new ItemscriptError(
-                "error.itemscript.ItemscriptContainer.getRequiredByteArray.not.present", key); }
-        if (value.isString()) { return value.asString()
-                .binaryValue(); }
-        throw new ItemscriptError(
-                "error.itemscript.ItemscriptContainer.getRequiredByteArray.existed.but.was.not.string", value + "");
+    public final byte[] getRequiredBinary(String key) {
+        return JsonAccessHelper.getRequiredBinary(this, key, getValue(key));
     }
 
     @Override
     public final Double getRequiredDouble(String key) {
-        JsonValue value = getValue(key);
-        if (value == null) { throw new ItemscriptError(
-                "error.itemscript.ItemscriptContainer.getRequiredFloat.not.present", key); }
-        if (value.isNumber()) { return value.asNumber()
-                .doubleValue(); }
-        throw new ItemscriptError(
-                "error.itemscript.ItemscriptContainer.getRequiredFloat.existed.but.was.not.number", value + "");
+        return JsonAccessHelper.getRequiredDouble(this, key, getValue(key));
     }
 
     @Override
     public final Float getRequiredFloat(String key) {
-        JsonValue value = getValue(key);
-        if (value == null) { throw new ItemscriptError(
-                "error.itemscript.ItemscriptContainer.getRequiredFloat.not.present", key); }
-        if (value.isNumber()) { return value.asNumber()
-                .floatValue(); }
-        throw new ItemscriptError(
-                "error.itemscript.ItemscriptContainer.getRequiredFloat.existed.but.was.not.number", value + "");
+        return JsonAccessHelper.getRequiredFloat(this, key, getValue(key));
     }
 
     @Override
     public final Integer getRequiredInt(String key) {
-        JsonValue value = getValue(key);
-        if (value == null) { throw new ItemscriptError(
-                "error.itemscript.ItemscriptContainer.getRequiredInt.not.present", key); }
-        if (value.isNumber()) { return value.asNumber()
-                .intValue(); }
-        throw new ItemscriptError(
-                "error.itemscript.ItemscriptContainer.getRequiredInt.existed.but.was.not.number", value + "");
+        return JsonAccessHelper.getRequiredInt(this, key, getValue(key));
     }
 
     @Override
     public final Long getRequiredLong(String key) {
-        JsonValue value = getValue(key);
-        if (value == null) { throw new ItemscriptError(
-                "error.itemscript.ItemscriptContainer.getRequiredLong.not.present", key); }
-        if (value.isString()) {
-            try {
-                return Long.parseLong(value.asString()
-                        .stringValue());
-            } catch (NumberFormatException e) {
-                throw ItemscriptError.internalError(this, "getRequiredLong.existed.but.could.not.parse.as.long",
-                        value + "");
-            }
-        }
-        throw new ItemscriptError(
-                "error.itemscript.ItemscriptContainer.getRequiredLong.existed.but.was.not.string", value + "");
+        return JsonAccessHelper.getRequiredLong(this, key, getValue(key));
     }
 
     @Override
     public final JsonObject getRequiredObject(String key) {
-        JsonValue value = getValue(key);
-        if (value == null) { throw new ItemscriptError(
-                "error.itemscript.ItemscriptContainer.getRequiredObject.not.present", key); }
-        if (value.isObject()) { return value.asObject(); }
-        throw new ItemscriptError(
-                "error.itemscript.ItemscriptContainer.getRequiredObject.existed.but.was.not.object", value + "");
+        return JsonAccessHelper.getRequiredObject(this, key, getValue(key));
     }
 
     @Override
     public final String getRequiredString(String key) {
-        JsonValue value = getValue(key);
-        if (value == null) { throw new ItemscriptError(
-                "error.itemscript.ItemscriptContainer.getRequiredString.not.present", key); }
-        if (value.isString()) { return value.asString()
-                .stringValue(); }
-        throw new ItemscriptError(
-                "error.itemscript.ItemscriptContainer.getRequiredString.existed.but.was.not.string", value + "");
+        return JsonAccessHelper.getRequiredString(this, key, getValue(key));
     }
 
     @Override

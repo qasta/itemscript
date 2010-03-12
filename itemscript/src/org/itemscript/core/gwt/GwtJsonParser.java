@@ -101,7 +101,12 @@ final class GwtJsonParser {
     }
 
     private static native JsonValue evaluate(JsonSystem system, String jsonString) /*-{
-        var v = eval('(' + jsonString + ')');
+        var v;
+        if (typeof(JSON) === 'object' && typeof(JSON.parse) === 'function') {
+            v = JSON.parse(jsonString);
+        } else {
+            v = eval('(' + jsonString + ')');
+        }
         var func = @org.itemscript.core.gwt.GwtJsonParser::typeMap[typeof v];
         return func ? func(system,v) : @org.itemscript.core.gwt.GwtJsonParser::throwUnknownTypeException(Ljava/lang/String;)(typeof v);
     }-*/;

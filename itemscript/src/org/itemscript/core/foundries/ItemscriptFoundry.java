@@ -29,10 +29,14 @@
 
 package org.itemscript.core.foundries;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.itemscript.core.HasSystem;
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.Params;
 import org.itemscript.core.exceptions.ItemscriptError;
+import org.itemscript.core.util.ChainObject;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 
@@ -49,7 +53,6 @@ public class ItemscriptFoundry<T> implements JsonFactory<T>, HasSystem, JsonFoun
     private final String location;
     private final JsonObject factoryObject;
     private final String nameKey;
-    public static final String EXTENDS_KEY = "extends";
 
     /**
      * Subclasses must call this constructor.
@@ -72,7 +75,11 @@ public class ItemscriptFoundry<T> implements JsonFactory<T>, HasSystem, JsonFoun
 
     @Override
     public T create(JsonObject params) {
-        return create(params.getString(nameKey), params);
+        String name = params.getString(nameKey);
+        if (name == null) {
+            name = findMissingName(params);
+        }
+        return create(name, params);
     }
 
     @Override
@@ -98,14 +105,14 @@ public class ItemscriptFoundry<T> implements JsonFactory<T>, HasSystem, JsonFoun
             return factory.create(params);
         } else if (factoryValue.isObject()) {
             JsonObject factoryObject = factoryValue.asObject();
-            String underlyingName = factoryObject.getString(EXTENDS_KEY);
-            JsonObject combinedFactory = factoryObject.copy()
-                    .asObject();
-            for (String key : params.keySet()) {
-                combinedFactory.put(key, params.get(key)
-                        .copy());
+            String underlyingName = factoryObject.getString(nameKey);
+            if (underlyingName == null) {
+                underlyingName = findMissingName(factoryObject);
             }
-            return create(underlyingName, combinedFactory);
+            List<JsonObject> objects = new ArrayList<JsonObject>();
+            objects.add(factoryObject);
+            objects.add(params);
+            return create(underlyingName, new ChainObject(system(), objects));
         }
         throw ItemscriptError.internalError(this, "create.factory.not.found", new Params().p("name", name));
     }

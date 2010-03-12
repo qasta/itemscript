@@ -56,6 +56,83 @@ public class JsonObjectTest extends ItemscriptTestBase {
     }
 
     @Test
+    public void testGetRequired() {
+        JsonObject object = system().createObject()
+                .p("a", true)
+                .p("b", Integer.MAX_VALUE)
+                .p("c", Float.MAX_VALUE)
+                .p("d", Double.MAX_VALUE)
+                .p("e", Long.MAX_VALUE)
+                .p("f", "A string")
+                .p("g", system().createObject())
+                .p("h", system().createArray());
+        object.getRequiredBoolean("a");
+        object.getRequiredInt("b");
+        object.getRequiredFloat("c");
+        object.getRequiredDouble("d");
+        object.getRequiredLong("e");
+        object.getRequiredString("f");
+        object.getRequiredObject("g");
+        object.getRequiredArray("h");
+        boolean failedBoolean = false;
+        try {
+            object.getRequiredBoolean("b");
+        } catch (ItemscriptError e) {
+            failedBoolean = true;
+        }
+        assertTrue(failedBoolean);
+        boolean failedInt = false;
+        try {
+            object.getRequiredInt("a");
+        } catch (ItemscriptError e) {
+            failedInt = true;
+        }
+        assertTrue(failedInt);
+        boolean failedFloat = false;
+        try {
+            object.getRequiredFloat("a");
+        } catch (ItemscriptError e) {
+            failedFloat = true;
+        }
+        assertTrue(failedFloat);
+        boolean failedDouble = false;
+        try {
+            object.getRequiredDouble("a");
+        } catch (ItemscriptError e) {
+            failedDouble = true;
+        }
+        assertTrue(failedDouble);
+        boolean failedLong = false;
+        try {
+            object.getRequiredLong("a");
+        } catch (ItemscriptError e) {
+            failedLong = true;
+        }
+        assertTrue(failedLong);
+        boolean failedString = false;
+        try {
+            object.getRequiredString("a");
+        } catch (ItemscriptError e) {
+            failedString = true;
+        }
+        assertTrue(failedString);
+        boolean failedObject = false;
+        try {
+            object.getRequiredObject("a");
+        } catch (ItemscriptError e) {
+            failedObject = true;
+        }
+        assertTrue(failedObject);
+        boolean failedArray = false;
+        try {
+            object.getRequiredArray("a");
+        } catch (ItemscriptError e) {
+            failedArray = true;
+        }
+        assertTrue(failedArray);
+    }
+
+    @Test
     public void testCycles() {
         JsonObject a = system().createObject();
         JsonObject b = system().createObject();
