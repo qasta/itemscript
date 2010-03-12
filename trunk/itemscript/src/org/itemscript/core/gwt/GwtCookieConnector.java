@@ -27,11 +27,6 @@ public class GwtCookieConnector implements SyncGetConnector, SyncPutConnector, H
     private final JsonSystem system;
     public static final long TEN_YEARS_MILLIS = 315569259747l;
 
-    @Override
-    public JsonSystem system() {
-        return system;
-    }
-
     /**
      * Create a new GwtCookieConnector.
      * 
@@ -60,5 +55,10 @@ public class GwtCookieConnector implements SyncGetConnector, SyncPutConnector, H
     @Override
     public void remove(Url url) {
         Cookies.removeCookie(url.pathString());
+    }
+
+    @Override
+    public JsonSystem system() {
+        return system;
     }
 }

@@ -105,6 +105,25 @@ public class RequestUtils {
     }
 
     /**
+     * Send a DELETE request.
+     * 
+     * @param url The URL to DELETE.
+     * @param callback The callback to call when the DELETE request completes.
+     * @return The Request object for this request.
+     */
+    public static Request sendDeleteRequest(String url, RequestCallback callback) {
+        Request request = null;
+        try {
+            request = new RequestBuilder(RequestBuilder.DELETE, url).sendRequest(null, callback);
+        } catch (RequestException e) {
+            if (callback != null) {
+                callback.onError(request, e);
+            }
+        }
+        return request;
+    }
+
+    /**
      * Send a GET request with parameters.
      * 
      * @param url The base URL to GET (without query string).
@@ -182,6 +201,28 @@ public class RequestUtils {
         return request;
     }
 
+    /**
+     * Send a PUT request with a JSON payload.
+     * 
+     * @param url The URL to PUT to.
+     * @param json The JSON to send.
+     * @param callback The callback to call when the PUT request completes.
+     * @return The Request object for this request.
+     */
+    public static Request sendJsonPutRequest(String url, JsonValue json, RequestCallback callback) {
+        Request request = null;
+        try {
+            RequestBuilder builder = new RequestBuilder(RequestBuilder.PUT, url);
+            builder.setHeader("content-type", "application/json");
+            request = builder.sendRequest(json.toCompactJsonString(), callback);
+        } catch (RequestException e) {
+            if (callback != null) {
+                callback.onError(request, e);
+            }
+        }
+        return request;
+    }
+
     // FIXME - We need to correctly encode the form parameters for multipart/form-data.
     //
     //    /**
@@ -217,47 +258,6 @@ public class RequestUtils {
                 callback.onError(request, e);
             } else {
                 throw new ItemscriptError("error.util.requestUtils.post.request.failed.no.callback", e);
-            }
-        }
-        return request;
-    }
-
-    /**
-     * Send a PUT request with a JSON payload.
-     * 
-     * @param url The URL to PUT to.
-     * @param json The JSON to send.
-     * @param callback The callback to call when the PUT request completes.
-     * @return The Request object for this request.
-     */
-    public static Request sendJsonPutRequest(String url, JsonValue json, RequestCallback callback) {
-        Request request = null;
-        try {
-            RequestBuilder builder = new RequestBuilder(RequestBuilder.PUT, url);
-            builder.setHeader("content-type", "application/json");
-            request = builder.sendRequest(json.toCompactJsonString(), callback);
-        } catch (RequestException e) {
-            if (callback != null) {
-                callback.onError(request, e);
-            }
-        }
-        return request;
-    }
-
-    /**
-     * Send a DELETE request.
-     * 
-     * @param url The URL to DELETE.
-     * @param callback The callback to call when the DELETE request completes.
-     * @return The Request object for this request.
-     */
-    public static Request sendDeleteRequest(String url, RequestCallback callback) {
-        Request request = null;
-        try {
-            request = new RequestBuilder(RequestBuilder.DELETE, url).sendRequest(null, callback);
-        } catch (RequestException e) {
-            if (callback != null) {
-                callback.onError(request, e);
             }
         }
         return request;

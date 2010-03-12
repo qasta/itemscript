@@ -54,10 +54,19 @@ public class JsonItemTest extends ItemscriptTestBase {
     }
 
     @Test
-    public void testSource() {
-        JsonBoolean value = system().put("mem:/test", true);
-        assertEquals("mem:/test", value.item()
-                .source() + "");
+    public void testDetachFromItem() {
+        JsonValue value = system().get("http://itemscript.org/test.json");
+        assertNotNull(value.item());
+        JsonItem item = value.item();
+        value.detachFromItem();
+        assertNull(value.item());
+        assertNull(item.value());
+        system().put("/foo", value);
+        JsonValue retValue = system().get("/foo");
+        assertEquals(value, retValue);
+        assertNotNull(value.item());
+        assertEquals("mem:/foo", value.item()
+                .source());
     }
 
     @Test
@@ -148,18 +157,9 @@ public class JsonItemTest extends ItemscriptTestBase {
     }
 
     @Test
-    public void testDetachFromItem() {
-        JsonValue value = system().get("http://itemscript.org/test.json");
-        assertNotNull(value.item());
-        JsonItem item = value.item();
-        value.detachFromItem();
-        assertNull(value.item());
-        assertNull(item.value());
-        system().put("/foo", value);
-        JsonValue retValue = system().get("/foo");
-        assertEquals(value, retValue);
-        assertNotNull(value.item());
-        assertEquals("mem:/foo", value.item()
-                .source());
+    public void testSource() {
+        JsonBoolean value = system().put("mem:/test", true);
+        assertEquals("mem:/test", value.item()
+                .source() + "");
     }
 }

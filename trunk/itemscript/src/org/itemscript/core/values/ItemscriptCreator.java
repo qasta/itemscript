@@ -113,13 +113,13 @@ public abstract class ItemscriptCreator implements JsonCreator, HasSystem {
     }
 
     @Override
-    public final JsonItem createItem(String sourceUrl, JsonValue value) {
-        return createItem(sourceUrl, null, value);
+    public final JsonItem createItem(String sourceUrl, JsonObject meta, JsonValue value) {
+        return createItem(Url.create(system(), sourceUrl), meta, value);
     }
 
     @Override
-    public final JsonItem createItem(String sourceUrl, JsonObject meta, JsonValue value) {
-        return createItem(Url.create(sourceUrl), meta, value);
+    public final JsonItem createItem(String sourceUrl, JsonValue value) {
+        return createItem(sourceUrl, null, value);
     }
 
     /**

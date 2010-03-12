@@ -87,12 +87,30 @@ public final class Query extends HashMap<String, List<String>> implements Map<St
     }
 
     /**
+     * Test whether this is a "dump" query.
+     * 
+     * @return True if this is a "dump" query, false otherwise.
+     */
+    public boolean isDumpQuery() {
+        return containsKey(DUMP_KEY);
+    }
+
+    /**
      * Test whether this is a "keys" query.
      * 
      * @return True if this is a "keys" query, false otherwise.
      */
     public boolean isKeysQuery() {
         return containsKey(KEYS_KEY);
+    }
+
+    /**
+     * Test whether this is a "load" query.
+     * 
+     * @return True if this is a "load" query, false otherwise.
+     */
+    public boolean isLoadQuery() {
+        return containsKey(LOAD_KEY);
     }
 
     /**
@@ -111,24 +129,6 @@ public final class Query extends HashMap<String, List<String>> implements Map<St
      */
     public boolean isPagedKeysQuery() {
         return containsKey(PAGED_KEYS);
-    }
-
-    /**
-     * Test whether this is a "dump" query.
-     * 
-     * @return True if this is a "dump" query, false otherwise.
-     */
-    public boolean isDumpQuery() {
-        return containsKey(DUMP_KEY);
-    }
-
-    /**
-     * Test whether this is a "load" query.
-     * 
-     * @return True if this is a "load" query, false otherwise.
-     */
-    public boolean isLoadQuery() {
-        return containsKey(LOAD_KEY);
     }
 
     /**

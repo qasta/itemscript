@@ -446,7 +446,7 @@ public final class JsonParser {
 
     private int peekStatus(LinkedList<Integer> statusStack) {
         if (statusStack.size() == 0) return -1;
-        Integer status = (Integer) statusStack.getFirst();
+        Integer status = statusStack.getFirst();
         return status.intValue();
     }
 

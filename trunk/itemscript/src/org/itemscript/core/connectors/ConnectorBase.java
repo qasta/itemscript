@@ -51,11 +51,6 @@ public abstract class ConnectorBase implements Connector, HasSystem {
         this.system = system;
     }
 
-    @Override
-    public final JsonSystem system() {
-        return system;
-    }
-
     /**
      * Create a count object for a "countItems" query.
      * 
@@ -66,5 +61,10 @@ public abstract class ConnectorBase implements Connector, HasSystem {
         JsonObject countObject = system().createObject();
         countObject.put("count", count);
         return countObject;
+    }
+
+    @Override
+    public final JsonSystem system() {
+        return system;
     }
 }

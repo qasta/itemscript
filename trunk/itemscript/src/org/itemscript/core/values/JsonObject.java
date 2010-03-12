@@ -39,15 +39,6 @@ import java.util.Map;
  */
 public interface JsonObject extends JsonContainer, Map<String, JsonValue> {
     /**
-     * Put a float value in this container under the given key, returning this container.
-     * 
-     * @param key The key to put the value under.
-     * @param value The String value to store.
-     * @return This JsonObject.
-     */
-    public JsonObject p(String key, Float value);
-
-    /**
      * Put a String value in this container under the given key, returning this container.
      * 
      * @param key The key to put the value under.
@@ -64,6 +55,15 @@ public interface JsonObject extends JsonContainer, Map<String, JsonValue> {
      * @return This JsonObject.
      */
     public JsonObject p(String key, Double value);
+
+    /**
+     * Put a float value in this container under the given key, returning this container.
+     * 
+     * @param key The key to put the value under.
+     * @param value The String value to store.
+     * @return This JsonObject.
+     */
+    public JsonObject p(String key, Float value);
 
     /**
      * Put a integer value in this container under the given key, returning this container.

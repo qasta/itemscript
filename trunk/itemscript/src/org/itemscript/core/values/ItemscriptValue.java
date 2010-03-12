@@ -53,31 +53,6 @@ abstract class ItemscriptValue implements JsonValue {
     }
 
     @Override
-    public JsonValue dereference() {
-        throw ItemscriptError.internalError(this, "dereference.value.was.not.JsonString.or.JsonContainer");
-    }
-
-    @Override
-    public void dereference(GetCallback callback) {
-        callback.onError(ItemscriptError.internalError(this,
-                "dereference.value.was.not.JsonString.or.JsonContainer"));
-    }
-
-    @Override
-    public void detachFromItem() {
-        if (item() == null) { return; }
-        if (parent() != null) {
-            parent().detachFromItem();
-            return;
-        }
-        if (item().source()
-                .startsWith("mem:")) { throw new UnsupportedOperationException(
-                "detachFromItem is not supported on values loaded from the mem: database"); }
-        ((ItemscriptItem) item()).detachFromValue();
-        setItem(null);
-    }
-
-    @Override
     public JsonArray asArray() {
         return null;
     }
@@ -125,6 +100,31 @@ abstract class ItemscriptValue implements JsonValue {
     @Override
     public Boolean booleanValue() {
         throw new UnsupportedOperationException("booleanValue() called on a value that was not a JsonBoolean");
+    }
+
+    @Override
+    public JsonValue dereference() {
+        throw ItemscriptError.internalError(this, "dereference.value.was.not.JsonString.or.JsonContainer");
+    }
+
+    @Override
+    public void dereference(GetCallback callback) {
+        callback.onError(ItemscriptError.internalError(this,
+                "dereference.value.was.not.JsonString.or.JsonContainer"));
+    }
+
+    @Override
+    public void detachFromItem() {
+        if (item() == null) { return; }
+        if (parent() != null) {
+            parent().detachFromItem();
+            return;
+        }
+        if (item().source()
+                .startsWith("mem:")) { throw new UnsupportedOperationException(
+                "detachFromItem is not supported on values loaded from the mem: database"); }
+        ((ItemscriptItem) item()).detachFromValue();
+        setItem(null);
     }
 
     @Override

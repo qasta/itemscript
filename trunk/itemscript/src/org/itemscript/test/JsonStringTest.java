@@ -53,6 +53,12 @@ public class JsonStringTest extends ItemscriptTestBase {
     }
 
     @Test
+    public void testConstruction() {
+        JsonString string = system().createString("xyz");
+        assertEquals("xyz", string.stringValue());
+    }
+
+    @Test
     public void testCopy() {
         JsonString string = system().createString("foo");
         JsonString string2 = string.copy()
@@ -68,12 +74,6 @@ public class JsonStringTest extends ItemscriptTestBase {
         byte[] retrievedValue = string4.binaryValue();
         assertEquals(Byte.MIN_VALUE, retrievedValue[0]);
         assertEquals(string3.stringValue(), string4.stringValue());
-     }
-
-    @Test
-    public void testConstruction() {
-        JsonString string = system().createString("xyz");
-        assertEquals("xyz", string.stringValue());
     }
 
     @Test

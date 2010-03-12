@@ -95,14 +95,6 @@ public interface JsonContainer extends JsonValue, JsonAccess {
     public JsonArray getRequiredArray(String key);
 
     /**
-     * Get a Boolean from this container. If the value does not exist, or is not a JsonBoolean, throws an exception.
-     * 
-     * @param key The key to get from.
-     * @return The Boolean value of the JsonBoolean under that key. 
-     */
-    public Boolean getRequiredBoolean(String key);
-
-    /**
      * Get a binary value from this container as a byte[]. If the value does not exist, or is not a JsonString,
      * or is a JsonString but cannot be parsed as a base64 value, throws an exception.
      * 
@@ -110,6 +102,14 @@ public interface JsonContainer extends JsonValue, JsonAccess {
      * @return The binary value of the JsonString under that key.
      */
     public byte[] getRequiredBinary(String key);
+
+    /**
+     * Get a Boolean from this container. If the value does not exist, or is not a JsonBoolean, throws an exception.
+     * 
+     * @param key The key to get from.
+     * @return The Boolean value of the JsonBoolean under that key. 
+     */
+    public Boolean getRequiredBoolean(String key);
 
     /**
      * Get a Double from this container. If the value does not exist, or is not a JsonNumber, throws an exception.

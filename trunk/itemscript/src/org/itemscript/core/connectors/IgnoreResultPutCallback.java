@@ -10,10 +10,10 @@ import org.itemscript.core.values.JsonValue;
  */
 public class IgnoreResultPutCallback implements PutCallback {
     @Override
-    public void onSuccess(JsonValue value) {}
-
-    @Override
     public void onError(Throwable e) {
         throw new RuntimeException(e);
     }
+
+    @Override
+    public void onSuccess(JsonValue value) {}
 }

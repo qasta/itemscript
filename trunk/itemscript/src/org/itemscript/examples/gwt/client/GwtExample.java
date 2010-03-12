@@ -50,24 +50,24 @@ public class GwtExample implements EntryPoint {
         final JsonSystem system = GwtSystem.SYSTEM;
         system.get(GWT.getHostPageBaseURL() + "test.json", new GetCallback() {
             @Override
+            public void onError(Throwable e) {
+                throw new RuntimeException(e);
+            }
+
+            @Override
             public void onSuccess(JsonValue value) {
                 Window.alert("Received value: " + value);
                 system.put(GWT.getHostPageBaseURL() + "ReflectJson", value, new PutCallback() {
                     @Override
-                    public void onSuccess(JsonValue value) {
-                        Window.alert("Reflected value: " + value);
-                    }
-
-                    @Override
                     public void onError(Throwable e) {
                         throw new RuntimeException(e);
                     }
-                });
-            }
 
-            @Override
-            public void onError(Throwable e) {
-                throw new RuntimeException(e);
+                    @Override
+                    public void onSuccess(JsonValue value) {
+                        Window.alert("Reflected value: " + value);
+                    }
+                });
             }
         });
     }

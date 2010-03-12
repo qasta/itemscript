@@ -31,6 +31,8 @@ package org.itemscript.core.values;
 
 import java.util.List;
 
+import org.itemscript.core.exceptions.ItemscriptError;
+
 /**
  * Represents a JSON array value.
  * 
@@ -38,20 +40,6 @@ import java.util.List;
  *
  */
 public interface JsonArray extends JsonContainer, List<JsonValue> {
-    /**
-     * Add a new JsonObject to the end of this JsonArray.
-     * 
-     * @return A new JsonObject.
-     */
-    public JsonObject addObject();
-
-    /**
-     * Add a new JsonArray to the end of this JsonArray.
-     * 
-     * @return A new JsonArray.
-     */
-    public JsonArray addArray();
-
     /**
      * Add a boolean value to this array, returning this JsonArray.
      * 
@@ -194,6 +182,20 @@ public interface JsonArray extends JsonContainer, List<JsonValue> {
     public void add(String value);
 
     /**
+     * Add a new JsonArray to the end of this JsonArray.
+     * 
+     * @return A new JsonArray.
+     */
+    public JsonArray addArray();
+
+    /**
+     * Add a new JsonObject to the end of this JsonArray.
+     * 
+     * @return A new JsonObject.
+     */
+    public JsonObject addObject();
+
+    /**
      * Create a new JsonArray at the given index, overwriting any existing value.
      * 
      * @param index The index to create at.
@@ -278,6 +280,102 @@ public interface JsonArray extends JsonContainer, List<JsonValue> {
     public JsonObject getObject(int index);
 
     /**
+     * Get a JsonArray from this JsonArray, creating it if the value did not exist.
+     * 
+     * If the value already existed but
+     * was not an array, an error will be thrown.
+     * 
+     * @param index The index of the value.
+     * @return The existing or newly-created JsonArray.
+     */
+    public JsonArray getOrCreateArray(int index);
+
+    /**
+     * Get a JsonObject from this container, creating it if the value did not exist.
+     * 
+     * If the value already existed but was
+     * not an object, an error will be thrown.
+     * 
+     * @param index The index of the value.
+     * @return The existing or newly-created JsonObject.
+     */
+    public JsonObject getOrCreateObject(int index);
+
+    /**
+     * Get a JsonArray from this JsonArray. If the value does not exist, or is not a JsonArray, throws an exception.
+     * 
+     * @param index The index of the value.
+     * @return The JsonArray under that key.
+     */
+    public JsonArray getRequiredArray(int index);
+
+    /**
+     * Get a binary value from this JsonArray as a byte[]. If the value does not exist, or is not a JsonString,
+     * or is a JsonString but cannot be parsed as a base64 value, throws an exception.
+     * 
+     * @param index The index of the value.
+     * @return The binary value of the JsonString under that key.
+     */
+    public byte[] getRequiredBinary(int index);
+
+    /**
+     * Get a Boolean from this JsonArray. If the value does not exist, or is not a JsonBoolean, throws an exception.
+     * 
+     * @param index The index of the value.
+     * @return The Boolean value of the JsonBoolean under that key. 
+     */
+    public Boolean getRequiredBoolean(int index);
+
+    /**
+     * Get a Double from this JsonArray. If the value does not exist, or is not a JsonNumber, throws an exception.
+     * 
+     * @param index The index of the value.
+     * @return The Double value of the JsonNumber under that key.
+     */
+    public Double getRequiredDouble(int index);
+
+    /**
+     * Get a Float from this JsonArray. If the value does not exist, or is not a JsonNumber, throws an exception.
+     * 
+     * @param index The index of the value.
+     * @return The Float value of the JsonNumber under that key.
+     */
+    public Float getRequiredFloat(int index);
+
+    /**
+     * Get an Integer from this JsonArray. If the value does not exist, or is not a JsonNumber, throws an exception.
+     * 
+     * @param index The index of the value.
+     * @return The Integer value of the JsonNumber under that key.
+     */
+    public Integer getRequiredInt(int index);
+
+    /**
+     * Get a Long from this JsonArray. If the value does not exist, or is not a JsonString, throws an exception.
+     * If the value is a JsonString, but it cannot be converted to a Long value, throws an exception.
+     * 
+     * @param index The index of the value.
+     * @return The Long value of the JsonString under that key.
+     */
+    public Long getRequiredLong(int index);
+
+    /**
+     * Get a JsonObject from this JsonArray. If the value does not exist, or is not a JsonObject, throws an exception.
+     * 
+     * @param index The index of the value.
+     * @return The JsonObject value under that key.
+     */
+    public JsonObject getRequiredObject(int index);
+
+    /**
+     * Get a string from this JsonArray. If the value does not exist, or is not a JsonString, throws an exception.
+     * 
+     * @param index The index of the value..
+     * @return The String value of the JsonString under that key.
+     */
+    public String getRequiredString(int index);
+
+    /**
      * Get a string value from this array.
      * 
      * @param index The index of the value.
@@ -347,100 +445,4 @@ public interface JsonArray extends JsonContainer, List<JsonValue> {
      * @param value The String value to set.
     */
     public void set(int index, String value);
-
-    /**
-     * Get a JsonArray from this JsonArray. If the value does not exist, or is not a JsonArray, throws an exception.
-     * 
-     * @param index The index of the value.
-     * @return The JsonArray under that key.
-     */
-    public JsonArray getRequiredArray(int index);
-
-    /**
-     * Get a Boolean from this JsonArray. If the value does not exist, or is not a JsonBoolean, throws an exception.
-     * 
-     * @param index The index of the value.
-     * @return The Boolean value of the JsonBoolean under that key. 
-     */
-    public Boolean getRequiredBoolean(int index);
-
-    /**
-     * Get a binary value from this JsonArray as a byte[]. If the value does not exist, or is not a JsonString,
-     * or is a JsonString but cannot be parsed as a base64 value, throws an exception.
-     * 
-     * @param index The index of the value.
-     * @return The binary value of the JsonString under that key.
-     */
-    public byte[] getRequiredBinary(int index);
-
-    /**
-     * Get a Double from this JsonArray. If the value does not exist, or is not a JsonNumber, throws an exception.
-     * 
-     * @param index The index of the value.
-     * @return The Double value of the JsonNumber under that key.
-     */
-    public Double getRequiredDouble(int index);
-
-    /**
-     * Get a Float from this JsonArray. If the value does not exist, or is not a JsonNumber, throws an exception.
-     * 
-     * @param index The index of the value.
-     * @return The Float value of the JsonNumber under that key.
-     */
-    public Float getRequiredFloat(int index);
-
-    /**
-     * Get an Integer from this JsonArray. If the value does not exist, or is not a JsonNumber, throws an exception.
-     * 
-     * @param index The index of the value.
-     * @return The Integer value of the JsonNumber under that key.
-     */
-    public Integer getRequiredInt(int index);
-
-    /**
-     * Get a Long from this JsonArray. If the value does not exist, or is not a JsonString, throws an exception.
-     * If the value is a JsonString, but it cannot be converted to a Long value, throws an exception.
-     * 
-     * @param index The index of the value.
-     * @return The Long value of the JsonString under that key.
-     */
-    public Long getRequiredLong(int index);
-
-    /**
-     * Get a JsonObject from this JsonArray. If the value does not exist, or is not a JsonObject, throws an exception.
-     * 
-     * @param index The index of the value.
-     * @return The JsonObject value under that key.
-     */
-    public JsonObject getRequiredObject(int index);
-
-    /**
-     * Get a JsonArray from this JsonArray, creating it if the value did not exist.
-     * 
-     * If the value already existed but
-     * was not an array, an error will be thrown.
-     * 
-     * @param index The index of the value.
-     * @return The existing or newly-created JsonArray.
-     */
-    public JsonArray getOrCreateArray(int index);
-
-    /**
-     * Get a JsonObject from this container, creating it if the value did not exist.
-     * 
-     * If the value already existed but was
-     * not an object, an error will be thrown.
-     * 
-     * @param index The index of the value.
-     * @return The existing or newly-created JsonObject.
-     */
-    public JsonObject getOrCreateObject(int index);
-
-    /**
-     * Get a string from this JsonArray. If the value does not exist, or is not a JsonString, throws an exception.
-     * 
-     * @param index The index of the value..
-     * @return The String value of the JsonString under that key.
-     */
-    public String getRequiredString(int index);
 }

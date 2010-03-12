@@ -30,13 +30,12 @@
 package org.itemscript.test;
 
 import junit.framework.Assert;
-import junit.framework.TestCase;
 
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Url;
 import org.junit.Test;
 
-public class UrlTest extends TestCase {
+public class UrlTest extends ItemscriptTestBase {
     private void assertPathDirectoryFilename(Url url, String path, String directory, String filename) {
         assertEquals(url.pathString(), path);
         assertEquals(url.directory(), directory);
@@ -49,7 +48,7 @@ public class UrlTest extends TestCase {
     }
 
     private void assertRelativeUrl(String baseUrl, String relativeUrl, String finalUrl) {
-        Url finalUrlObj = Url.createRelative(baseUrl, relativeUrl);
+        Url finalUrlObj = Url.createRelative(system(), baseUrl, relativeUrl);
         assertEquals(finalUrlObj.toString(), finalUrl);
     }
 
@@ -64,7 +63,7 @@ public class UrlTest extends TestCase {
     public void testBadPercentEscape() {
         boolean failed = false;
         try {
-            Url.create("broken/escape/%Y");
+            Url.create(system(), "broken/escape/%Y");
         } catch (ItemscriptError e) {
             failed = true;
         }
@@ -73,7 +72,7 @@ public class UrlTest extends TestCase {
 
     @Test
     public void testDecodingFragment() {
-        Url url = Url.create("#%26/%27");
+        Url url = Url.create(system(), "#%26/%27");
         assertEquals("&", url.fragment()
                 .get(0));
         assertEquals("'", url.fragment()
@@ -82,14 +81,14 @@ public class UrlTest extends TestCase {
 
     @Test
     public void testDecodingPath() {
-        Url url = Url.create("file:///%26");
+        Url url = Url.create(system(), "file:///%26");
         assertEquals(url.path()
                 .get(1), "&");
     }
 
     @Test
     public void testDecodingQuery() {
-        Url url = Url.create("file:///foo?key=%27");
+        Url url = Url.create(system(), "file:///foo?key=%27");
         assertEquals(url.query()
                 .get("key")
                 .get(0), "'");
@@ -97,7 +96,9 @@ public class UrlTest extends TestCase {
 
     @Test
     public void testEverything() {
-        Url url = Url.create("http://test.com:123/one/two/three.foo?key=value&key=anothervalue&key2=value2#a/b/c");
+        Url url =
+                Url.create(system(),
+                        "http://test.com:123/one/two/three.foo?key=value&key=anothervalue&key2=value2#a/b/c");
         assertSchemeHostnamePort(url, "http", "test.com", "123");
         assertPathDirectoryFilename(url, "/one/two/three.foo", "/one/two/", "three.foo");
         assertQueryFragment(url, "key=value&key=anothervalue&key2=value2", "a/b/c");
@@ -111,7 +112,7 @@ public class UrlTest extends TestCase {
 
     @Test
     public void testFileUrl() {
-        Url url = Url.create("file://somehost/a/path/filename.txt");
+        Url url = Url.create(system(), "file://somehost/a/path/filename.txt");
         assertSchemeHostnamePort(url, "file", "somehost", null);
         assertPathDirectoryFilename(url, "/a/path/filename.txt", "/a/path/", "filename.txt");
         assertQueryFragment(url, null, null);
@@ -119,7 +120,7 @@ public class UrlTest extends TestCase {
 
     @Test
     public void testFragmentOnly() {
-        Url url = Url.create("#fragment/one/two/three");
+        Url url = Url.create(system(), "#fragment/one/two/three");
         assertSchemeHostnamePort(url, null, null, null);
         assertPathDirectoryFilename(url, null, null, null);
         assertQueryFragment(url, null, "fragment/one/two/three");
@@ -132,7 +133,7 @@ public class UrlTest extends TestCase {
     public void testMissingColonSlashSlash() {
         boolean failed = false;
         try {
-            Url.create("http:willfail");
+            Url.create(system(), "http:willfail");
         } catch (ItemscriptError e) {
             failed = true;
         }
@@ -141,7 +142,7 @@ public class UrlTest extends TestCase {
 
     @Test
     public void testMultiValueKey() {
-        Url url = Url.create("?key=value&key=anotherValue");
+        Url url = Url.create(system(), "?key=value&key=anotherValue");
         assertEquals(url.query()
                 .get("key")
                 .size(), 2);
@@ -156,13 +157,13 @@ public class UrlTest extends TestCase {
     @Test
     public void testParseSpeed() {
         for (int i = 0; i < 1000; ++i) {
-            Url it = Url.create("http://pathendswithadotdot.com/?ojiojo=jnnjkjn&knin=kjniknikn");
+            Url it = Url.create(system(), "http://pathendswithadotdot.com/?ojiojo=jnnjkjn&knin=kjniknikn");
         }
     }
 
     @Test
     public void testPathComponents() {
-        Url url = Url.create("http://host.com/one.dir/two.dir/three.file");
+        Url url = Url.create(system(), "http://host.com/one.dir/two.dir/three.file");
         assertSchemeHostnamePort(url, "http", "host.com", null);
         assertPathDirectoryFilename(url, "/one.dir/two.dir/three.file", "/one.dir/two.dir/", "three.file");
         assertEquals(url.path()
@@ -177,13 +178,13 @@ public class UrlTest extends TestCase {
 
     @Test
     public void testQueryAndFragment() {
-        Url url = Url.create("?key=value#one/two/three");
+        Url url = Url.create(system(), "?key=value#one/two/three");
         assertQueryFragment(url, "key=value", "one/two/three");
     }
 
     @Test
     public void testQueryOnly() {
-        Url url = Url.create("?key1=value1&key2=value2");
+        Url url = Url.create(system(), "?key1=value1&key2=value2");
         assertSchemeHostnamePort(url, null, null, null);
         assertPathDirectoryFilename(url, null, null, null);
         assertQueryFragment(url, "key1=value1&key2=value2", null);
@@ -197,7 +198,7 @@ public class UrlTest extends TestCase {
 
     @Test
     public void testRelativePath() {
-        Url url = Url.create("one/two/three");
+        Url url = Url.create(system(), "one/two/three");
         assertPathDirectoryFilename(url, "one/two/three", "one/two/", "three");
     }
 
@@ -267,7 +268,7 @@ public class UrlTest extends TestCase {
 
     @Test
     public void testShortMemUrl() {
-        Url url = Url.create("mem:/something/something/something");
+        Url url = Url.create(system(), "mem:/something/something/something");
         assertSchemeHostnamePort(url, "mem", null, null);
         assertPathDirectoryFilename(url, "/something/something/something", "/something/something/", "something");
         assertQueryFragment(url, null, null);
@@ -275,7 +276,7 @@ public class UrlTest extends TestCase {
 
     @Test
     public void testUnknownScheme() {
-        Url url = Url.create("unknownscheme:somethingsomethingsomething");
+        Url url = Url.create(system(), "unknownscheme:somethingsomethingsomething");
         assertEquals(url.scheme(), "unknownscheme");
         assertEquals(url.remainder(), "somethingsomethingsomething");
     }

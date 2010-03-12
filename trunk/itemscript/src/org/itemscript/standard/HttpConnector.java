@@ -87,6 +87,27 @@ public final class HttpConnector extends ConnectorBase
     }
 
     @Override
+    public JsonValue post(Url url, JsonValue value) {
+        try {
+            URL javaUrl = new URL(url + "");
+            HttpURLConnection connection = (HttpURLConnection) javaUrl.openConnection();
+            connection.setDoOutput(true);
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty(CONTENT_TYPE, APPLICATION_JSON);
+            connection.connect();
+            Writer w = new OutputStreamWriter(connection.getOutputStream());
+            w.write(value.toCompactJsonString());
+            w.close();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            JsonValue retValue = system().parseReader(reader);
+            JsonItem item = system().createItem(url + "", retValue);
+            return retValue;
+        } catch (IOException e) {
+            throw ItemscriptError.internalError(this, "IOException", e);
+        }
+    }
+
+    @Override
     public JsonValue put(Url url, JsonValue value) {
         try {
             URL javaUrl = new URL(url + "");
@@ -116,27 +137,6 @@ public final class HttpConnector extends ConnectorBase
             connection.connect();
             int response = connection.getResponseCode();
             String responseMessage = connection.getResponseMessage();
-        } catch (IOException e) {
-            throw ItemscriptError.internalError(this, "IOException", e);
-        }
-    }
-
-    @Override
-    public JsonValue post(Url url, JsonValue value) {
-        try {
-            URL javaUrl = new URL(url + "");
-            HttpURLConnection connection = (HttpURLConnection) javaUrl.openConnection();
-            connection.setDoOutput(true);
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty(CONTENT_TYPE, APPLICATION_JSON);
-            connection.connect();
-            Writer w = new OutputStreamWriter(connection.getOutputStream());
-            w.write(value.toCompactJsonString());
-            w.close();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            JsonValue retValue = system().parseReader(reader);
-            JsonItem item = system().createItem(url + "", retValue);
-            return retValue;
         } catch (IOException e) {
             throw ItemscriptError.internalError(this, "IOException", e);
         }

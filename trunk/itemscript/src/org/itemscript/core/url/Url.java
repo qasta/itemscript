@@ -52,6 +52,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.itemscript.core.JsonSystem;
 import org.itemscript.core.exceptions.ItemscriptError;
 
 final class HttpLikeSchemeParser implements SchemeParser {
@@ -76,7 +77,7 @@ final class HttpLikeSchemeParser implements SchemeParser {
     private String fragmentString;
     private Fragment fragment = new Fragment();
 
-    private Url _parse(int endOfScheme) {
+    private Url _parse(JsonSystem system, int endOfScheme) {
         if (endOfScheme == 0) {
             hasScheme = true;
         } else {
@@ -103,8 +104,8 @@ final class HttpLikeSchemeParser implements SchemeParser {
         if (hasFragment) {
             int endOfFragment = findFragment(endOfPathOrQuery);
         }
-        return new Url(urlString, remainder, scheme, authority, userInformation, hostname, port, pathString, path,
-                directory, filename, queryString, query, fragmentString, fragment);
+        return new Url(system, urlString, remainder, scheme, authority, userInformation, hostname, port,
+                pathString, path, directory, filename, queryString, query, fragmentString, fragment);
     }
 
     private char charAt(int index) {
@@ -266,7 +267,7 @@ final class HttpLikeSchemeParser implements SchemeParser {
             }
         }
         fragmentString = substring(startOfFragment, endOfFragment);
-        fragment = Url.decodeFragment(fragmentString);
+        fragment = Fragment.decodeFragment(fragmentString);
         return endOfFragment;
     }
 
@@ -333,10 +334,10 @@ final class HttpLikeSchemeParser implements SchemeParser {
         return endOfQuery;
     }
 
-    public Url parse(String urlString, int endOfScheme) {
+    public Url parse(JsonSystem system, String urlString, int endOfScheme) {
         this.urlString = urlString;
         this.length = urlString.length();
-        return _parse(endOfScheme);
+        return _parse(system, endOfScheme);
     }
 
     public void pushValue(String key, String value) {
@@ -354,7 +355,7 @@ final class HttpLikeSchemeParser implements SchemeParser {
 }
 
 final class UnknownSchemeParser implements SchemeParser {
-    public Url parse(String urlString, int endOfScheme) {
+    public Url parse(JsonSystem system, String urlString, int endOfScheme) {
         String scheme = urlString.substring(0, endOfScheme);
         String remainder = urlString.substring(endOfScheme + 1, urlString.length());
         boolean foundFragment = false;
@@ -372,22 +373,27 @@ final class UnknownSchemeParser implements SchemeParser {
         Fragment fragment = null;
         if (sb.length() > 0) {
             fragmentString = sb.toString();
-            fragment = Url.decodeFragment(fragmentString);
+            fragment = Fragment.decodeFragment(fragmentString);
         }
-        return new Url(urlString, remainder, scheme, null, null, null, null, null, null, null, null, null, null,
-                fragmentString, fragment);
+        return new Url(system, urlString, remainder, scheme, null, null, null, null, null, null, null, null, null,
+                null, fragmentString, fragment);
     }
 }
 
 /**
  * Represents a decoded URL in the Itemscript system.
- * 
+ * <p>
  * This separate implementation to {@link java.net.URL} was necessary because the latter is not supported in the GWT
  * environment.
+ * <p>
+ * Note: the static factory methods on this class will go away and be replaced by instance methods on {@link JsonSystem} at some point,
+ * so reliance on it as a standalone URL-parsing class is probably unwise. The static {@link #encode} and {@link #decode} methods will
+ * remain no matter what, though. This is to allow the addition of extra scheme parsers at runtime to allow for new connectors to easily
+ * be added. In the meantime those methods will require a JsonSystem object to make sure that they are not used in places where no JsonSystem is
+ * available.
  * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
-// FIXME - this entire class should be made non-static...
 public final class Url {
     private static String addBasePath(Url baseUrl, Url relativeUrl, String finalUrl) {
         // If the relative URL didn't have a path, use the entire original path:
@@ -527,33 +533,6 @@ public final class Url {
     }
 
     /**
-     * Decode the given fragment string.
-     * 
-     * @param fragmentString The fragment string to decode.
-     * @return The decoded Fragment.
-     */
-    public static Fragment decodeFragment(String fragmentString) {
-        Fragment fragment = new Fragment();
-        int startOfComponent = 0;
-        for (int i = 0; i <= fragmentString.length(); ++i) {
-            char c;
-            if (i == fragmentString.length()) {
-                c = 0;
-            } else {
-                c = fragmentString.charAt(i);
-            }
-            if (c == '/' || c == 0) {
-                if (i > startOfComponent) {
-                    String component = fragmentString.substring(startOfComponent, i);
-                    fragment.add(decode(component));
-                    startOfComponent = i + 1;
-                }
-            }
-        }
-        return fragment;
-    }
-
-    /**
     * Encode a string to the "x-www-form-urlencoded" form, enhanced
     * with the UTF-8-in-URL proposal. This is what happens:
     *
@@ -669,6 +648,7 @@ public final class Url {
     private final String queryString;
     private final Query query;
     private final String fragmentString;
+    private final JsonSystem system;
     private final Fragment fragment;
     /**
      * The mem scheme.
@@ -751,7 +731,8 @@ public final class Url {
      * @param urlString The string containing a URL.
      * @return The new Url object.
      */
-    public static Url create(String urlString) {
+    @Deprecated
+    public static Url create(JsonSystem system, String urlString) {
         if (urlString == null) { return null; }
         // Remove leading and trailing whitespace first...
         urlString = urlString.trim();
@@ -780,7 +761,7 @@ public final class Url {
         }
         SchemeParser schemeParser = parserFactories.get(scheme)
                 .create();
-        return schemeParser.parse(urlString, endOfScheme);
+        return schemeParser.parse(system, urlString, endOfScheme);
     }
 
     /**
@@ -790,8 +771,9 @@ public final class Url {
      * @param relativeUrl The relative URL to add to the base URL.
      * @return The new Url object.
      */
-    public static Url createRelative(String baseUrl, String relativeUrl) {
-        return createRelative(create(baseUrl), create(relativeUrl));
+    @Deprecated
+    public static Url createRelative(JsonSystem system, String baseUrl, String relativeUrl) {
+        return createRelative(system, create(system, baseUrl), create(system, relativeUrl));
     }
 
     /**
@@ -801,7 +783,8 @@ public final class Url {
      * @param relativeUrl The relative URL to add to the base URL.
      * @return The new Url object.
      */
-    public static Url createRelative(Url baseUrl, Url relativeUrl) {
+    @Deprecated
+    public static Url createRelative(JsonSystem system, Url baseUrl, Url relativeUrl) {
         String baseUrlString = baseUrl.toString();
         String relativeUrlString = relativeUrl.toString();
         // per RFC1808/18
@@ -814,9 +797,9 @@ public final class Url {
         }
         relativeUrlString = relativeUrlString.trim();
         // If the base URL is empty, we return the relative URL as the whole URL.
-        if (baseUrlString.length() == 0) { return create(relativeUrlString); }
+        if (baseUrlString.length() == 0) { return create(system, relativeUrlString); }
         // If the relative URL is empty, we return the base URL as the whole URL.
-        if (relativeUrlString.length() == 0) { return create(baseUrlString); }
+        if (relativeUrlString.length() == 0) { return create(system, baseUrlString); }
         // If the putatively relative URL had a scheme, it wasn't actually relative, so return it as the whole URL.
         if (relativeUrl.scheme() != null) { return relativeUrl; }
         // If the base URL didn't have a scheme, uh, it wasn't a very good base URL now was it?
@@ -837,7 +820,7 @@ public final class Url {
                 .length() > 0) {
             finalUrl += "#" + relativeUrl.fragmentString();
         }
-        return create(finalUrl);
+        return create(system, finalUrl);
     }
 
     private static String getSchemeHostnameAndPort(Url url) {
@@ -855,6 +838,7 @@ public final class Url {
     /**
      * Url constructor. Unless you are implementing a scheme parser, you almost certainly want to use the static create() method, not this constructor.
      * 
+     * @param system
      * @param urlString
      * @param remainder
      * @param scheme
@@ -871,9 +855,11 @@ public final class Url {
      * @param fragmentString
      * @param fragment
      */
-    public Url(String urlString, String remainder, String scheme, String authority, String userInformation,
-            String hostname, String port, String pathString, Path path, String directory, String filename,
-            String queryString, Query query, String fragmentString, Fragment fragment) {
+    @Deprecated
+    public Url(JsonSystem system, String urlString, String remainder, String scheme, String authority,
+            String userInformation, String hostname, String port, String pathString, Path path, String directory,
+            String filename, String queryString, Query query, String fragmentString, Fragment fragment) {
+        this.system = system;
         this.urlString = urlString;
         this.remainder = remainder;
         this.scheme = scheme;
@@ -1090,7 +1076,7 @@ public final class Url {
     }
 
     /**
-     * Get a new Url object without the fragment from this one.
+     * Get a new Url object based on this one, but with the fragment (if any) removed.
      * 
      * @return The new Url object.
      */
@@ -1103,6 +1089,23 @@ public final class Url {
             }
             sb.append(c);
         }
-        return create(sb.toString());
+        return create(system, sb.toString());
+    }
+
+    /**
+     * Get a new Url object based on this one, but with the query and fragment (if any) removed.
+     * 
+     * @return The new Url object.
+     */
+    public Url withoutQueryOrFragment() {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < urlString.length(); ++i) {
+            char c = urlString.charAt(i);
+            if (c == '?' || c == '#') {
+                break;
+            }
+            sb.append(c);
+        }
+        return create(system, sb.toString());
     }
 }
