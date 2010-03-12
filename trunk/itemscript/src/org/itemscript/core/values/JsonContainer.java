@@ -103,13 +103,13 @@ public interface JsonContainer extends JsonValue, JsonAccess {
     public Boolean getRequiredBoolean(String key);
 
     /**
-     * Get a binary value from this container. If the value does not exist, or is not a JsonString,
+     * Get a binary value from this container as a byte[]. If the value does not exist, or is not a JsonString,
      * or is a JsonString but cannot be parsed as a base64 value, throws an exception.
      * 
      * @param key The key to get from.
      * @return The binary value of the JsonString under that key.
      */
-    public byte[] getRequiredByteArray(String key);
+    public byte[] getRequiredBinary(String key);
 
     /**
      * Get a Double from this container. If the value does not exist, or is not a JsonNumber, throws an exception.

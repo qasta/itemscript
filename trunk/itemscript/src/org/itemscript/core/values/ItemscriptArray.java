@@ -41,13 +41,55 @@ import org.itemscript.core.JsonSystem;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.util.JsonAccessHelper;
 
+/**
+ * The implementation class for JsonArray.
+ * 
+ * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
+ */
 final class ItemscriptArray extends ItemscriptContainer implements JsonArray {
     private final ArrayList<JsonValue> values = new ArrayList<JsonValue>();
 
+    /**
+     * Create a new ItemscriptArray.
+     * 
+     * @param system The associated JsonSystem.
+     */
     protected ItemscriptArray(JsonSystem system) {
         super(system);
     }
 
+    @Override
+    public final JsonArray getOrCreateArray(int index) {
+        if (index < size()) {
+            JsonArray array = getArray(index);
+            if (array == null) { throw ItemscriptError.internalError(this,
+                    "getOrCreateArray.value.existed.but.was.not.an.array", JsonAccessHelper.keyValueParams(index
+                            + "", get(index))); }
+            return array;
+        } else {
+            return createArray(index);
+        }
+    }
+
+    @Override
+    public final JsonObject getOrCreateObject(int index) {
+        if (index < size()) {
+            JsonObject object = getObject(index);
+            if (object == null) { throw ItemscriptError.internalError(this,
+                    "getOrCreateObject.value.existed.but.was.not.an.object", JsonAccessHelper.keyValueParams(index
+                            + "", get(index))); }
+            return object;
+        } else {
+            return createObject(index);
+        }
+    }
+
+    /**
+     * Create a new ItemscriptArray with the given initial list of values.
+     * 
+     * @param system The associated JsonSystem.
+     * @param values The values to initalize the list with.
+     */
     protected ItemscriptArray(JsonSystem system, List<JsonValue> values) {
         super(system);
         values.addAll(values);
@@ -172,10 +214,30 @@ final class ItemscriptArray extends ItemscriptContainer implements JsonArray {
     }
 
     @Override
+    public JsonArray addArray() {
+        JsonArray array = system().createArray();
+        add(array);
+        return array;
+    }
+
+    @Override
+    public JsonObject addObject() {
+        JsonObject object = system().createObject();
+        add(object);
+        return object;
+    }
+
+    @Override
     public JsonArray asArray() {
         return this;
     }
 
+    /**
+     * Parse the given string as an index, throw an error if it can't be parsed.
+     * 
+     * @param key The string to parse.
+     * @return The int value of the string.
+     */
     private int checkIndex(String key) {
         try {
             return Integer.parseInt(key);
@@ -211,16 +273,6 @@ final class ItemscriptArray extends ItemscriptContainer implements JsonArray {
     }
 
     @Override
-    public JsonArray createArray(int index) {
-        return createArray(index + "");
-    }
-
-    @Override
-    public JsonObject createObject(int index) {
-        return createObject(index + "");
-    }
-
-    @Override
     public JsonArray copy() {
         JsonArray newArray = system().createArray();
         for (int i = 0; i < size(); ++i) {
@@ -229,6 +281,16 @@ final class ItemscriptArray extends ItemscriptContainer implements JsonArray {
             newArray.set(i, newValue);
         }
         return newArray;
+    }
+
+    @Override
+    public JsonArray createArray(int index) {
+        return createArray(index + "");
+    }
+
+    @Override
+    public JsonObject createObject(int index) {
+        return createObject(index + "");
     }
 
     private void enlargeValues(int index) {
@@ -245,6 +307,11 @@ final class ItemscriptArray extends ItemscriptContainer implements JsonArray {
     @Override
     public JsonArray getArray(int index) {
         return JsonAccessHelper.asArray(get(index));
+    }
+
+    @Override
+    public byte[] getBinary(int index) {
+        return JsonAccessHelper.asBinary(get(index));
     }
 
     @Override
@@ -275,6 +342,51 @@ final class ItemscriptArray extends ItemscriptContainer implements JsonArray {
     @Override
     public JsonObject getObject(int index) {
         return JsonAccessHelper.asObject(get(index));
+    }
+
+    @Override
+    public final JsonArray getRequiredArray(int index) {
+        return JsonAccessHelper.getRequiredArray(this, index, get(index));
+    }
+
+    @Override
+    public final byte[] getRequiredBinary(int index) {
+        return JsonAccessHelper.getRequiredBinary(this, index, get(index));
+    }
+
+    @Override
+    public final Boolean getRequiredBoolean(int index) {
+        return JsonAccessHelper.getRequiredBoolean(this, index, get(index));
+    }
+
+    @Override
+    public final Double getRequiredDouble(int index) {
+        return JsonAccessHelper.getRequiredDouble(this, index, get(index));
+    }
+
+    @Override
+    public final Float getRequiredFloat(int index) {
+        return JsonAccessHelper.getRequiredFloat(this, index, get(index));
+    }
+
+    @Override
+    public final Integer getRequiredInt(int index) {
+        return JsonAccessHelper.getRequiredInt(this, index, get(index));
+    }
+
+    @Override
+    public final Long getRequiredLong(int index) {
+        return JsonAccessHelper.getRequiredLong(this, index, get(index));
+    }
+
+    @Override
+    public final JsonObject getRequiredObject(int index) {
+        return JsonAccessHelper.getRequiredObject(this, index, get(index));
+    }
+
+    @Override
+    public final String getRequiredString(int index) {
+        return JsonAccessHelper.getRequiredString(this, index, get(index));
     }
 
     @Override
@@ -366,7 +478,7 @@ final class ItemscriptArray extends ItemscriptContainer implements JsonArray {
     }
 
     /**
-     * remove(Object o) is not supported on ItemscriptArrays.
+     * Note: remove(Object o) is not supported on ItemscriptArrays.
      */
     @Override
     public boolean remove(Object o) {

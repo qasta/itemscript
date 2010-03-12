@@ -51,6 +51,15 @@ public class JsonArrayTest extends ItemscriptTestBase {
     }
 
     @Test
+    public void testAddObjectAndArray() {
+        JsonArray array = system().createArray();
+        array.addObject();
+        array.addArray();
+        assertTrue(array.getObject(0) instanceof JsonObject);
+        assertTrue(array.getArray(1) instanceof JsonArray);
+    }
+
+    @Test
     public void testArrayParsing() {
         JsonArray array = system().parse("[1,2,3]")
                 .asArray();
