@@ -70,6 +70,14 @@ public final class ItemscriptItem implements JsonItem {
         ((ItemscriptValue) value).setItem(this);
     }
 
+    /**
+     * Detach the value from this JsonItem. Only called by {@link ItemscriptValue#detachFromItem}.
+     */
+    void detachFromValue() {
+        this.value = null;
+        this.handlers = null;
+    }
+
     @Override
     public JsonObject meta() {
         return meta;
