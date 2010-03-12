@@ -64,6 +64,20 @@ abstract class ItemscriptValue implements JsonValue {
     }
 
     @Override
+    public void detachFromItem() {
+        if (item() == null) { return; }
+        if (parent() != null) {
+            parent().detachFromItem();
+            return;
+        }
+        if (item().source()
+                .startsWith("mem:")) { throw new UnsupportedOperationException(
+                "detachFromItem is not supported on values loaded from the mem: database"); }
+        ((ItemscriptItem) item()).detachFromValue();
+        setItem(null);
+    }
+
+    @Override
     public JsonArray asArray() {
         return null;
     }

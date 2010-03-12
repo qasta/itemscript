@@ -146,4 +146,20 @@ public class JsonItemTest extends ItemscriptTestBase {
         JsonObject object3 = object2.getObject("bar");
         assertEquals("value", object3.getString("baz"));
     }
+
+    @Test
+    public void testDetachFromItem() {
+        JsonValue value = system().get("http://itemscript.org/test.json");
+        assertNotNull(value.item());
+        JsonItem item = value.item();
+        value.detachFromItem();
+        assertNull(value.item());
+        assertNull(item.value());
+        system().put("/foo", value);
+        JsonValue retValue = system().get("/foo");
+        assertEquals(value, retValue);
+        assertNotNull(value.item());
+        assertEquals("mem:/foo", value.item()
+                .source());
+    }
 }

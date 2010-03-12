@@ -68,6 +68,25 @@ public interface JsonValue extends HasSystem {
     public JsonContainer asContainer();
 
     /**
+     * Detach this value from its JsonItem, if any.
+     * <p>
+     * This method is largely an efficiency alternative to {@link copy}; instead of copying a value loaded from
+     * an external source, you can just throw away the sourcing information and store it directly.
+     * <p>
+     * This is an experimental and kind of ugly method, so it might go away without much warning if a nicer way of
+     * accomplishing the same goal is found.
+     * <p>
+     * Note: At present, this operation is not supported on values that are attached to <code>mem:</code> JsonItems.
+     * Unlike values loaded from a remote source, values returned from the in-memory database are not copies, but are
+     * the actual database objects. So, allowing them to be detached from their JsonItems could cause problems. Instead,
+     * you should save a local reference to the value, then call {@link JsonSystem#remove} to remove the value, which then
+     * frees it to be put back in somewhere else.
+     * 
+     * @throws UnsupportedOperationException If this value is attached to a JsonItem with a <code>mem:</code> source. 
+     */
+    public void detachFromItem();
+
+    /**
      * If this value is a JsonNative, returns it as a JsonNative.
      * 
      * If it is not a JsonNative, returns null.

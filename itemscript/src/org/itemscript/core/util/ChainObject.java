@@ -562,4 +562,9 @@ public class ChainObject implements JsonObject {
         sb.append("]");
         return sb.toString();
     }
+
+    @Override
+    public void detachFromItem() {
+        throw new UnsupportedOperationException();
+    }
 }
