@@ -396,6 +396,12 @@ public class JsonSystemTest extends ItemscriptTestBase {
                 .substring(0, 5));
         String filename = source.filename();
         assertEquals(36, filename.length());
+        PutResponse putResponse = system().put("/bar?uuid", "bar");
+        Url source2 = Url.create(system(), putResponse.url());
+        assertEquals("/bar/", source2.pathString()
+                .substring(0, 5));
+        String filename2 = source2.filename();
+        assertEquals(36, filename2.length());
     }
 
     @Test
