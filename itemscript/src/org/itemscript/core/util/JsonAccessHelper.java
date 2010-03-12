@@ -4,14 +4,14 @@ package org.itemscript.core.util;
 import org.itemscript.core.Params;
 import org.itemscript.core.connectors.GetCallback;
 import org.itemscript.core.exceptions.ItemscriptError;
-import org.itemscript.core.values.JsonAccess;
+import org.itemscript.core.values.JsonGetAccess;
 import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonContainer;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 
 /**
- * Contains methods for implementing the {@link JsonAccess} interface. 
+ * Contains methods for implementing the {@link JsonGetAccess} interface. 
  * 
  * This class is not intended for general use, and the interface is not promised to be stable; it has to be public because it
  * is used by various other classes in different packages.

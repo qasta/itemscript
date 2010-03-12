@@ -34,6 +34,7 @@ import org.itemscript.core.connectors.GetCallback;
 import org.itemscript.core.connectors.PutCallback;
 import org.itemscript.core.gwt.GwtSystem;
 import org.itemscript.core.values.JsonValue;
+import org.itemscript.core.values.PutResponse;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -64,8 +65,8 @@ public class GwtExample implements EntryPoint {
                     }
 
                     @Override
-                    public void onSuccess(JsonValue value) {
-                        Window.alert("Reflected value: " + value);
+                    public void onSuccess(PutResponse putResponse) {
+                        Window.alert("Reflected value: " + putResponse.value());
                     }
                 });
             }

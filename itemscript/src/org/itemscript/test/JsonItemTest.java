@@ -72,7 +72,8 @@ public class JsonItemTest extends ItemscriptTestBase {
     @Test
     public void testEventHandlers() {
         {
-            JsonValue value = system().put("mem:/test", "value");
+            JsonValue value = system().put("mem:/test", "value")
+                    .value();
             JsonItem item = value.item();
             item.addHandler(new Handler() {
                 public void handle(Event event) {
@@ -87,7 +88,8 @@ public class JsonItemTest extends ItemscriptTestBase {
             assertEquals("new value", putEventValue);
         }
         {
-            JsonValue value = system().put("mem:/test2#foo", "value");
+            JsonValue value = system().put("mem:/test2#foo", "value")
+                    .value();
             JsonItem item = value.item();
             item.addHandler(new Handler() {
                 public void handle(Event event) {
@@ -158,7 +160,9 @@ public class JsonItemTest extends ItemscriptTestBase {
 
     @Test
     public void testSource() {
-        JsonBoolean value = system().put("mem:/test", true);
+        JsonBoolean value = system().put("mem:/test", true)
+                .value()
+                .asBoolean();
         assertEquals("mem:/test", value.item()
                 .source() + "");
     }

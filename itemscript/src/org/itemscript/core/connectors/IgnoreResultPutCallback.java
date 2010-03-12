@@ -1,7 +1,7 @@
 
 package org.itemscript.core.connectors;
 
-import org.itemscript.core.values.JsonValue;
+import org.itemscript.core.values.PutResponse;
 
 /**
  * A {@link PutCallback} that does nothing when the request succeeds and throws a RuntimeException when it fails.
@@ -15,5 +15,5 @@ public class IgnoreResultPutCallback implements PutCallback {
     }
 
     @Override
-    public void onSuccess(JsonValue value) {}
+    public void onSuccess(PutResponse putResponse) {}
 }

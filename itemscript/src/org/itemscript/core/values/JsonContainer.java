@@ -39,7 +39,7 @@ import java.util.Set;
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  *
  */
-public interface JsonContainer extends JsonValue, JsonAccess {
+public interface JsonContainer extends JsonValue, JsonGetAccess {
     /**
      * Tests whether this container contains a value under the given key.
      * 
@@ -228,4 +228,91 @@ public interface JsonContainer extends JsonValue, JsonAccess {
      * @return The number of entries in this container.
      */
     public int size();
+
+    /**
+     * Put a boolean value as a JsonBoolean.
+     * 
+     * @param key The key to put the value under.
+     * @param value The boolean value to store.
+     * @return A new JsonBoolean.
+     */
+    public JsonBoolean put(String key, Boolean value);
+
+    /**
+     * Put a binary value. The value will be base64-encoded and stored in a JsonString.
+     * <p>
+     * Note: The JsonString object will point to the underlying byte[] that was supplied; it will
+     * not copy it. The internal operations of the JsonSystem will not change it, but it will
+     * be made directly available through the JsonString object's {@link JsonString#binaryValue}
+     * method. So, if you need to make sure that the original is not changed, you must copy it before
+     * supplying it to this method. 
+     * 
+     * @param key The key to put the value under.
+     * @param value The binary value to store.
+     * @return A new JsonString.
+     */
+    public JsonString put(String key, byte[] value);
+
+    /**
+     * Put a double value as a JsonNumber.
+     * 
+     * @param key The key to put the value under.
+     * @param value The double value to store.
+     * @return A new JsonNumber
+     */
+    public JsonNumber put(String key, Double value);
+
+    /**
+     * Put a float value as a JsonNumber.
+     * 
+     * @param key The key to put the value under.
+     * @param value The float value to store.
+     * @return A new JsonNumber.
+     */
+    public JsonNumber put(String key, Float value);
+
+    /**
+     * Put an int value as a JsonNumber.
+     * 
+     * @param key The key to put the value under.
+     * @param value The int value to store.
+     * @return A new JsonNumber
+     */
+    public JsonNumber put(String key, Integer value);
+
+    /**
+     * Put a long value as a JsonString.
+     * 
+     * @param key The key to put the value under.
+     * @param value The long value to store.
+     * @return A new JsonString.
+     */
+    public JsonString put(String key, Long value);
+
+    /**
+     * Put a string value as a JsonString.
+     * 
+     * @param key The key to put the value under.
+     * @param value The String value to store.
+     * @return A new JsonString.
+     */
+    public JsonString put(String key, String value);
+
+    /**
+     * Put a native object as a JsonNative.
+     * 
+     * @param key The key to put the value under.
+     * @param value The native object to store.
+     * @return A new JsonNative.
+     */
+    public JsonNative putNative(String key, Object value);
+
+    /**
+     * Put a JsonValue. Note that the JsonValue to be stored must not currently be inside another container; nor can it be the
+     * parent of this container (so cycles are not allowed). Nor can it be the value of another {@link JsonItem}.
+     * 
+     * @param key The key to put the value under.
+     * @param value The JsonValue to store.
+     */
+    public void putValue(String key, JsonValue value);
 }

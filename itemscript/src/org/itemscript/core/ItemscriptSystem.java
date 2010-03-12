@@ -50,6 +50,7 @@ import org.itemscript.core.url.Query;
 import org.itemscript.core.url.Url;
 import org.itemscript.core.util.JsonAccessHelper;
 import org.itemscript.core.values.ItemscriptContainer;
+import org.itemscript.core.values.ItemscriptPutResponse;
 import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonBoolean;
 import org.itemscript.core.values.JsonCreator;
@@ -60,6 +61,8 @@ import org.itemscript.core.values.JsonNumber;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonString;
 import org.itemscript.core.values.JsonValue;
+import org.itemscript.core.values.PutResponse;
+import org.itemscript.core.values.RemoveResponse;
 
 /**
  * The implementation class for JsonSystem. In order to configure system- or platform- specific behavior,
@@ -67,7 +70,7 @@ import org.itemscript.core.values.JsonValue;
  * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
-public final class ItemscriptSystem implements JsonSystem, HasSystem {
+public final class ItemscriptSystem implements JsonSystem {
     private final JsonCreator factory;
     private final JsonConfig config;
     private final JsonObject connectors;
@@ -384,42 +387,37 @@ public final class ItemscriptSystem implements JsonSystem, HasSystem {
     }
 
     @Override
-    public JsonBoolean put(String url, Boolean value) {
+    public PutResponse put(String url, Boolean value) {
         JsonBoolean jsonValue = createBoolean(value);
-        put(url, jsonValue);
-        return jsonValue;
+        return put(url, jsonValue);
     }
 
     @Override
-    public JsonString put(String url, byte[] value) {
+    public PutResponse put(String url, byte[] value) {
         JsonString jsonValue = createString(value);
-        put(url, jsonValue);
-        return jsonValue;
+        return put(url, jsonValue);
     }
 
     @Override
-    public JsonNumber put(String url, Double value) {
+    public PutResponse put(String url, Double value) {
         JsonNumber jsonValue = createNumber(value);
-        put(url, jsonValue);
-        return jsonValue;
+        return put(url, jsonValue);
     }
 
     @Override
-    public JsonNumber put(String url, Float value) {
+    public PutResponse put(String url, Float value) {
         JsonNumber jsonValue = createNumber(value);
-        put(url, jsonValue);
-        return jsonValue;
+        return put(url, jsonValue);
     }
 
     @Override
-    public JsonNumber put(String url, Integer value) {
+    public PutResponse put(String url, Integer value) {
         JsonNumber jsonValue = createNumber(value);
-        put(url, jsonValue);
-        return jsonValue;
+        return put(url, jsonValue);
     }
 
     @Override
-    public JsonValue put(String url, JsonValue value) {
+    public PutResponse put(String url, JsonValue value) {
         return put(Url.create(system(), url), value);
     }
 
@@ -429,20 +427,18 @@ public final class ItemscriptSystem implements JsonSystem, HasSystem {
     }
 
     @Override
-    public JsonString put(String url, Long value) {
+    public PutResponse put(String url, Long value) {
         JsonString jsonValue = createString(value);
-        put(url, jsonValue);
-        return jsonValue;
+        return put(url, jsonValue);
     }
 
     @Override
-    public JsonString put(String url, String value) {
+    public PutResponse put(String url, String value) {
         JsonString jsonValue = createString(value);
-        put(url, jsonValue);
-        return jsonValue;
+        return put(url, jsonValue);
     }
 
-    public JsonValue put(Url url, JsonValue value) {
+    public PutResponse put(Url url, JsonValue value) {
         Url fullUrl = createRootRelativeUrl(url);
         if (isNotMemSchemeAndHasFragment(fullUrl)) { throw ItemscriptError.internalError(this,
                 "put.url.with.fragment.not.supported", fullUrl + ""); }
@@ -451,7 +447,7 @@ public final class ItemscriptSystem implements JsonSystem, HasSystem {
             if (fullUrl.query()
                     .isLoadQuery() && connector instanceof SyncLoadConnector) {
                 ((SyncLoadConnector) connector).load(fullUrl, value.asObject());
-                return createNull();
+                return new ItemscriptPutResponse(fullUrl + "", null, null);
             } else {
                 if (!(connector instanceof SyncPostConnector)) { throw ItemscriptError.internalError(this,
                         "put.had.query.but.connector.did.not.implement.post.connector.type"); }
@@ -489,20 +485,19 @@ public final class ItemscriptSystem implements JsonSystem, HasSystem {
     }
 
     @Override
-    public JsonNative putNative(String url, Object nativeValue) {
+    public PutResponse putNative(String url, Object nativeValue) {
         JsonNative jsonValue = factory().createNative(nativeValue);
-        put(url, jsonValue);
-        return jsonValue;
+        return put(url, jsonValue);
     }
 
     @Override
-    public JsonValue putValue(String url, JsonValue value) {
+    public PutResponse putValue(String url, JsonValue value) {
         return put(url, value);
     }
 
     @Override
-    public void remove(String url) {
-        remove(Url.create(system(), url));
+    public RemoveResponse remove(String url) {
+        return remove(Url.create(system(), url));
     }
 
     @Override
@@ -510,11 +505,11 @@ public final class ItemscriptSystem implements JsonSystem, HasSystem {
         remove(Url.create(system(), url), callback);
     }
 
-    public void remove(Url url) {
+    public RemoveResponse remove(Url url) {
         Url fullUrl = createRootRelativeUrl(url);
         checkFragmentForRemove(fullUrl);
         checkQueryForRemove(fullUrl);
-        ((SyncPutConnector) getConnector(fullUrl)).remove(fullUrl);
+        return ((SyncPutConnector) getConnector(fullUrl)).remove(fullUrl);
     }
 
     public void remove(final Url url, final RemoveCallback callback) {
@@ -524,8 +519,7 @@ public final class ItemscriptSystem implements JsonSystem, HasSystem {
         Connector connector = getConnector(fullUrl);
         if (connector instanceof SyncPutConnector) {
             try {
-                remove(fullUrl);
-                callback.onSuccess();
+                callback.onSuccess(remove(fullUrl));
             } catch (ItemscriptError e) {
                 callback.onError(e);
             }
@@ -535,8 +529,8 @@ public final class ItemscriptSystem implements JsonSystem, HasSystem {
     }
 
     @Override
-    public void removeValue(String url) {
-        remove(url);
+    public RemoveResponse removeValue(String url) {
+        return remove(url);
     }
 
     @Override

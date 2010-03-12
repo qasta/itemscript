@@ -454,9 +454,8 @@ final class ItemscriptArray extends ItemscriptContainer implements JsonArray {
     }
 
     @Override
-    public JsonValue putValue(String key, JsonValue value) {
+    public void putValue(String key, JsonValue value) {
         set(Integer.valueOf(key), value);
-        return value;
     }
 
     @Override

@@ -38,6 +38,8 @@ import org.itemscript.core.connectors.GetCallback;
 import org.itemscript.core.connectors.PutCallback;
 import org.itemscript.core.connectors.RemoveCallback;
 import org.itemscript.core.url.Url;
+import org.itemscript.core.values.ItemscriptPutResponse;
+import org.itemscript.core.values.ItemscriptRemoveResponse;
 import org.itemscript.core.values.JsonValue;
 
 import com.google.gwt.http.client.Request;
@@ -89,8 +91,9 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
 
             @Override
             public void onResponseReceived(Request request, Response response) {
-                callback.onSuccess(system().createItem(url + "", system().parse(response.getText()))
-                        .value());
+                callback.onSuccess(new ItemscriptPutResponse(url + "", null, system().createItem(url + "",
+                        system().parse(response.getText()))
+                        .value()));
             }
         });
     }
@@ -105,8 +108,9 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
 
             @Override
             public void onResponseReceived(Request request, Response response) {
-                callback.onSuccess(system().createItem(url + "", system().parse(response.getText()))
-                        .value());
+                callback.onSuccess(new ItemscriptPutResponse(url + "", null, system().createItem(url + "",
+                        system().parse(response.getText()))
+                        .value()));
             }
         });
     }
@@ -121,7 +125,7 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
 
             @Override
             public void onResponseReceived(Request request, Response response) {
-                callback.onSuccess();
+                callback.onSuccess(new ItemscriptRemoveResponse(null));
             }
         });
     }

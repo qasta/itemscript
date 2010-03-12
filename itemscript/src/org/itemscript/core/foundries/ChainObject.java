@@ -506,7 +506,7 @@ public class ChainObject implements JsonObject {
     }
 
     @Override
-    public JsonValue putValue(String key, JsonValue value) {
+    public void putValue(String key, JsonValue value) {
         throw new UnsupportedOperationException();
     }
 

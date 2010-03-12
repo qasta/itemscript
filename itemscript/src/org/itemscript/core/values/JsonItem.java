@@ -46,7 +46,7 @@ import org.itemscript.core.events.Handler;
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  *
  */
-public interface JsonItem extends HasSystem, JsonAccess {
+public interface JsonItem extends HasSystem, JsonGetAccess, JsonPutAccess {
     /**
      * Add an event handler to this item. The handler will be called any time the value of this item
      * changes or is removed.  
@@ -99,9 +99,9 @@ public interface JsonItem extends HasSystem, JsonAccess {
      * 
      * @param url The URL to put the value at.
      * @param value The value to put.
-     * @return The value returned by the put operation, which may not be the same as the value that was put.
+     * @return The PutResponse returned by the put operation.
      */
-    public JsonValue put(String url, JsonValue value);
+    public PutResponse put(String url, JsonValue value);
 
     /**
      * Put a value in (or relative to) this item by URL, asynchronously.
@@ -122,8 +122,9 @@ public interface JsonItem extends HasSystem, JsonAccess {
      * The URL will be interpreted the same way as in {@link #get(String)}.
      * 
      * @param url The URL to remove a value from.
+     * @return The RemoveResponse returned by the remove operation.
      */
-    public void remove(String url);
+    public RemoveResponse remove(String url);
 
     /**
      * Remove a value from (or relative to) this item by URL.

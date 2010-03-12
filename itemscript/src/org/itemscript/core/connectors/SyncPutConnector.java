@@ -31,6 +31,8 @@ package org.itemscript.core.connectors;
 
 import org.itemscript.core.url.Url;
 import org.itemscript.core.values.JsonValue;
+import org.itemscript.core.values.PutResponse;
+import org.itemscript.core.values.RemoveResponse;
 
 /**
  * The interface to be implemented by a {@link Connector} that allows synchronous put operations.
@@ -44,14 +46,15 @@ public interface SyncPutConnector extends Connector {
      * 
      * @param url The URL to put the value at.
      * @param value The value to be put.
-     * @return The value returned by the put operation, which may not be the same as the value that was put.
+     * @return The PutResponse returned by the put operation.
      */
-    public JsonValue put(Url url, JsonValue value);
+    public PutResponse put(Url url, JsonValue value);
 
     /**
      * Remove a value from the given URL.
      * 
      * @param url The URL to remove the value from.
+     * @return The RemoveResponse returned by the remove operation.
      */
-    public void remove(Url url);
+    public RemoveResponse remove(Url url);
 }

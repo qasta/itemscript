@@ -45,8 +45,12 @@ import org.itemscript.core.connectors.SyncPostConnector;
 import org.itemscript.core.connectors.SyncPutConnector;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Url;
+import org.itemscript.core.values.ItemscriptPutResponse;
+import org.itemscript.core.values.ItemscriptRemoveResponse;
 import org.itemscript.core.values.JsonItem;
 import org.itemscript.core.values.JsonValue;
+import org.itemscript.core.values.PutResponse;
+import org.itemscript.core.values.RemoveResponse;
 
 /**
  * HTTP Connector for the standard-Java configuration.
@@ -87,7 +91,7 @@ public final class HttpConnector extends ConnectorBase
     }
 
     @Override
-    public JsonValue post(Url url, JsonValue value) {
+    public PutResponse post(Url url, JsonValue value) {
         try {
             URL javaUrl = new URL(url + "");
             HttpURLConnection connection = (HttpURLConnection) javaUrl.openConnection();
@@ -98,17 +102,14 @@ public final class HttpConnector extends ConnectorBase
             Writer w = new OutputStreamWriter(connection.getOutputStream());
             w.write(value.toCompactJsonString());
             w.close();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            JsonValue retValue = system().parseReader(reader);
-            JsonItem item = system().createItem(url + "", retValue);
-            return retValue;
+            return new ItemscriptPutResponse(url + "", null, null);
         } catch (IOException e) {
             throw ItemscriptError.internalError(this, "IOException", e);
         }
     }
 
     @Override
-    public JsonValue put(Url url, JsonValue value) {
+    public PutResponse put(Url url, JsonValue value) {
         try {
             URL javaUrl = new URL(url + "");
             HttpURLConnection connection = (HttpURLConnection) javaUrl.openConnection();
@@ -119,17 +120,14 @@ public final class HttpConnector extends ConnectorBase
             Writer w = new OutputStreamWriter(connection.getOutputStream());
             w.write(value.toCompactJsonString());
             w.close();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            JsonValue retValue = system().parseReader(reader);
-            JsonItem item = system().createItem(url + "", retValue);
-            return retValue;
+            return new ItemscriptPutResponse(url + "", null, null);
         } catch (IOException e) {
             throw ItemscriptError.internalError(this, "IOException", e);
         }
     }
 
     @Override
-    public void remove(Url url) {
+    public RemoveResponse remove(Url url) {
         try {
             URL javaUrl = new URL(url + "");
             HttpURLConnection connection = (HttpURLConnection) javaUrl.openConnection();
@@ -137,6 +135,7 @@ public final class HttpConnector extends ConnectorBase
             connection.connect();
             int response = connection.getResponseCode();
             String responseMessage = connection.getResponseMessage();
+            return new ItemscriptRemoveResponse(null);
         } catch (IOException e) {
             throw ItemscriptError.internalError(this, "IOException", e);
         }
