@@ -542,4 +542,9 @@ public final class ItemscriptSystem implements JsonSystem {
     public String toString() {
         return "[JsonSystem]";
     }
+
+    @Override
+    public String generateB64id() {
+        return config.generateB64id();
+    }
 }

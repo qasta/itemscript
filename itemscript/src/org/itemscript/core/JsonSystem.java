@@ -67,6 +67,17 @@ public interface JsonSystem extends JsonGetAccess, JsonPutAccess, HasSystem, Jso
     public String generateUuid();
 
     /**
+     * Generate a random base-64 unique-ID string. This is a 22-character representation of a 128-bit
+     * random unique-ID encoded as base64 without padding and containing only URL-safe characters.
+     * <p>
+     * Note: although this is a 128-bit random unique-ID, it is not technically a UUID because it may
+     * not have the flag bits set that say what type of ID it is.
+     * 
+     * @return The new b64id.
+     */
+    public String generateB64id();
+
+    /**
      * Get a value from the given URL.
      * 
      * If the URL is relative, it will be interpreted as relative to the URL "mem:/".

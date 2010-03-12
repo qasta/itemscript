@@ -224,10 +224,15 @@ public final class MemConnector extends ConnectorBase
     @Override
     public PutResponse post(Url url, JsonValue value) {
         Query query = url.query();
-        if (query.containsKey("uuid")) {
+        if (query.isUuidQuery()) {
             String uuid = system().generateUuid();
             Url generatedUrl =
                     Url.createRelative(system(), JsonSystem.ROOT_URL, url.withoutQueryOrFragment() + "/" + uuid);
+            return put(generatedUrl, value);
+        } else if (query.isB64idQuery()) {
+            String b64id = system().generateB64id();
+            Url generatedUrl =
+                    Url.createRelative(system(), JsonSystem.ROOT_URL, url.withoutQueryOrFragment() + "/" + b64id);
             return put(generatedUrl, value);
         } else {
             throw ItemscriptError.internalError(this, "post.unknown.query.type");

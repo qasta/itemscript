@@ -35,6 +35,7 @@ import java.util.UUID;
 import org.itemscript.core.ItemscriptSystem;
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.config.JsonConfig;
+import org.itemscript.core.util.Base64;
 import org.itemscript.core.values.JsonCreator;
 
 /**
@@ -65,6 +66,22 @@ public class MinimalConfig implements JsonConfig {
     public String generateUuid() {
         return UUID.randomUUID()
                 .toString();
+    }
+
+    @Override
+    public String generateB64id() {
+        UUID uuid = UUID.randomUUID();
+        byte[] bytes = new byte[16];
+        longToBytes(uuid.getLeastSignificantBits(), bytes, 0);
+        longToBytes(uuid.getMostSignificantBits(), bytes, 8);
+        return new String(Base64.encodeForUrl(bytes));
+    }
+
+    private static void longToBytes(long value, byte[] dest, int start) {
+        for (int i = 0; i < 8; ++i) {
+            dest[start + i] = (byte) (value & 0xFF);
+            value >>= 8;
+        }
     }
 
     @Override

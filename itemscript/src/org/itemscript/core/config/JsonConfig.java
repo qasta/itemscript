@@ -57,6 +57,13 @@ public interface JsonConfig {
     public String generateUuid();
 
     /**
+     * Generate a new random b64id.
+     * 
+     * @return A new random b64id.
+     */
+    public String generateB64id();
+
+    /**
      * Get a new random int.
      * 
      * @return A new random int.
