@@ -48,6 +48,7 @@ import org.itemscript.core.connectors.SyncQueryConnector;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Query;
 import org.itemscript.core.url.Url;
+import org.itemscript.core.url.UrlFactory;
 import org.itemscript.core.util.JsonAccessHelper;
 import org.itemscript.core.values.ItemscriptContainer;
 import org.itemscript.core.values.ItemscriptPutResponse;
@@ -75,6 +76,7 @@ public final class ItemscriptSystem implements JsonSystem {
     private final JsonConfig config;
     private final JsonObject connectors;
     private final Url rootUrl;
+    private final JsonUtil util;
 
     /**
      * Create a new JsonSystem implementation using the supplied JsonConfig.
@@ -85,10 +87,13 @@ public final class ItemscriptSystem implements JsonSystem {
      * @param config The JsonConfig object used to set up this system.
      */
     public ItemscriptSystem(JsonConfig config) {
-        rootUrl = Url.create(this, JsonSystem.ROOT_URL);
         this.config = config;
-        factory = config.createJsonCreator(this);
-        connectors = MemConnector.create(this);
+        this.factory = config.createJsonCreator(this);
+        this.util = new ItemscriptUtil(this, config);
+        this.rootUrl = util.createUrl(JsonSystem.ROOT_URL);
+        this.connectors = MemConnector.create(this);
+        put(UrlFactory.SCHEME_PARSER_FACTORIES_PATH, util.urlFactory()
+                .schemeParserFactories());
         config.seedSystem(this);
     }
 
@@ -104,7 +109,7 @@ public final class ItemscriptSystem implements JsonSystem {
 
     @Override
     public void copy(String fromUrl, String toUrl) {
-        copy(Url.create(system(), fromUrl), Url.create(system(), toUrl));
+        copy(util().createUrl(fromUrl), util().createUrl(toUrl));
     }
 
     public void copy(Url fromUrl, Url toUrl) {
@@ -162,7 +167,7 @@ public final class ItemscriptSystem implements JsonSystem {
     }
 
     private Url createRootRelativeUrl(Url url) {
-        return Url.createRelative(system(), rootUrl, url);
+        return util().createRelativeUrl(rootUrl, url);
     }
 
     @Override
@@ -205,18 +210,13 @@ public final class ItemscriptSystem implements JsonSystem {
     }
 
     @Override
-    public String generateUuid() {
-        return config.generateUuid();
-    }
-
-    @Override
     public JsonValue get(String url) {
-        return get(Url.create(system(), url));
+        return get(util().createUrl(url));
     }
 
     @Override
     public void get(final String url, final GetCallback callback) {
-        get(Url.create(system(), url), callback);
+        get(util().createUrl(url), callback);
     }
 
     public JsonValue get(Url url) {
@@ -367,15 +367,6 @@ public final class ItemscriptSystem implements JsonSystem {
                 .equals(Url.MEM_SCHEME) && url.hasFragment();
     }
 
-    /**
-     * Get a random int.
-     * 
-     * @return A random int.
-     */
-    public int nextRandomInt() {
-        return config.nextRandomInt();
-    }
-
     @Override
     public JsonValue parse(String json) {
         return factory().parse(json);
@@ -418,12 +409,12 @@ public final class ItemscriptSystem implements JsonSystem {
 
     @Override
     public PutResponse put(String url, JsonValue value) {
-        return put(Url.create(system(), url), value);
+        return put(util().createUrl(url), value);
     }
 
     @Override
     public void put(String url, JsonValue value, PutCallback callback) {
-        put(Url.create(system(), url), value, callback);
+        put(util().createUrl(url), value, callback);
     }
 
     @Override
@@ -497,12 +488,12 @@ public final class ItemscriptSystem implements JsonSystem {
 
     @Override
     public RemoveResponse remove(String url) {
-        return remove(Url.create(system(), url));
+        return remove(util().createUrl(url));
     }
 
     @Override
     public void remove(final String url, final RemoveCallback callback) {
-        remove(Url.create(system(), url), callback);
+        remove(util().createUrl(url), callback);
     }
 
     public RemoveResponse remove(Url url) {
@@ -544,7 +535,7 @@ public final class ItemscriptSystem implements JsonSystem {
     }
 
     @Override
-    public String generateB64id() {
-        return config.generateB64id();
+    public JsonUtil util() {
+        return util;
     }
 }

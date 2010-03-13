@@ -159,7 +159,8 @@ public final class MemConnector extends ConnectorBase
         if (subItems == null) { return; }
         for (String key : subItems.keySet()) {
             String subUrl = pathedUrl + "/" + Url.encode(key);
-            load(Url.create(system(), subUrl), subItems.getObject(key));
+            load(system().util()
+                    .createUrl(subUrl), subItems.getObject(key));
         }
     }
 
@@ -225,14 +226,17 @@ public final class MemConnector extends ConnectorBase
     public PutResponse post(Url url, JsonValue value) {
         Query query = url.query();
         if (query.isUuidQuery()) {
-            String uuid = system().generateUuid();
+            String uuid = system().util()
+                    .generateUuid();
             Url generatedUrl =
-                    Url.createRelative(system(), JsonSystem.ROOT_URL, url.withoutQueryOrFragment() + "/" + uuid);
+                    system().util().createRelativeUrl(JsonSystem.ROOT_URL, url.withoutQueryOrFragment() + "/" + uuid);
             return put(generatedUrl, value);
         } else if (query.isB64idQuery()) {
-            String b64id = system().generateB64id();
+            String b64id = system().util()
+                    .generateB64id();
             Url generatedUrl =
-                    Url.createRelative(system(), JsonSystem.ROOT_URL, url.withoutQueryOrFragment() + "/" + b64id);
+ system().util()
+                    .createRelativeUrl(JsonSystem.ROOT_URL, url.withoutQueryOrFragment() + "/" + b64id);
             return put(generatedUrl, value);
         } else {
             throw ItemscriptError.internalError(this, "post.unknown.query.type");

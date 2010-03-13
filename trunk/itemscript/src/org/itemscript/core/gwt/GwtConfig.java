@@ -31,6 +31,8 @@ package org.itemscript.core.gwt;
 
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.config.JsonConfig;
+import org.itemscript.core.url.HttpLikeSchemeParser;
+import org.itemscript.core.url.UrlFactory;
 import org.itemscript.core.util.Base64;
 import org.itemscript.core.values.JsonCreator;
 
@@ -102,5 +104,6 @@ public class GwtConfig implements JsonConfig {
         // The file: scheme is also assigned to the HTTP connector because file: URLs are also resolved through the web browser's facilities...
         system.putNative("/itemscript/connectors#file", jsonHttpConnector);
         system.putNative("/itemscript/connectors#cookie", new GwtCookieConnector(system));
+        system.putNative(UrlFactory.SCHEME_PARSER_FACTORIES_PATH + "#cookie", new HttpLikeSchemeParser());
     }
 }

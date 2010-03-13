@@ -47,7 +47,6 @@ import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Url;
 import org.itemscript.core.values.ItemscriptPutResponse;
 import org.itemscript.core.values.ItemscriptRemoveResponse;
-import org.itemscript.core.values.JsonItem;
 import org.itemscript.core.values.JsonValue;
 import org.itemscript.core.values.PutResponse;
 import org.itemscript.core.values.RemoveResponse;
@@ -81,10 +80,18 @@ public final class HttpConnector extends ConnectorBase
         try {
             URL javaUrl = new URL(url + "");
             URLConnection connection = javaUrl.openConnection();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            JsonValue value = system().parseReader(reader);
-            JsonItem item = system().createItem(url + "", value);
-            return value;
+            // Note: we are ignoring content-encoding for now.
+            String contentType = connection.getContentType();
+            if (url.filename()
+                    .endsWith(".json") || contentType.equals("application/json")
+                    || contentType.equals("text/json") || contentType.equals("text/x-json")) {
+                return FileConnector.readJson(system(), url, new InputStreamReader(connection.getInputStream()));
+            } else if (contentType.startsWith("text")) {
+                return FileConnector.readText(system(), url, new BufferedReader(new InputStreamReader(
+                        connection.getInputStream())));
+            } else {
+                return FileConnector.readBinary(system(), url, connection.getInputStream());
+            }
         } catch (IOException e) {
             throw ItemscriptError.internalError(this, "IOException", e);
         }

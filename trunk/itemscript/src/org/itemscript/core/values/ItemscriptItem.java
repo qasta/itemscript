@@ -98,12 +98,14 @@ public final class ItemscriptItem implements JsonItem {
 
     @Override
     public JsonValue get(String url) {
-        return get(Url.create(system(), url));
+        return get(system().util()
+                .createUrl(url));
     }
 
     @Override
     public void get(String url, GetCallback callback) {
-        get(Url.create(system(), url), callback);
+        get(system().util()
+                .createUrl(url), callback);
     }
 
     JsonValue get(Url url) {
@@ -112,7 +114,8 @@ public final class ItemscriptItem implements JsonItem {
             if (fragment.size() == 0) { return value; }
             return ((ItemscriptContainer) value).getByFragment(fragment);
         } else {
-            return ((ItemscriptSystem) system).get(Url.createRelative(system(), source, url));
+            return ((ItemscriptSystem) system).get(system().util()
+                    .createRelativeUrl(source, url));
         }
     }
 
@@ -124,7 +127,8 @@ public final class ItemscriptItem implements JsonItem {
                 callback.onError(e);
             }
         } else {
-            ((ItemscriptSystem) system).get(Url.createRelative(system(), source, url), callback);
+            ((ItemscriptSystem) system).get(system().util()
+                    .createRelativeUrl(source, url), callback);
         }
     }
 
@@ -266,13 +270,15 @@ public final class ItemscriptItem implements JsonItem {
 
     @Override
     public PutResponse put(String url, JsonValue value) {
-        putValue(Url.create(system(), url), value);
+        putValue(system().util()
+                .createUrl(url), value);
         return new ItemscriptPutResponse(url, null, value);
     }
 
     @Override
     public void put(String url, JsonValue value, PutCallback callback) {
-        put(Url.create(system(), url), value, callback);
+        put(system().util()
+                .createUrl(url), value, callback);
     }
 
     @Override
@@ -300,7 +306,8 @@ public final class ItemscriptItem implements JsonItem {
             }
         } else {
             // Otherwise interpret it as relative to the source URL of this item.
-            ((ItemscriptSystem) system).put(Url.createRelative(system(), source, url), value, callback);
+            ((ItemscriptSystem) system).put(system().util()
+                    .createRelativeUrl(source, url), value, callback);
         }
     }
 
@@ -313,7 +320,8 @@ public final class ItemscriptItem implements JsonItem {
 
     @Override
     public PutResponse putValue(String url, JsonValue value) {
-        return putValue(Url.create(system(), url), value);
+        return putValue(system().util()
+                .createUrl(url), value);
     }
 
     private PutResponse putValue(Url url, JsonValue value) {
@@ -346,22 +354,26 @@ public final class ItemscriptItem implements JsonItem {
                 this.value = value;
                 notifyPut("#", value);
             }
-            return new ItemscriptPutResponse(Url.createRelative(system, source(), url + "") + "", null, value);
+            return new ItemscriptPutResponse(system().util()
+                    .createRelativeUrl(source(), url + "") + "", null, value);
         } else {
             // If the URL was anything other than a fragment, interpret it as being relative to the source of this
             // item and put the value there.
-            return ((ItemscriptSystem) system).put(Url.createRelative(system(), source, url), value);
+            return ((ItemscriptSystem) system).put(system().util()
+                    .createRelativeUrl(source, url), value);
         }
     }
 
     @Override
     public RemoveResponse remove(String url) {
-        return remove(Url.create(system(), url));
+        return remove(system().util()
+                .createUrl(url));
     }
 
     @Override
     public void remove(String url, RemoveCallback callback) {
-        remove(Url.create(system(), url), callback);
+        remove(system().util()
+                .createUrl(url), callback);
     }
 
     private RemoveResponse remove(Url url) {
@@ -385,7 +397,8 @@ public final class ItemscriptItem implements JsonItem {
             }
         } else {
             // Otherwise treat the URL as relative to the source of this item and call system.remove().
-            ((ItemscriptSystem) system).remove(Url.createRelative(system(), source, url));
+            ((ItemscriptSystem) system).remove(system().util()
+                    .createRelativeUrl(source, url));
         }
         return new ItemscriptRemoveResponse(null);
     }
@@ -404,7 +417,8 @@ public final class ItemscriptItem implements JsonItem {
             }
         }
         // Otherwise treat the URL as relative to the source of this item and call system.remove().
-        ((ItemscriptSystem) system).remove(Url.createRelative(system(), source, url), callback);
+        ((ItemscriptSystem) system).remove(system().util()
+                .createRelativeUrl(source, url), callback);
     }
 
     @Override

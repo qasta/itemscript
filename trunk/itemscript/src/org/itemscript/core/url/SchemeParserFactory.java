@@ -38,5 +38,10 @@ package org.itemscript.core.url;
  *
  */
 public interface SchemeParserFactory {
+    /**
+     * Create a new SchemeParser to parse a URL.
+     * 
+     * @return A new SchemeParser.
+     */
     public SchemeParser create();
 }

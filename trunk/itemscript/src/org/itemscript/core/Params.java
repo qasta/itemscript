@@ -32,7 +32,7 @@ package org.itemscript.core;
 import java.util.HashMap;
 
 /**
- * A simple class that implements Map<String, String> and provides a chainable put method for initialization.
+ * A simple class that implements <code>Map&lt;String, String&gt;</code> and provides a chainable put method for initialization.
  * This is useful when you want to create and initialize a string map inline, for instance for logging or exceptions.
  * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
