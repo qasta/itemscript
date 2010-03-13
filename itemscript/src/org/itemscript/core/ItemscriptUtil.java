@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright notice,
  *       this list of conditions and the following disclaimer in the documentation
  *       and/or other materials provided with the distribution.
- *     * Neither the names of Kalinda Software, DBA Software, Data Base Architects,
+ *     * Neither the names of Kalinda Software, DBA Software, Data Base Architects, Itemscript
  *       nor the names of its contributors may be used to endorse or promote products derived
  *       from this software without specific prior written permission.
  * 
@@ -27,55 +27,76 @@
  * Author: Jacob Davies
  */
 
-package org.itemscript.standard;
+package org.itemscript.core;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-
-import org.itemscript.core.HasSystem;
-import org.itemscript.core.JsonSystem;
-import org.itemscript.core.exceptions.ItemscriptError;
+import org.itemscript.core.config.JsonConfig;
 import org.itemscript.core.url.Url;
-import org.itemscript.core.values.JsonString;
-import org.itemscript.core.values.JsonValue;
+import org.itemscript.core.url.UrlFactory;
 
 /**
- * Connector that allows you to read a file into a byte[] stored in a JsonString.
- * <p>
- * TODO: This needs to be rolled into the single file connector.
- *  
+ * The implementation class for JsonUtil.
+ * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
-@Deprecated
-public final class BinaryFileConnector extends FileConnectorBase implements HasSystem {
+class ItemscriptUtil implements JsonUtil, HasSystem {
+    private final JsonConfig config;
+    private final JsonSystem system;
+    private final UrlFactory urlFactory;
+
     /**
-     * Create a new BinaryFileConnector.
+     * Create a new ItemscriptUtil with the associated JsonSystem and JsonConfig.
      * 
      * @param system The associated JsonSystem.
+     * @param config The associated JsonConfig.
      */
-    public BinaryFileConnector(JsonSystem system) {
-        super(system);
+    ItemscriptUtil(JsonSystem system, JsonConfig config) {
+        this.system = system;
+        this.config = config;
+        this.urlFactory = new UrlFactory(system);
     }
 
     @Override
-    public JsonValue get(Url url) {
-        File file = new File(url.pathString());
-        if (!file.exists()) { throw new ItemscriptError(
-                "error.itemscript.BinaryFileConnector.get.file.does.not.exist", url.pathString()); }
-        if (file.isDirectory()) {
-            throw ItemscriptError.internalError(this, "get.was.directory", file + "");
-        } else {
-            try {
-                FileInputStream stream = new FileInputStream(file);
-                byte[] contents = Util.readStreamToByteArray(stream);
-                stream.close();
-                JsonString value = system().createString(contents);
-                return system().createItem(url + "", value)
-                        .value();
-            } catch (IOException e) {
-                throw new ItemscriptError("error.itemscript.BinaryFileConnector.get.IOException", e);
-            }
-        }
+    public JsonSystem system() {
+        return system;
+    }
+
+    @Override
+    public String generateB64id() {
+        return config.generateB64id();
+    }
+
+    @Override
+    public int nextRandomInt() {
+        return config.nextRandomInt();
+    }
+
+    @Override
+    public String generateUuid() {
+        return config.generateUuid();
+    }
+
+    @Override
+    public Url createRelativeUrl(String baseUrl, String relativeUrl) {
+        return urlFactory.createRelative(baseUrl, relativeUrl);
+    }
+
+    @Override
+    public Url createRelativeUrl(Url baseUrl, String relativeUrl) {
+        return urlFactory.createRelative(baseUrl, relativeUrl);
+    }
+
+    @Override
+    public Url createRelativeUrl(Url baseUrl, Url relativeUrl) {
+        return urlFactory.createRelative(baseUrl, relativeUrl);
+    }
+
+    @Override
+    public Url createUrl(String url) {
+        return urlFactory.create(url);
+    }
+
+    @Override
+    public UrlFactory urlFactory() {
+        return urlFactory;
     }
 }

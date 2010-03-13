@@ -40,6 +40,7 @@ public interface SchemeParser {
     /**
      * Parse a URL string into a {@link Url} object.
      * 
+     * @param system The associated JsonSystem.
      * @param urlString The URL string to parse.
      * @param endOfScheme The index of the first character after the scheme, or 0 if the URL did not include a scheme.
      * @return A new Url object.

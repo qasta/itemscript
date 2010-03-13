@@ -60,26 +60,16 @@ public interface JsonSystem extends JsonGetAccess, JsonPutAccess, HasSystem, Jso
     public void copy(String fromUrl, String toUrl);
 
     /**
-     * Generate a random UUID string.
+     * Get the {@link JsonUtil} object for this system. The JsonUtil object contains various implementation
+     * methods that may be useful but aren't really part of the core system interface.
      * 
-     * @return The new UUID.
+     * @return The associated JsonUtil.
      */
-    public String generateUuid();
-
-    /**
-     * Generate a random base-64 unique-ID string. This is a 22-character representation of a 128-bit
-     * random unique-ID encoded as base64 without padding and containing only URL-safe characters.
-     * <p>
-     * Note: although this is a 128-bit random unique-ID, it is not technically a UUID because it may
-     * not have the flag bits set that say what type of ID it is.
-     * 
-     * @return The new b64id.
-     */
-    public String generateB64id();
+    public JsonUtil util();
 
     /**
      * Get a value from the given URL.
-     * 
+     * <p>
      * If the URL is relative, it will be interpreted as relative to the URL "mem:/".
      * 
      * @param url The URL to get the value from.
@@ -89,9 +79,9 @@ public interface JsonSystem extends JsonGetAccess, JsonPutAccess, HasSystem, Jso
 
     /**
       * Get a value from the given URL, asynchronously.
-      * 
+      * <p>
       * If the URL is relative, it will be interpreted as relative to the URL "mem:/".
-      * 
+      * <p>
       * Calls the given callback when the value has been retrieved.
       * 
       * @param url The URL to get the value from.
@@ -109,10 +99,10 @@ public interface JsonSystem extends JsonGetAccess, JsonPutAccess, HasSystem, Jso
 
     /**
      * Parse the contents of the given Reader as JSON.
-     * 
+     * <p>
      * The argument is specified as Object only because GWT does not contain Reader.
-     * 
-     * This method is inoperative in the GWT environment.
+     * <p>
+     * Note: this method is inoperative in the GWT environment.
      * 
      * @param reader The Reader to parse.
      * @return The JsonValue corresponding to the contents of the Reader.

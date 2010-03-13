@@ -47,433 +47,19 @@
 
 package org.itemscript.core.url;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import org.itemscript.core.HasSystem;
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.exceptions.ItemscriptError;
-
-final class HttpLikeSchemeParser implements SchemeParser {
-    private String urlString;
-    private String remainder;
-    private int length;
-    private boolean hasScheme;
-    private String scheme;
-    private String authority;
-    private String userInformation;
-    private String hostname;
-    private boolean hasPort;
-    private String port;
-    private String pathString;
-    private boolean hasQuery;
-    private boolean hasFragment;
-    private String directory;
-    private String filename;
-    private Path path = new Path();;
-    private String queryString;
-    private Query query = new Query();
-    private String fragmentString;
-    private Fragment fragment = new Fragment();
-
-    private Url _parse(JsonSystem system, int endOfScheme) {
-        if (endOfScheme == 0) {
-            hasScheme = true;
-        } else {
-            hasScheme = false;
-        }
-        int startOfPath;
-        if (hasScheme) {
-            remainder = null;
-            scheme = null;
-            hostname = null;
-            port = null;
-            startOfPath = 0;
-        } else {
-            scheme = substring(0, endOfScheme).toLowerCase();
-            remainder = urlString.substring(endOfScheme + 1);
-            int endOfAuthority = findAuthority(endOfScheme);
-            startOfPath = endOfAuthority;
-        }
-        int endOfPath = findPath(startOfPath);
-        int endOfPathOrQuery = endOfPath;
-        if (hasQuery) {
-            endOfPathOrQuery = findQuery(endOfPath);
-        }
-        if (hasFragment) {
-            int endOfFragment = findFragment(endOfPathOrQuery);
-        }
-        return new Url(system, urlString, remainder, scheme, authority, userInformation, hostname, port,
-                pathString, path, directory, filename, queryString, query, fragmentString, fragment);
-    }
-
-    private char charAt(int index) {
-        // At the end of the string or past it, return a 0 char.
-        if (index >= urlString.length()) { return 0; }
-        return urlString.charAt(index);
-    }
-
-    private void decodePath() {
-        // Look for a leading '/' indicating a rooted path.
-        int startOfFirstNonRootComponent = 0;
-        if (pathString.length() > 0 && pathString.charAt(0) == '/') {
-            path.add("/");
-            startOfFirstNonRootComponent = 1;
-        }
-        int startOfComponent = startOfFirstNonRootComponent;
-        for (int i = startOfFirstNonRootComponent; i <= pathString.length(); ++i) {
-            char c;
-            if (i == pathString.length()) {
-                c = 0;
-            } else {
-                c = pathString.charAt(i);
-            }
-            if (c == '/' || c == 0) {
-                if (i > startOfComponent) {
-                    String component = pathString.substring(startOfComponent, i);
-                    path.add(Url.decode(component));
-                }
-                startOfComponent = i + 1;
-            }
-        }
-        // Look for a trailing '/' indicating no filename. If not found, set the directory & filename.
-        if (pathString.length() > 0 && pathString.charAt(pathString.length() - 1) != '/') {
-            filename = path.get(path.size() - 1);
-            directory = pathString.substring(0, pathString.length() - filename.length());
-        } else {
-            directory = pathString;
-            filename = null;
-        }
-    }
-
-    private void decodeQuery() {
-        boolean inKey = true;
-        String key = "";
-        int startOfKey = 0;
-        int startOfValue = 0;
-        for (int i = 0; i <= queryString.length(); ++i) {
-            char c;
-            if (i == queryString.length()) {
-                c = 0;
-            } else {
-                c = queryString.charAt(i);
-            }
-            if (inKey) {
-                if (c == '=') {
-                    key = Url.decode(queryString.substring(startOfKey, i));
-                    inKey = false;
-                    startOfValue = i + 1;
-                } else if (c == '&' || c == 0) {
-                    // A key with no value....
-                    key = queryString.substring(startOfKey, i);
-                    pushValue(key, "");
-                    inKey = true;
-                    startOfKey = i + 1;
-                }
-            } else {
-                if (c == '&' || c == 0) {
-                    String value = Url.decode(queryString.substring(startOfValue, i));
-                    pushValue(key, value);
-                    inKey = true;
-                    startOfKey = i + 1;
-                }
-            }
-        }
-    }
-
-    private int findAuthority(int endOfScheme) {
-        // First check that after the scheme comes a double slash "//" - if not, there's no authority.
-        if (charAt(endOfScheme + 1) != '/' || charAt(endOfScheme + 2) != '/') {
-            authority = null;
-            userInformation = null;
-            hostname = null;
-            port = null;
-            return endOfScheme + 1;
-        }
-        int startOfAuthority = endOfScheme + 3;
-        int endOfAuthority = 0;
-        boolean hasUserInformation = false;
-        boolean hasPort = false;
-        // Look for a /, ?, or # to end the authority.
-        for (int i = startOfAuthority; i <= length; ++i) {
-            char c = charAt(i);
-            if (c == '@') {
-                hasUserInformation = true;
-            } else if (c == 0) {
-                endOfAuthority = i;
-                break;
-            } else if (c == '/') {
-                endOfAuthority = i;
-                break;
-            }
-        }
-        // The authority can be empty even if the url had a scheme e.g. "file:///foo/bar/"
-        if (startOfAuthority == endOfAuthority) {
-            authority = null;
-        } else {
-            authority = substring(startOfAuthority, endOfAuthority).toLowerCase();
-        }
-        if (authority != null) {
-            // Now break it up and look for a user information section, host, and port.
-            String hostnameAndPort = "";
-            if (hasUserInformation) {
-                for (int i = 0; i < authority.length(); ++i) {
-                    char c = authority.charAt(i);
-                    if (c == '@') {
-                        userInformation = authority.substring(0, i);
-                        hostnameAndPort = authority.substring(i + 1);
-                        break;
-                    }
-                }
-            } else {
-                userInformation = null;
-                hostnameAndPort = authority;
-            }
-            // Now look for a hostname and maybe a port:
-            for (int i = 0; i <= hostnameAndPort.length(); ++i) {
-                char c;
-                if (i == hostnameAndPort.length()) {
-                    c = 0;
-                } else {
-                    c = hostnameAndPort.charAt(i);
-                }
-                if (c == ':') {
-                    hostname = hostnameAndPort.substring(0, i);
-                    port = hostnameAndPort.substring(i + 1);
-                    break;
-                } else if (c == 0) {
-                    hostname = hostnameAndPort;
-                    port = null;
-                }
-            }
-        } else {
-            userInformation = null;
-            hostname = null;
-            port = null;
-        }
-        return endOfAuthority;
-    }
-
-    private int findFragment(int endOfPathOrQuery) {
-        int startOfFragment = endOfPathOrQuery + 1;
-        int endOfFragment = 0;
-        // For fragments they always run to the end of the string, but we're gonna go by character by character just for the hell of it...
-        for (int i = startOfFragment; i <= length; ++i) {
-            char c = charAt(i);
-            if (c == 0) {
-                endOfFragment = i;
-                break;
-            }
-        }
-        fragmentString = substring(startOfFragment, endOfFragment);
-        fragment = Fragment.decodeFragment(fragmentString);
-        return endOfFragment;
-    }
-
-    private int findPath(int startOfPath) {
-        int endOfPath = 0;
-        for (int i = startOfPath; i <= length; ++i) {
-            char c = charAt(i);
-            // The path runs until the end of the string or a ? or # character.
-            if (c == 0) {
-                endOfPath = i;
-                hasQuery = false;
-                hasFragment = false;
-                break;
-            } else if (c == '?') {
-                endOfPath = i;
-                hasQuery = true;
-                break;
-            } else if (c == '#') {
-                endOfPath = i;
-                hasQuery = false;
-                hasFragment = true;
-                break;
-            }
-        }
-        // An empty path with a scheme is equivalent to "/" - e.g. a URL like "http://well.com"
-        // An empty path with no scheme is equivalent to null, though - e.g. "?foo=bar" or "#someanchor"
-        if (startOfPath == endOfPath) {
-            if (hasScheme) {
-                pathString = null;
-            } else {
-                pathString = "/";
-            }
-        } else {
-            pathString = substring(startOfPath, endOfPath);
-        }
-        // if there was a scheme, paths must start with "/"
-        if (!hasScheme) {
-            if (pathString.charAt(0) != '/') { throw new ItemscriptError(
-                    "error.itemscript.Url.findPath.url.with.scheme.path.did.not.start.with.slash", pathString); }
-        }
-        if (pathString != null) {
-            decodePath();
-        }
-        return endOfPath;
-    }
-
-    private int findQuery(int endOfPath) {
-        int startOfQuery = endOfPath + 1;
-        int endOfQuery = 0;
-        for (int i = startOfQuery; i <= length; ++i) {
-            char c = charAt(i);
-            if (c == 0) {
-                endOfQuery = i;
-                hasFragment = false;
-                break;
-            } else if (c == '#') {
-                endOfQuery = i;
-                hasFragment = true;
-                break;
-            }
-        }
-        queryString = substring(startOfQuery, endOfQuery);
-        decodeQuery();
-        return endOfQuery;
-    }
-
-    public Url parse(JsonSystem system, String urlString, int endOfScheme) {
-        this.urlString = urlString;
-        this.length = urlString.length();
-        return _parse(system, endOfScheme);
-    }
-
-    public void pushValue(String key, String value) {
-        List<String> list = query.get(key);
-        if (list == null) {
-            list = new ArrayList<String>();
-            query.put(key, list);
-        }
-        list.add(value);
-    }
-
-    private String substring(int begin, int end) {
-        return urlString.substring(begin, end);
-    }
-}
-
-final class UnknownSchemeParser implements SchemeParser {
-    public Url parse(JsonSystem system, String urlString, int endOfScheme) {
-        String scheme = urlString.substring(0, endOfScheme);
-        String remainder = urlString.substring(endOfScheme + 1, urlString.length());
-        boolean foundFragment = false;
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < urlString.length(); ++i) {
-            char c = urlString.charAt(i);
-            if (foundFragment) {
-                sb.append(c);
-            }
-            if (c == '#') {
-                foundFragment = true;
-            }
-        }
-        String fragmentString = null;
-        Fragment fragment = null;
-        if (sb.length() > 0) {
-            fragmentString = sb.toString();
-            fragment = Fragment.decodeFragment(fragmentString);
-        }
-        return new Url(system, urlString, remainder, scheme, null, null, null, null, null, null, null, null, null,
-                null, fragmentString, fragment);
-    }
-}
 
 /**
  * Represents a decoded URL in the Itemscript system.
  * <p>
  * This separate implementation to {@link java.net.URL} was necessary because the latter is not supported in the GWT
  * environment.
- * <p>
- * Note: the static factory methods on this class will go away and be replaced by instance methods on {@link JsonSystem} at some point,
- * so reliance on it as a standalone URL-parsing class is probably unwise. The static {@link #encode} and {@link #decode} methods will
- * remain no matter what, though. This is to allow the addition of extra scheme parsers at runtime to allow for new connectors to easily
- * be added. In the meantime those methods will require a JsonSystem object to make sure that they are not used in places where no JsonSystem is
- * available.
  * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
-public final class Url {
-    private static String addBasePath(Url baseUrl, Url relativeUrl, String finalUrl) {
-        // If the relative URL didn't have a path, use the entire original path:
-        finalUrl += baseUrl.pathString();
-        // And if the relative URL had no query, use the entire original query if there was one:
-        if (relativeUrl.queryString() == null || relativeUrl.queryString()
-                .length() == 0) {
-            if (baseUrl.queryString() != null && baseUrl.queryString()
-                    .length() > 0) {
-                finalUrl += "?" + baseUrl.queryString();
-            }
-        } else {
-            // Otherwise add the relative URL's query:
-            finalUrl += "?" + relativeUrl.queryString();
-        }
-        return finalUrl;
-    }
-
-    private static String addRelativePath(Url baseUrlObj, Url relativeUrlObj, String finalUrl) {
-        // If the relative URL's path was absolute, ignore the base URL's path:
-        List<String> unreducedPath = combinePaths(baseUrlObj, relativeUrlObj);
-        // Now, throw out the leading "/" entry for now, and remove any components consisting only of "."
-        List<String> reducedPath = reducePath(relativeUrlObj, unreducedPath);
-        // Bearing in mind that the path should start with a slash...
-        if (reducedPath.size() > 0) {
-            for (int i = 0; i < reducedPath.size(); ++i) {
-                finalUrl += "/";
-                finalUrl += reducedPath.get(i);
-            }
-        } else {
-            finalUrl += "/";
-        }
-        // OK - now, if the relative URL ended with a "/" AND was not just the string "/" AND the final URL doesn't
-        // already end with a slash, append one...
-        if (relativeUrlObj.pathString()
-                .length() > 1 && relativeUrlObj.pathString()
-                .endsWith("/") && !finalUrl.endsWith("/")) {
-            finalUrl += "/";
-        }
-        // Now if the relative URL had a query, add it:
-        if (relativeUrlObj.queryString() != null && relativeUrlObj.queryString()
-                .length() > 0) {
-            finalUrl += "?" + relativeUrlObj.queryString();
-        }
-        return finalUrl;
-    }
-
-    private static List<String> combinePaths(Url baseUrlObj, Url relativeUrlObj) {
-        List<String> unreducedPath = new ArrayList<String>();
-        if (relativeUrlObj.path()
-                .get(0)
-                .equals("/")) {
-            unreducedPath.addAll(relativeUrlObj.path());
-        } else {
-            // Otherwise add the relative URL path to the base URL's directory:
-            int lastBaseElementToAdd;
-            // If it had a filename, stop before that.. unless the filename was ".."!
-            if (baseUrlObj.filename() != null && baseUrlObj.filename()
-                    .length() > 0) {
-                if (baseUrlObj.filename()
-                        .equals("..")) {
-                    lastBaseElementToAdd = baseUrlObj.path()
-                            .size() - 1;
-                } else {
-                    lastBaseElementToAdd = baseUrlObj.path()
-                            .size() - 2;
-                }
-            } else {
-                lastBaseElementToAdd = baseUrlObj.path()
-                        .size() - 1;
-            }
-            for (int i = 0; i <= lastBaseElementToAdd; ++i) {
-                unreducedPath.add(baseUrlObj.path()
-                        .get(i));
-            }
-            unreducedPath.addAll(relativeUrlObj.path());
-        }
-        return unreducedPath;
-    }
-
+public final class Url implements HasSystem {
     /**
      * URL-decode the supplied string.
      * 
@@ -588,52 +174,6 @@ public final class Url {
         return sbuf.toString();
     }
 
-    private static boolean isSchemeChar(char c) {
-        if (c == '+' || c == '.' || c == '-') { return true; }
-        if (Character.isLetterOrDigit(c)) { return true; }
-        return false;
-    }
-
-    private static List<String> reducePath(Url relativeUrlObj, List<String> unreducedPath) {
-        // Otherwise we need to remove the "." and ".." entries. First, the leading "/" and any "." entries:
-        List<String> reducedPath = new ArrayList<String>();
-        for (int i = 1; i < unreducedPath.size(); ++i) {
-            String component = unreducedPath.get(i);
-            if (!component.equals(".")) {
-                reducedPath.add(component);
-            }
-        }
-        // Now, as long as any exist, remove any combinations of a component followed by .., iteratively.
-        LOOKFORDOTDOTS : while (true) {
-            int indexOfFirstDotDot = -1;
-            COMPONENTS : for (int i = 0; i < reducedPath.size(); ++i) {
-                String component = reducedPath.get(i);
-                if (component.equals("..")) {
-                    indexOfFirstDotDot = i;
-                    break COMPONENTS;
-                }
-            }
-            // If we didn't find any, move on.
-            if (indexOfFirstDotDot == -1) {
-                break LOOKFORDOTDOTS;
-            }
-            // Otherwise create a new reduced path with the component before the first ".." and the ".." itself removed.
-            if (indexOfFirstDotDot == 0) { throw ItemscriptError.internalError(relativeUrlObj,
-                    "first.component.was.dot.dot", reducedPath + ""); }
-            List<String> newReducedPath = new ArrayList<String>();
-            // OK, now add all the components up to the one before the ".."
-            for (int i = 0; i < (indexOfFirstDotDot - 1); ++i) {
-                newReducedPath.add(reducedPath.get(i));
-            }
-            // Now add all the components after the ".." and repeat...
-            for (int i = indexOfFirstDotDot + 1; i < reducedPath.size(); ++i) {
-                newReducedPath.add(reducedPath.get(i));
-            }
-            reducedPath = newReducedPath;
-        }
-        return reducedPath;
-    }
-
     private final String remainder;
     private final String scheme;
     private final String authority;
@@ -666,14 +206,6 @@ public final class Url {
      * The file scheme.
      */
     public final static String FILE_SCHEME = "file";
-    /**
-     * The cookie scheme.
-     */
-    private final static String COOKIE_SCHEME = "cookie";
-    private final static String NO_SCHEME = "NO SCHEME";
-    private final static String UNKNOWN_SCHEME = "UNKNOWN SCHEME";
-    private final static Map<String, SchemeParserFactory> parserFactories =
-            new HashMap<String, SchemeParserFactory>();
     private final static String[] hex =
             {"%00", "%01", "%02", "%03", "%04", "%05", "%06", "%07", "%08", "%09", "%0a", "%0b", "%0c", "%0d",
                     "%0e", "%0f", "%10", "%11", "%12", "%13", "%14", "%15", "%16", "%17", "%18", "%19", "%1a",
@@ -695,148 +227,9 @@ public final class Url {
                     "%de", "%df", "%e0", "%e1", "%e2", "%e3", "%e4", "%e5", "%e6", "%e7", "%e8", "%e9", "%ea",
                     "%eb", "%ec", "%ed", "%ee", "%ef", "%f0", "%f1", "%f2", "%f3", "%f4", "%f5", "%f6", "%f7",
                     "%f8", "%f9", "%fa", "%fb", "%fc", "%fd", "%fe", "%ff"};
-    static {
-        SchemeParserFactory httpLike = new SchemeParserFactory() {
-            public SchemeParser create() {
-                return new HttpLikeSchemeParser();
-            }
-        };
-        parserFactories.put(NO_SCHEME, httpLike);
-        parserFactories.put(MEM_SCHEME, httpLike);
-        parserFactories.put(HTTP_SCHEME, httpLike);
-        parserFactories.put(HTTPS_SCHEME, httpLike);
-        parserFactories.put(FILE_SCHEME, httpLike);
-        parserFactories.put(COOKIE_SCHEME, httpLike);
-        SchemeParserFactory unknown = new SchemeParserFactory() {
-            public SchemeParser create() {
-                return new UnknownSchemeParser();
-            }
-        };
-        parserFactories.put(UNKNOWN_SCHEME, unknown);
-    }
 
     /**
-     * Add a new SchemeParserFactory for a scheme.
-     * 
-     * @param scheme
-     * @param factory
-     */
-    public static void addSchemeParserFactory(String scheme, SchemeParserFactory factory) {
-        parserFactories.put(scheme, factory);
-    }
-
-    /**
-     * Create a new Url from a string containing a URL.
-     * 
-     * @param urlString The string containing a URL.
-     * @return The new Url object.
-     */
-    @Deprecated
-    public static Url create(JsonSystem system, String urlString) {
-        if (urlString == null) { return null; }
-        // Remove leading and trailing whitespace first...
-        urlString = urlString.trim();
-        int startOfScheme = 0;
-        int endOfScheme = 0;
-        for (int i = startOfScheme; i < urlString.length(); ++i) {
-            char c = urlString.charAt(i);
-            if (!isSchemeChar(c)) {
-                if (c == ':') {
-                    endOfScheme = i;
-                    break;
-                } else {
-                    break;
-                }
-            }
-        }
-        String scheme = null;
-        if (endOfScheme > startOfScheme) {
-            scheme = urlString.substring(startOfScheme, endOfScheme)
-                    .toLowerCase();
-        } else {
-            scheme = NO_SCHEME;
-        }
-        if (!parserFactories.containsKey(scheme)) {
-            scheme = UNKNOWN_SCHEME;
-        }
-        SchemeParser schemeParser = parserFactories.get(scheme)
-                .create();
-        return schemeParser.parse(system, urlString, endOfScheme);
-    }
-
-    /**
-     * Create a new Url from a base URL and a relative URL.
-     * 
-     * @param baseUrl The base URL to work from.
-     * @param relativeUrl The relative URL to add to the base URL.
-     * @return The new Url object.
-     */
-    @Deprecated
-    public static Url createRelative(JsonSystem system, String baseUrl, String relativeUrl) {
-        return createRelative(system, create(system, baseUrl), create(system, relativeUrl));
-    }
-
-    /**
-     * Create a new Url from a base Url object and a relative Url object.
-     * 
-     * @param baseUrl The base URL to work from.
-     * @param relativeUrl The relative URL to add to the base URL.
-     * @return The new Url object.
-     */
-    @Deprecated
-    public static Url createRelative(JsonSystem system, Url baseUrl, Url relativeUrl) {
-        String baseUrlString = baseUrl.toString();
-        String relativeUrlString = relativeUrl.toString();
-        // per RFC1808/18
-        if (baseUrlString == null) {
-            baseUrlString = "";
-        }
-        baseUrlString = baseUrlString.trim();
-        if (relativeUrlString == null) {
-            relativeUrlString = "";
-        }
-        relativeUrlString = relativeUrlString.trim();
-        // If the base URL is empty, we return the relative URL as the whole URL.
-        if (baseUrlString.length() == 0) { return create(system, relativeUrlString); }
-        // If the relative URL is empty, we return the base URL as the whole URL.
-        if (relativeUrlString.length() == 0) { return create(system, baseUrlString); }
-        // If the putatively relative URL had a scheme, it wasn't actually relative, so return it as the whole URL.
-        if (relativeUrl.scheme() != null) { return relativeUrl; }
-        // If the base URL didn't have a scheme, uh, it wasn't a very good base URL now was it?
-        if (baseUrl.scheme() == null) { throw ItemscriptError.internalError(baseUrl,
-                "createRelative.baseUrl.did.not.have.a.scheme", baseUrlString); }
-        // OK, so the final URL will have the scheme/hostname/port of the base URL, if it had any.
-        String finalUrl = getSchemeHostnameAndPort(baseUrl);
-        // If the relative URL had a path, add that path to the final URL.
-        if (relativeUrl.pathString() != null && relativeUrl.pathString()
-                .length() > 0) {
-            finalUrl = addRelativePath(baseUrl, relativeUrl, finalUrl);
-        } else {
-            finalUrl = addBasePath(baseUrl, relativeUrl, finalUrl);
-        }
-        // Finally, if the relative URL had a fragment section, add it (the base fragment is always ignored unless the relative URL was empty, which is handled
-        // above):
-        if (relativeUrl.fragmentString() != null && relativeUrl.fragmentString()
-                .length() > 0) {
-            finalUrl += "#" + relativeUrl.fragmentString();
-        }
-        return create(system, finalUrl);
-    }
-
-    private static String getSchemeHostnameAndPort(Url url) {
-        if (url.scheme()
-                .equals("mem")) {
-            // Sort of a hack...
-            return "mem:";
-        } else {
-            return url.scheme()
-                    + "://"
-                    + (url.hostname() != null ? url.hostname() + (url.port() != null ? ":" + url.port() : "") : "");
-        }
-    }
-
-    /**
-     * Url constructor. Unless you are implementing a scheme parser, you almost certainly want to use the static create() method, not this constructor.
+     * Url constructor.
      * 
      * @param system
      * @param urlString
@@ -855,7 +248,6 @@ public final class Url {
      * @param fragmentString
      * @param fragment
      */
-    @Deprecated
     public Url(JsonSystem system, String urlString, String remainder, String scheme, String authority,
             String userInformation, String hostname, String port, String pathString, Path path, String directory,
             String filename, String queryString, Query query, String fragmentString, Fragment fragment) {
@@ -1089,7 +481,13 @@ public final class Url {
             }
             sb.append(c);
         }
-        return create(system, sb.toString());
+        return system().util()
+                .createUrl(sb.toString());
+    }
+
+    @Override
+    public JsonSystem system() {
+        return system;
     }
 
     /**
@@ -1106,6 +504,7 @@ public final class Url {
             }
             sb.append(c);
         }
-        return create(system, sb.toString());
+        return system().util()
+                .createUrl(sb.toString());
     }
 }

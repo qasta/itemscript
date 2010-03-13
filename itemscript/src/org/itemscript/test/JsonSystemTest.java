@@ -192,7 +192,21 @@ public class JsonSystemTest extends ItemscriptTestBase {
     }
 
     @Test
-    public void testJsonFileGet() {
+    public void testHttpGet() {
+        JsonObject value = system().get("http://itemscript.org/test.json")
+                .asObject();
+        assertEquals("value", value.getString("test-string"));
+        assertEquals("value", system().getString("http://itemscript.org/test.json#test-string"));
+        JsonArray textValue = system().getArray("http://itemscript.org/test.txt");
+        String firstLine = system().getString("http://itemscript.org/test.txt#0");
+        assertEquals("one", firstLine);
+        JsonString imageValue = system().get("http://itemscript.org/test.png")
+                .asString();
+        assertNotNull(imageValue);
+    }
+
+    @Test
+    public void testFileGet() {
         JsonArray array = system().get("file:" + basePath + "?keys")
                 .asArray();
         assertTrue(array.contains(system().createString("test.json")));
@@ -200,6 +214,12 @@ public class JsonSystemTest extends ItemscriptTestBase {
                 .asObject();
         assertEquals("bar", value.getString("foo"));
         assertEquals("bar", system().getString("file:" + basePath + "test.json#foo"));
+        JsonArray textValue = system().getArray("file:" + basePath + "test.txt");
+        String firstLine = system().getString("file:" + basePath + "test.txt#0");
+        assertEquals("one", firstLine);
+        JsonString imageValue = system().get("file:" + basePath + "test.png")
+                .asString();
+        assertNotNull(imageValue);
     }
 
     @Test
@@ -390,14 +410,16 @@ public class JsonSystemTest extends ItemscriptTestBase {
     public void testUuidPut() {
         JsonValue value = system().put("/foo?uuid", "foo")
                 .value();
-        Url source = Url.create(system(), value.item()
-                .source());
+        Url source = system().util()
+                .createUrl(value.item()
+                        .source());
         assertEquals("/foo/", source.pathString()
                 .substring(0, 5));
         String filename = source.filename();
         assertEquals(36, filename.length());
         PutResponse putResponse = system().put("/bar?uuid", "bar");
-        Url source2 = Url.create(system(), putResponse.url());
+        Url source2 = system().util()
+                .createUrl(putResponse.url());
         assertEquals("/bar/", source2.pathString()
                 .substring(0, 5));
         String filename2 = source2.filename();
@@ -407,7 +429,8 @@ public class JsonSystemTest extends ItemscriptTestBase {
     @Test
     public void testB64idPut() {
         PutResponse response = system().put("/foo?b64id", "foo");
-        Url source = Url.create(system(), response.url());
+        Url source = system().util()
+                .createUrl(response.url());
         assertEquals("/foo/", source.pathString()
                 .substring(0, 5));
         String filename = source.filename();

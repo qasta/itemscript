@@ -55,7 +55,7 @@ public class StandardConfig extends MinimalConfig implements JsonConfig {
     public void seedSystem(JsonSystem system) {
         super.seedSystem(system);
         system.putNative("mem:/itemscript/connectors#classpath", new ResourceConnector(system));
-        system.putNative("mem:/itemscript/connectors#file", new JsonFileConnector(system));
+        system.putNative("mem:/itemscript/connectors#file", new FileConnector(system));
         HttpConnector httpConnector = new HttpConnector(system);
         system.putNative("mem:/itemscript/connectors#http", httpConnector);
         system.putNative("mem:/itemscript/connectors#https", httpConnector);
