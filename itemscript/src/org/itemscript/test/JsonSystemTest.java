@@ -438,7 +438,6 @@ public class JsonSystemTest extends ItemscriptTestBase {
         JsonValue get = system().get(response.url());
         assertEquals(response.url(), get.item()
                 .source());
-        System.err.println(response.url());
     }
 
     @Test
