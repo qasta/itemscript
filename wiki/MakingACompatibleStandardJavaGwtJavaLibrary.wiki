@@ -1,0 +1,54 @@
+#summary A quick guide to what I've learned about making libraries that work in both standard Java & GWT
+
+= Introduction =
+
+Making Java code that can be compiled in both the GWT and standard Java environments can be a bit of a challenge. There are a few things I learned while writing the JSON library & DB that might be useful.
+
+== The problems ==
+
+The main problems:
+
+  * Code that will be compiled by GWT cannot refer to any class or interface that is not emulated in GWT.
+  * Code that will be compiled by GWT cannot refer to any other code that is outside of a GWT client package. (Really the same problem as the above.)
+  * Standard Java environments will not have the GWT libraries available and cannot run any code from the GWT package.
+  * Standard Java environments cannot run JSNI.
+  * GWT does not emulate many standard, common Java interfaces like Reader or InputStream.
+  * GWT has classes that substitute for certain core Java classes - for instance, related to random number generation - but that don't implement the exact same interface.
+
+At first glance, these would seem to reduce you to a very limited, lowest-common-denominator library that cannot use many of the standard Java interfaces and therefore is of very limited use. There's certainly that aspect to some of it, but it doesn't have to be that bad.
+
+== Some solutions ==
+
+=== Divide & conquer ===
+
+Plan to divide your code into three segments. One segment should contain the core functionality of your library to be shared between both the standard-Java and GWT environments. Another segment should contain everything for the standard-Java environment and all the references to standard Java interfaces. The third segment should contain everything for the GWT-Java environment and all the references to GWT interfaces.
+
+The first segment - the shared one - will be a GWT module, but won't contain any JSNI or any GWT-specific code, nor will it contain any references to standard-Java interfaces.
+
+The first segment - the shared segment - cannot contain any "outward" references to the other two segments. The other two segments can contain references to the shared segment API, but not to each other.
+
+In the Itemscript project, those packages are as follows:
+
+  * Shared - `[http://code.google.com/p/itemscript/source/browse/#svn/trunk/itemscript/src/org/itemscript/core org.itemscript.core]`
+  * Standard-Java - `[http://code.google.com/p/itemscript/source/browse/#svn/trunk/itemscript/src/org/itemscript/standard org.itemscript.standard]`
+  * GWT-Java - `[http://code.google.com/p/itemscript/source/browse/#svn/trunk/itemscript/src/org/itemscript/core/gwt org.itemscript.core.gwt]`
+
+=== Use a configuration interface to supply the platform-specific functions to your library ===
+
+Of course, the shared library is likely to need to interact with platform specific code. But it can't make "outward" references to it. So how does it get to it? The answer is to write an interface (or probably more than one) that wraps all the platform-specific features in a generic fashion. This interface still cannot refer to any of the platform-specific classes or interfaces, though, but the implementation of the interface can.
+
+This interface is then implemented in a platform-specific fashion, and supplied to the library during initialization.
+
+In the Itemscript project, the main configuration interfaces are `[http://code.google.com/p/itemscript/source/browse/trunk/itemscript/src/org/itemscript/core/config/JsonConfig.java JsonConfig]` and `[http://code.google.com/p/itemscript/source/browse/trunk/itemscript/src/org/itemscript/core/values/JsonCreator.java JsonCreator]`. The `JsonConfig` interface is a required initialization argument when creating a new `ItemscriptSystem`, in other words when initializing the library. `JsonConfig` wraps a few fairly trivial functions whose implementation differs from one platform to another, for instance, getting a new random int value, and generating a UUID. `JsonCreator` wraps the platform-native JSON parser (`JSON.parse` or `eval` in GWT, a JFlex parser in standard Java).
+
+=== Substitute Object for platform-specific interfaces or classes in the core API ===
+
+Just separating out the platform-specific parts may not be enough. You may need to provide a method in the core API that requires a platform-specific interface be supplied. In those cases, you have to do what would normally not be a great practice: specifying the type of that argument as `Object`. Naturally, that method will not work on the platform where that interface is not available - but it will at least compile there.
+
+For instance, in the Itemscript project, one important feature is the ability to parse JSON that comes in a `Reader` as well as in a `String`. GWT does not contain the `Reader` interface, so the shared core library cannot directly refer to `Reader`, but we want to have a method available alongside `parse(String json)` that will parse a `Reader`.
+
+So, we have a method on `JsonSystem` with the signature `parseReader(Object reader)`. This method just calls the method `parseReader(Object reader)` on `JsonCreator`; for the GWT implementation, we just throw an unsupported operation exception. For the standard Java implementation, we just have to cast the `Object` argument to `Reader`, then supply it a method on the JSON parser that expects a `Reader`. It's not too pretty, but it works.
+
+=== Provide a registry for platform-specific extensions ===
+
+For some kinds of functionality, you want to be able to 
