@@ -79,7 +79,6 @@ public class UrlFactory implements HasSystem {
     private final JsonSystem system;
     private final static String UNKNOWN_SCHEME = "UNKNOWN SCHEME";
     private final static String NO_SCHEME = "NO SCHEME";
-    private final SchemeParserFactory memSchemeParserFactory;
     public static final String SCHEME_PARSER_FACTORIES_PATH = "mem:/itemscript/schemeParserFactories";
     private final JsonObject schemeParserFactories;
 
@@ -100,7 +99,6 @@ public class UrlFactory implements HasSystem {
                 return new HttpLikeSchemeParser();
             }
         };
-        memSchemeParserFactory = httpLike;
         schemeParserFactories = system().createObject();
         schemeParserFactories.putNative(UrlFactory.NO_SCHEME, httpLike);
         schemeParserFactories.putNative(Url.MEM_SCHEME, httpLike);
@@ -116,15 +114,18 @@ public class UrlFactory implements HasSystem {
     }
 
     /**
-     * Return the JsonObject where schemeParserFactories are stored.
-     * @return
+     * Get the JsonObject where SchemeParserFactories are stored.
+     * This is a method used during bootstrapping to get hold of the scheme parsers - since the
+     * scheme parsers are required in order to decode a URL and find a value, we have to give a
+     * direct reference that the system can itself store in a location during bootstrapping.
+     * 
+     * @return The JsonObject where SchemeParserFactories are stored.
      */
     public JsonObject schemeParserFactories() {
         return schemeParserFactories;
     }
 
     private SchemeParserFactory parserFactory(String name) {
-        if (name.equals(Url.MEM_SCHEME)) { return memSchemeParserFactory; }
         return (SchemeParserFactory) schemeParserFactories.getNative(name);
     }
 

@@ -40,7 +40,7 @@ import com.google.gwt.core.client.EntryPoint;
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  *
  */
-public class GwtSystem implements EntryPoint {
+public final class GwtSystem implements EntryPoint {
     /**
      * A single, static instance of a JsonSystem.
      */

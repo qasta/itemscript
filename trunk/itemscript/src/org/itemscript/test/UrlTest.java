@@ -62,7 +62,6 @@ public class UrlTest extends ItemscriptTestBase {
     @Test
     public void testBadPercentEscape() {
         boolean failed = false;
-        System.err.println(system());
         try {
             system().util()
                     .createUrl("broken/escape/%Y");

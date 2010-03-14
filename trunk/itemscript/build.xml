@@ -1,12 +1,12 @@
 <project name="JAR Itemscript" default="dist" basedir=".">
-	<property name="version" value="0.9.8" />
+	<property name="version" value="0.9.9" />
 	<target name="gwt-jar" description="Create the itemscript-gwt JAR file">
 		<jar destfile="dist/itemscript-gwt-${version}.jar" basedir="war/WEB-INF/classes" excludes="**/test/**,**/examples/**">
 			<fileset dir="src/" excludes="**/Itemscript.gwt.xml,**/examples/**,**/test/**" />
 		</jar>
 	</target>
 	<target name="standard-jar" description="Create the itemscript-standard JAR file">
-		<jar destfile="dist/itemscript-standard-${version}.jar" basedir="war/WEB-INF/classes" excludes="**/test/**,**/examples/**,**/Itemscript.gwt.xml" />
+		<jar destfile="dist/itemscript-standard-${version}.jar" basedir="war/WEB-INF/classes" excludes="**/test/**,**/examples/**,**/gwt/**,**/Itemscript.gwt.xml" />
 	</target>
 	<target name="javadoc" description="Create the Javadoc">
 		<javadoc destdir="doc" author="true" windowtitle="Itemscript Javadoc">
