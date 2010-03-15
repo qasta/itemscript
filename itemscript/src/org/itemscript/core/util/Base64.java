@@ -181,6 +181,6 @@ public final class Base64 {
             }
             op++;
         }
-       return out;
+        return out;
     }
 }
