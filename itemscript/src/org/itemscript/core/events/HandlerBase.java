@@ -38,6 +38,7 @@ import org.itemscript.core.JsonSystem;
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  *
  */
+@Deprecated
 public abstract class HandlerBase implements HasSystem, Handler {
     private final JsonSystem system;
 
