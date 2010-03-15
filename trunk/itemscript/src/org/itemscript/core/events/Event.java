@@ -38,6 +38,7 @@ import org.itemscript.core.values.JsonValue;
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  *
  */
+@Deprecated
 public class Event {
     private final EventType eventType;
     private final String fragment;

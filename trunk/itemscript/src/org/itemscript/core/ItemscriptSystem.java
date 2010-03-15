@@ -255,6 +255,10 @@ public final class ItemscriptSystem implements JsonSystem {
                     "get.connector.did.not.implement.SyncGetConnector"); }
             value = ((SyncGetConnector) getConnector(withoutFragmentUrl)).get(withoutFragmentUrl);
         }
+        return interpretFragment(fullUrl, value);
+    }
+
+    private JsonValue interpretFragment(Url fullUrl, JsonValue value) {
         if (fullUrl.hasFragment()) {
             if (fullUrl.fragment()
                     .size() == 0) { return value; }
@@ -273,7 +277,7 @@ public final class ItemscriptSystem implements JsonSystem {
     }
 
     public void get(Url url, final GetCallback callback) {
-        Url fullUrl = createRootRelativeUrl(url);
+        final Url fullUrl = createRootRelativeUrl(url);
         Connector connector = getConnector(fullUrl);
         if (connector instanceof SyncGetConnector) {
             try {
@@ -284,7 +288,17 @@ public final class ItemscriptSystem implements JsonSystem {
         } else {
             if (!(connector instanceof AsyncGetConnector)) { throw ItemscriptError.internalError(this,
                     "get.connector.did.not.implement.AsyncGetConnector"); }
-            ((AsyncGetConnector) connector).get(fullUrl, callback);
+            ((AsyncGetConnector) connector).get(fullUrl, new GetCallback() {
+                @Override
+                public void onSuccess(JsonValue value) {
+                    callback.onSuccess(interpretFragment(fullUrl, value));
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    callback.onError(e);
+                }
+            });
         }
     }
 

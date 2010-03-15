@@ -31,12 +31,14 @@ package org.itemscript.core.gwt;
 
 import org.itemscript.core.HasSystem;
 import org.itemscript.core.JsonSystem;
+import org.itemscript.core.Params;
 import org.itemscript.core.connectors.AsyncGetConnector;
 import org.itemscript.core.connectors.AsyncPostConnector;
 import org.itemscript.core.connectors.AsyncPutConnector;
 import org.itemscript.core.connectors.GetCallback;
 import org.itemscript.core.connectors.PutCallback;
 import org.itemscript.core.connectors.RemoveCallback;
+import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Url;
 import org.itemscript.core.values.ItemscriptPutResponse;
 import org.itemscript.core.values.ItemscriptRemoveResponse;
@@ -75,8 +77,14 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
 
             @Override
             public void onResponseReceived(Request request, Response response) {
-                callback.onSuccess(system().createItem(url + "", system().parse(response.getText()))
-                        .value());
+                if (response.getStatusCode() == 200) {
+                    callback.onSuccess(system().createItem(url + "", system().parse(response.getText()))
+                            .value());
+                } else {
+                    callback.onError(ItemscriptError.internalError(this, "get.returned.non.200.status",
+                            new Params().p("status", response.getStatusCode() + "")
+                                    .p("text", response.getStatusText())));
+                }
             }
         });
     }

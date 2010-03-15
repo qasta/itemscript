@@ -165,6 +165,33 @@ public class ItemscriptError extends RuntimeException {
     }
 
     /**
+     * Get the message key for this exception.
+     * 
+     * @return The message key.
+     */
+    public String key() {
+        return key;
+    }
+
+    /**
+     * Get the params for this exception.
+     * 
+     * @return A Map&lt;String,String&gt; of params, or null if there was no params map.
+     */
+    public Map<String, String> params() {
+        return params;
+    }
+
+    /**
+     * Get the single param for this exception.
+     * 
+     * @return The single param, or null if there was no single param.
+     */
+    public String singleParam() {
+        return singleParam;
+    }
+
+    /**
      * Create a new exception with the given message key and cause.
      * 
      * @param key The message key for this exception.

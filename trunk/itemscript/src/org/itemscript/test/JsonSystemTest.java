@@ -234,17 +234,6 @@ public class JsonSystemTest extends ItemscriptTestBase {
         assertEquals("456", system().getString("/foo/two"));
     }
 
-    //    @Test
-    //    public void testStress() {
-    //        String url = randomUrl();
-    //        System.err.println("url: " + url);
-    //        system().put(url, randomString());
-    //        System.err.println(system().get("mem:/foo")
-    //                .toCompactJsonString());
-    //        System.err.println(system().get(url)
-    //                .fragment());
-    //    }
-    //
     @Test
     public void testMemPut() {
         system().put("mem:/one/two/three", system().createArray()
