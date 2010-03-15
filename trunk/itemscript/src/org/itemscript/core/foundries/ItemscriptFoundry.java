@@ -36,6 +36,7 @@ import org.itemscript.core.HasSystem;
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.Params;
 import org.itemscript.core.exceptions.ItemscriptError;
+import org.itemscript.core.values.ChainObject;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 

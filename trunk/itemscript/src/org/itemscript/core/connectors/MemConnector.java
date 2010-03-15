@@ -228,14 +228,13 @@ public final class MemConnector extends ConnectorBase
         if (query.isUuidQuery()) {
             String uuid = system().util()
                     .generateUuid();
-            Url generatedUrl =
-                    system().util().createRelativeUrl(JsonSystem.ROOT_URL, url.withoutQueryOrFragment() + "/" + uuid);
+            Url generatedUrl = system().util()
+                    .createRelativeUrl(JsonSystem.ROOT_URL, url.withoutQueryOrFragment() + "/" + uuid);
             return put(generatedUrl, value);
         } else if (query.isB64idQuery()) {
             String b64id = system().util()
                     .generateB64id();
-            Url generatedUrl =
- system().util()
+            Url generatedUrl = system().util()
                     .createRelativeUrl(JsonSystem.ROOT_URL, url.withoutQueryOrFragment() + "/" + b64id);
             return put(generatedUrl, value);
         } else {
