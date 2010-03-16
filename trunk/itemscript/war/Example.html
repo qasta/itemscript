@@ -20,55 +20,51 @@ application to display correctly.</div>
 </noscript>
 
 <script>
-var trace = false;
-function toggleTrace() {
-    trace = !trace;
-    itemscript.setTrace(trace);
-}
-function testDb() {
-    var url = itemscript.put("/foo?b64id", {
-        "value":{
-            "test-string" : "value",
-            "test-int" : 1,
-            "test-float" : 1.5,
-            "test-boolean" : true,
-            "test-null" : null,
-            "test-object" : {
-                "x" : "y"
-            },
-            "test-array" : [
-                "abc",
-                1,
-                false
-            ]
-        }
-    })["url"];
+function testMem() {
+    var value = {
+            "value":{
+	        "test-string" : "value",
+	        "test-int" : 1,
+	        "test-float" : 1.5,
+	        "test-boolean" : true,
+	        "test-null" : null,
+	        "test-object" : {
+	            "x" : "y"
+	        },
+	        "test-array" : [
+	            "abc",
+	            1,
+	            false
+	        ]
+	    }
+	};
+    var url = itemscript.put("/foo?b64id", value)["url"];
     window.alert("get url: " + url + " value: " + JSON.stringify(itemscript.get(url)));
     itemscript.remove(url);
-    window.alert("get url: " + url + " value: " + JSON.stringify(itemscript.get(url)));
 }
-function testAsync() {
+function testHttp() {
     var url = "http://127.0.0.1:8888/test.json"
     var callback =  {
-            "onSuccess" : function(value) {
-                window.alert("getAsync url: " + url + " value: " + JSON.stringify(value));
-            },
-            "onError" : function(exception) {
-                window.alert("error: " + JSON.stringify(exception));
-            }
-        };
+        "onSuccess" : function(value) {
+            window.alert("getAsync url: " + url + " value: " + JSON.stringify(value));
+	    },
+	    "onError" : function(exception) {
+	        window.alert("error: " + JSON.stringify(exception));
+	    }
+	};
     itemscript.getAsync(url, callback);
 }
+// For testJavascript, a global object:
 testObject = {
     "xyz" : "abc"
 };
-function testJavaScript() {
-    window.alert(JSON.stringify(itemscript.get("javascript:testObject")));
+function testJavascript() {
+    var url = "javascript:testObject";
+    window.alert("get url: " + url + " value: " + JSON.stringify(itemscript.get(url)));
 }
 </script>
-<input type="button" onClick="toggleTrace()" value="Toggle trace" />
-<input type="button" onClick="testDb()" value="Test DB" />
-<input type="button" onClick="testAsync()" value="Test Async" />
-<input type="button" onClick="testJavaScript()" value="Test JavaScript" />
+<input type="button" onClick="testMem()" value="Test mem:" />
+<input type="button" onClick="testHttp()" value="Test http:" />
+<input type="button" onClick="testJavascript()" value="Test javascript:" />
 </body>
 </html>
