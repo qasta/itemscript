@@ -29,10 +29,12 @@
 			</packageset>
 		</javadoc>
 	</target>
-	<target name="dist" description="Create the distribution ZIP file" depends="clean,gwt-jar,standard-jar,javadoc">
-		<mkdir dir="dist" />
+	<target name="js-zip" description="Create the JavaScript ZIP file" depends="gwt-compile">
+		<zip destfile="dist/itemscript-javascript-${version}.zip" basedir="war" includes="org.itemscript.Itemscript/**,README.txt"/>
+	</target>
+	<target name="dist" description="Create the distribution ZIP file" depends="clean,js-zip,gwt-jar,standard-jar,javadoc">
 		<zip destfile="dist/itemscript-${version}.zip" basedir="." excludes="war/**,.settings/**,.classpath,.project,build.xml,itemscript-${version}.zip,dist/**">
-			<fileset dir="dist" includes="itemscript-standard-${version}.jar,itemscript-gwt-${version}.jar" />
+			<fileset dir="dist" includes="itemscript-standard-${version}.jar,itemscript-gwt-${version}.jar,itemscript-javascript-${version}.zip" />
 		</zip>
 	</target>
 	<target name="clean">

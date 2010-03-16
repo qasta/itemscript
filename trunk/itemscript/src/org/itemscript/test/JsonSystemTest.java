@@ -48,13 +48,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class JsonSystemTest extends ItemscriptTestBase {
-    static Random random = new Random();
-    static char[] letters = new char[26];
-    static {
-        for (char l = 'a'; l <= 'z'; ++l) {
-            letters[l - 'a'] = l;
-        }
-    }
     final static String basePath = "/d:/workspace/Itemscript/src/org/itemscript/test/";
     //    @Test
     //    public void testTextFileGet() {
@@ -73,14 +66,6 @@ public class JsonSystemTest extends ItemscriptTestBase {
     static boolean getCompleted = false;
     static boolean putCompleted = false;
     static boolean removeCompleted = false;
-
-    private String randomString() {
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i <= (Math.abs(random.nextInt()) % 20); ++i) {
-            sb.append(letters[Math.abs(random.nextInt()) % 26]);
-        }
-        return sb.toString();
-    }
 
     private String randomUrl() {
         StringBuffer sb = new StringBuffer("mem:/foo");
@@ -432,5 +417,71 @@ public class JsonSystemTest extends ItemscriptTestBase {
     @Test
     public void testValidate() {
         system().get("classpath:org/itemscript/test/validate.json");
+    }
+
+    @Test
+    public void testCreate() {
+        JsonObject object = createRandomObject(15, 0);
+        String string = object.toJsonString();
+        System.err.println(string);
+        JsonValue parsed = system().parse(string);
+        assertNotNull(parsed);
+    }
+
+    Random random = new Random();
+    char[] letters = new char[26];
+    {
+        for (char l = 'a'; l <= 'z'; ++l) {
+            letters[l - 'a'] = l;
+        }
+    }
+
+    private String randomString() {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i <= (Math.abs(random.nextInt()) % 20); ++i) {
+            sb.append(letters[Math.abs(random.nextInt()) % 26]);
+        }
+        return sb.toString();
+    }
+
+    private JsonValue createSomething(int maxDepth, int depth) {
+        int what = Math.abs(random.nextInt()) % 6;
+        switch (what) {
+            case 0 :
+                return createRandomObject(maxDepth, depth);
+            case 1 :
+                return createRandomArray(maxDepth, depth);
+            case 2 :
+                return system().createNull();
+            case 3 :
+                return system().createBoolean(random.nextBoolean());
+            case 4 :
+                return system().createString(randomString());
+            case 5 :
+            default :
+                return system().createNumber(random.nextDouble());
+        }
+    }
+
+    private JsonObject createRandomObject(int maxDepth, int depth) {
+        JsonObject object = system().createObject();
+        if (depth < maxDepth) {
+            int childNodes = Math.abs(random.nextInt()) % 10;
+            for (int i = 0; i < childNodes; ++i) {
+                object.put(randomString(), createSomething(maxDepth, depth + 1));
+            }
+        }
+        return object;
+    }
+
+    private JsonArray createRandomArray(int maxDepth, int depth) {
+        JsonArray array = system().createArray();
+        if (depth < maxDepth) {
+            int childNodes = Math.abs(random.nextInt()) % 10;
+            for (int i = 0; i < childNodes; ++i) {
+                array.add(createSomething(maxDepth, depth + 1));
+            }
+        }
+        return array;
     }
 }

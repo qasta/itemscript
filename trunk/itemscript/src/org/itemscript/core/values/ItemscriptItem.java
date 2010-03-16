@@ -63,6 +63,7 @@ public final class ItemscriptItem implements JsonItem {
         this.value = value;
         this.source = source;
         this.meta = meta;
+        if (value == null) { throw ItemscriptError.internalError(this, "constructor.value.was.null"); }
         ((ItemscriptValue) value).setItem(this);
     }
 
