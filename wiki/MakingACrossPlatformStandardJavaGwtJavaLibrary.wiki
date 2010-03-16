@@ -30,7 +30,7 @@ In the Itemscript project, those packages are as follows:
   * Standard-Java - [http://code.google.com/p/itemscript/source/browse/#svn/trunk/itemscript/src/org/itemscript/standard org.itemscript.standard]
   * GWT-Java - [http://code.google.com/p/itemscript/source/browse/#svn/trunk/itemscript/src/org/itemscript/core/gwt org.itemscript.core.gwt]
 
-Note that in this case the GWT-Java package is a sub-package of the shared package. This is to slightly simplify the process of including the itemscript GWT module by making the GWT-specific code part of the same module. It could just as easily be outside of the `core` package and included as a referenced module by that package. On the other hand, the standard-Java package must be outside of the `core` package because otherwise GWT will complain that it cannot find the referenced standard-Java interfaces when it tries to compile that module.
+Note that in this case the GWT-Java package is a sub-package of the shared package. This is to slightly simplify the process of including the itemscript GWT module by making the GWT-specific code part of the same module. It could just as easily be outside of the `core` package and included as a referenced module by that package. On the other hand, the standard-Java package _must_ be outside of the `core` package because otherwise GWT will complain that it cannot find the referenced standard-Java interfaces when it tries to compile that module. (Because `org.itemscript.core` is a GWT `client` package.)
  
 === Use a configuration interface to supply the platform-specific functions to your library ===
 
