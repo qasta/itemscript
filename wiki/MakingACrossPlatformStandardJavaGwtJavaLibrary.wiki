@@ -12,9 +12,9 @@ Making Java code that can be compiled in both the GWT and standard Java environm
   * Standard Java environments will not have the GWT libraries available and cannot run any code from the GWT package.
   * Standard Java environments cannot run JSNI.
   * GWT does not emulate many standard, common Java interfaces like Reader or InputStream.
-  * GWT has classes that substitute for certain core Java classes - for instance, related to random number generation - but that don't implement the exact same interface.
+  * GWT has classes that substitute for certain core Java classes - for instance, related to random number generation - but they don't implement the exact same interface.
 
-At first glance, these would seem to reduce you to a very limited, lowest-common-denominator library that cannot use many of the standard Java interfaces and therefore is of very limited use. But it doesn't have to be that bad.
+At first glance, these would seem to reduce you to a very limited, lowest-common-denominator library that cannot use many of the standard Java interfaces and therefore is of very limited use; or two completely different codebases for a library for the standard and GWT versions. But it doesn't have to be that bad.
 
 == Some solutions ==
 
