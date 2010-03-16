@@ -58,7 +58,7 @@ In the Itemscript project we do this with the various `Connector` interfaces in 
 
 To keep your standard-Java JAR safe for non-GWT environments, you should keep all of the GWT-specific code out of it, and provide a different JAR for GWT users. You don't need to worry too much about excluding standard-Java APIs from the latter; it's perfectly OK for the GWT-Java JAR to contain standard-Java-specific interfaces and libraries, as long as none of them are referred to inside either the core segment or the GWT-specific segment of your code.
 
-For instance, in the Itemscript project we build two different JARs like this:
+For instance, in the Itemscript project we build two different JARs with ant like this:
 
 {{{
     <target name="gwt-jar" description="Create the itemscript-gwt JAR file">
@@ -72,3 +72,5 @@ For instance, in the Itemscript project we build two different JARs like this:
 }}}
 
 The standard JAR contains no GWT-specific-classes and none of the gwt.xml files, making it safe to use in an environment where the GWT libraries are not installed. The GWT JAR can be used both on the server side and to compile GWT code for the client side.
+
+The other advantage of two JARs is that the standard JAR does not need to contain the source code, whereas the GWT JAR does. You can see that in the `<fileset>` line in the above ant script.
