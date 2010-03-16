@@ -43,6 +43,7 @@ import org.itemscript.core.values.JsonCreator;
  *
  */
 public class GwtConfig implements JsonConfig {
+    private static final String ITEMSCRIPT_CONNECTORS_PREFIX = "/itemscript/connectors#";
     private final static String integerToHex = "0123456789abcdef";
 
     @Override
@@ -99,11 +100,12 @@ public class GwtConfig implements JsonConfig {
     @Override
     public void seedSystem(JsonSystem system) {
         GwtHttpConnector jsonHttpConnector = new GwtHttpConnector(system);
-        system.putNative("/itemscript/connectors#http", jsonHttpConnector);
-        system.putNative("/itemscript/connectors#https", jsonHttpConnector);
+        system.putNative(ITEMSCRIPT_CONNECTORS_PREFIX + "http", jsonHttpConnector);
+        system.putNative(ITEMSCRIPT_CONNECTORS_PREFIX + "https", jsonHttpConnector);
         // The file: scheme is also assigned to the HTTP connector because file: URLs are also resolved through the web browser's facilities...
-        system.putNative("/itemscript/connectors#file", jsonHttpConnector);
-        system.putNative("/itemscript/connectors#cookie", new GwtCookieConnector(system));
+        system.putNative(ITEMSCRIPT_CONNECTORS_PREFIX + "file", jsonHttpConnector);
+        system.putNative(ITEMSCRIPT_CONNECTORS_PREFIX + "cookie", new GwtCookieConnector(system));
+        system.putNative(ITEMSCRIPT_CONNECTORS_PREFIX + "javascript", new GwtJavaScriptConnector(system));
         system.putNative(UrlFactory.SCHEME_PARSER_FACTORIES_PATH + "#cookie", new HttpLikeSchemeParser());
     }
 }

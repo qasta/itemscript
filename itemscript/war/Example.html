@@ -9,14 +9,7 @@
 
 <!-- Load itemscript -->
 <script type="text/javascript" language="javascript"
-	src="itemscript/itemscript.nocache.js"></script>
-
-<!-- Dependencies -->
-<script src="http://yui.yahooapis.com/2.8.0r4/build/yahoo/yahoo-min.js"></script>
-
-<!-- Source file -->
-<script src="http://yui.yahooapis.com/2.8.0r4/build/json/json-min.js"></script>
-</head>
+	src="org.itemscript.Itemscript/org.itemscript.Itemscript.nocache.js"></script>
 
 <body>
 <noscript>
@@ -27,9 +20,6 @@ application to display correctly.</div>
 </noscript>
 
 <script>
-function jsonString(object) {
-    return YAHOO.lang.JSON.stringify(object);
-}
 var trace = false;
 function toggleTrace() {
     trace = !trace;
@@ -53,25 +43,32 @@ function testDb() {
             ]
         }
     })["url"];
-    window.alert("get url: " + url + " value: " + jsonString(itemscript.get(url)));
+    window.alert("get url: " + url + " value: " + JSON.stringify(itemscript.get(url)));
     itemscript.remove(url);
-    window.alert("get url: " + url + " value: " + jsonString(itemscript.get(url)));
+    window.alert("get url: " + url + " value: " + JSON.stringify(itemscript.get(url)));
 }
 function testAsync() {
     var url = "http://127.0.0.1:8888/test.json"
     var callback =  {
             "onSuccess" : function(value) {
-                window.alert("getAsync url: " + url + " value: " + jsonString(value));
+                window.alert("getAsync url: " + url + " value: " + JSON.stringify(value));
             },
             "onError" : function(exception) {
-                window.alert("error: " + jsonString(exception));
+                window.alert("error: " + JSON.stringify(exception));
             }
         };
     itemscript.getAsync(url, callback);
+}
+testObject = {
+    "xyz" : "abc"
+};
+function testJavaScript() {
+    window.alert(JSON.stringify(itemscript.get("javascript:testObject")));
 }
 </script>
 <input type="button" onClick="toggleTrace()" value="Toggle trace" />
 <input type="button" onClick="testDb()" value="Test DB" />
 <input type="button" onClick="testAsync()" value="Test Async" />
+<input type="button" onClick="testJavaScript()" value="Test JavaScript" />
 </body>
 </html>
