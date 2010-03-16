@@ -3,7 +3,7 @@
 
 = Introduction =
 
-Making Java code that can be compiled in both the GWT and standard Java environments can be a bit of a challenge. There are a few things I learned while writing the JSON library & DB that might be useful.
+Making Java code that can be compiled in both the GWT and standard Java environments can be a bit of a challenge. There are a few simple things I learned while writing the Itemscript JSON library & DB that might be useful.
 
 == The problems ==
 
@@ -14,7 +14,7 @@ Making Java code that can be compiled in both the GWT and standard Java environm
   * GWT does not emulate many standard, common Java interfaces like Reader or InputStream.
   * GWT has classes that substitute for certain core Java classes - for instance, related to random number generation - but that don't implement the exact same interface.
 
-At first glance, these would seem to reduce you to a very limited, lowest-common-denominator library that cannot use many of the standard Java interfaces and therefore is of very limited use. There's certainly that aspect to some of it, but it doesn't have to be that bad.
+At first glance, these would seem to reduce you to a very limited, lowest-common-denominator library that cannot use many of the standard Java interfaces and therefore is of very limited use. But it doesn't have to be that bad.
 
 == Some solutions ==
 
