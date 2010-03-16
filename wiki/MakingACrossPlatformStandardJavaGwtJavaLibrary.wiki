@@ -7,8 +7,6 @@ Making Java code that can be compiled in both the GWT and standard Java environm
 
 == The problems ==
 
-The main problems:
-
   * Code that will be compiled by GWT cannot refer to any class or interface that is not emulated in GWT.
   * Code that will be compiled by GWT cannot refer to any other code that is outside of a GWT client package. (Really the same problem as the above.)
   * Standard Java environments will not have the GWT libraries available and cannot run any code from the GWT package.
