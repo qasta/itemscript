@@ -44,7 +44,7 @@ In the Itemscript project, the main configuration interfaces are [http://code.go
 
 Just separating out the platform-specific parts may not be enough. You may need to provide a method in the core API that requires a platform-specific interface be supplied. In those cases, you have to do what would normally not be a great practice: specifying the type of that argument as `Object`. Naturally, that method will not work on the platform where that interface is not available - but it will at least compile there.
 
-For instance, in the Itemscript project, one important feature is the ability to parse JSON that comes in a `Reader` as well as in a `String`. GWT does not contain the `Reader` interface, so the shared core library cannot directly refer to `Reader`, but we want to have a method available alongside `parse(String json)` that will parse a `Reader`.
+For instance, in the Itemscript project, one important feature is the ability to parse JSON that comes in a `Reader` as well as in a `String`. GWT does not contain the `Reader` interface, so the shared core library cannot directly refer to `Reader`, but we want to have a method available alongside `parse(String json)` on `JsonSystem` that will parse a `Reader`.
 
 So, we have a method on `JsonSystem` with the signature `parseReader(Object reader)`. This method just calls the method `parseReader(Object reader)` on `JsonCreator`; for the GWT implementation, we just throw an unsupported operation exception. For the standard Java implementation, we just have to cast the `Object` argument to `Reader`, then supply it a method on the JSON parser that expects a `Reader`. It's not too pretty, but it works.
 
