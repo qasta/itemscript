@@ -6,14 +6,14 @@ public class ItemscriptPutResponse implements PutResponse {
     private final String url;
     private final JsonValue value;
 
+    public ItemscriptPutResponse(String url, JsonObject meta) {
+        this(url, meta, null);
+    }
+
     public ItemscriptPutResponse(String url, JsonObject meta, JsonValue value) {
         this.url = url;
         this.meta = meta;
         this.value = value;
-    }
-
-    public ItemscriptPutResponse(String url, JsonObject meta) {
-        this(url, meta, null);
     }
 
     @Override

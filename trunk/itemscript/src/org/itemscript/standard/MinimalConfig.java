@@ -55,17 +55,18 @@ public class MinimalConfig implements JsonConfig {
         return new ItemscriptSystem(new MinimalConfig());
     }
 
+    private static void longToBytes(long value, byte[] dest, int start) {
+        for (int i = 0; i < 8; ++i) {
+            dest[start + i] = (byte) (value & 0xFF);
+            value >>= 8;
+        }
+    }
+
     private final Random random = new Random();
 
     @Override
     public JsonCreator createJsonCreator(JsonSystem system) {
         return new StandardJsonCreator(system);
-    }
-
-    @Override
-    public String generateUuid() {
-        return UUID.randomUUID()
-                .toString();
     }
 
     @Override
@@ -77,11 +78,10 @@ public class MinimalConfig implements JsonConfig {
         return new String(Base64.encodeForUrl(bytes));
     }
 
-    private static void longToBytes(long value, byte[] dest, int start) {
-        for (int i = 0; i < 8; ++i) {
-            dest[start + i] = (byte) (value & 0xFF);
-            value >>= 8;
-        }
+    @Override
+    public String generateUuid() {
+        return UUID.randomUUID()
+                .toString();
     }
 
     @Override

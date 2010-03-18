@@ -76,16 +76,79 @@ final class UnknownSchemeParser implements SchemeParser {
  *
  */
 public class UrlFactory implements HasSystem {
-    private final JsonSystem system;
-    private final static String UNKNOWN_SCHEME = "UNKNOWN SCHEME";
-    private final static String NO_SCHEME = "NO SCHEME";
-    public static final String SCHEME_PARSER_FACTORIES_PATH = "mem:/itemscript/schemeParserFactories";
-    private final JsonObject schemeParserFactories;
-
-    @Override
-    public JsonSystem system() {
-        return system;
+    private static String addBasePath(Url baseUrl, Url relativeUrl, String finalUrl) {
+        // If the relative URL didn't have a path, use the entire original path:
+        finalUrl += baseUrl.pathString();
+        // And if the relative URL had no query, use the entire original query if there was one:
+        if (relativeUrl.queryString() == null || relativeUrl.queryString()
+                .length() == 0) {
+            if (baseUrl.queryString() != null && baseUrl.queryString()
+                    .length() > 0) {
+                finalUrl += "?" + baseUrl.queryString();
+            }
+        } else {
+            // Otherwise add the relative URL's query:
+            finalUrl += "?" + relativeUrl.queryString();
+        }
+        return finalUrl;
     }
+    private static List<String> combinePaths(Url baseUrlObj, Url relativeUrlObj) {
+        List<String> unreducedPath = new ArrayList<String>();
+        if (relativeUrlObj.path()
+                .get(0)
+                .equals("/")) {
+            unreducedPath.addAll(relativeUrlObj.path());
+        } else {
+            // Otherwise add the relative URL path to the base URL's directory:
+            int lastBaseElementToAdd;
+            // If it had a filename, stop before that.. unless the filename was ".."!
+            if (baseUrlObj.filename() != null && baseUrlObj.filename()
+                    .length() > 0) {
+                if (baseUrlObj.filename()
+                        .equals("..")) {
+                    lastBaseElementToAdd = baseUrlObj.path()
+                            .size() - 1;
+                } else {
+                    lastBaseElementToAdd = baseUrlObj.path()
+                            .size() - 2;
+                }
+            } else {
+                lastBaseElementToAdd = baseUrlObj.path()
+                        .size() - 1;
+            }
+            for (int i = 0; i <= lastBaseElementToAdd; ++i) {
+                unreducedPath.add(baseUrlObj.path()
+                        .get(i));
+            }
+            unreducedPath.addAll(relativeUrlObj.path());
+        }
+        return unreducedPath;
+    }
+    private static String getSchemeHostnameAndPort(Url url) {
+        if (url.scheme()
+                .equals("mem")) {
+            // Sort of a hack...
+            return "mem:";
+        } else {
+            return url.scheme()
+                    + "://"
+                    + (url.hostname() != null ? url.hostname() + (url.port() != null ? ":" + url.port() : "") : "");
+        }
+    }
+    private static boolean isSchemeChar(char c) {
+        if (c == '+' || c == '.' || c == '-') { return true; }
+        if (Character.isLetterOrDigit(c)) { return true; }
+        return false;
+    }
+    private final JsonSystem system;
+
+    private final static String UNKNOWN_SCHEME = "UNKNOWN SCHEME";
+
+    private final static String NO_SCHEME = "NO SCHEME";
+
+    public static final String SCHEME_PARSER_FACTORIES_PATH = "mem:/itemscript/schemeParserFactories";
+
+    private final JsonObject schemeParserFactories;
 
     /**
      * Create a new UrlFactory for the associated JsonSystem.
@@ -113,20 +176,33 @@ public class UrlFactory implements HasSystem {
         schemeParserFactories.putNative(UrlFactory.UNKNOWN_SCHEME, unknown);
     }
 
-    /**
-     * Get the JsonObject where SchemeParserFactories are stored.
-     * This is a method used during bootstrapping to get hold of the scheme parsers - since the
-     * scheme parsers are required in order to decode a URL and find a value, we have to give a
-     * direct reference that the system can itself store in a location during bootstrapping.
-     * 
-     * @return The JsonObject where SchemeParserFactories are stored.
-     */
-    public JsonObject schemeParserFactories() {
-        return schemeParserFactories;
-    }
-
-    private SchemeParserFactory parserFactory(String name) {
-        return (SchemeParserFactory) schemeParserFactories.getNative(name);
+    private String addRelativePath(Url baseUrlObj, Url relativeUrlObj, String finalUrl) {
+        // If the relative URL's path was absolute, ignore the base URL's path:
+        List<String> unreducedPath = UrlFactory.combinePaths(baseUrlObj, relativeUrlObj);
+        // Now, throw out the leading "/" entry for now, and remove any components consisting only of "."
+        List<String> reducedPath = reducePath(unreducedPath);
+        // Bearing in mind that the path should start with a slash...
+        if (reducedPath.size() > 0) {
+            for (int i = 0; i < reducedPath.size(); ++i) {
+                finalUrl += "/";
+                finalUrl += reducedPath.get(i);
+            }
+        } else {
+            finalUrl += "/";
+        }
+        // OK - now, if the relative URL ended with a "/" AND was not just the string "/" AND the final URL doesn't
+        // already end with a slash, append one...
+        if (relativeUrlObj.pathString()
+                .length() > 1 && relativeUrlObj.pathString()
+                .endsWith("/") && !finalUrl.endsWith("/")) {
+            finalUrl += "/";
+        }
+        // Now if the relative URL had a query, add it:
+        if (relativeUrlObj.queryString() != null && relativeUrlObj.queryString()
+                .length() > 0) {
+            finalUrl += "?" + relativeUrlObj.queryString();
+        }
+        return finalUrl;
     }
 
     /**
@@ -235,16 +311,8 @@ public class UrlFactory implements HasSystem {
         return create(finalUrl);
     }
 
-    private static String getSchemeHostnameAndPort(Url url) {
-        if (url.scheme()
-                .equals("mem")) {
-            // Sort of a hack...
-            return "mem:";
-        } else {
-            return url.scheme()
-                    + "://"
-                    + (url.hostname() != null ? url.hostname() + (url.port() != null ? ":" + url.port() : "") : "");
-        }
+    private SchemeParserFactory parserFactory(String name) {
+        return (SchemeParserFactory) schemeParserFactories.getNative(name);
     }
 
     private List<String> reducePath(List<String> unreducedPath) {
@@ -287,88 +355,20 @@ public class UrlFactory implements HasSystem {
         return reducedPath;
     }
 
-    private static boolean isSchemeChar(char c) {
-        if (c == '+' || c == '.' || c == '-') { return true; }
-        if (Character.isLetterOrDigit(c)) { return true; }
-        return false;
+    /**
+     * Get the JsonObject where SchemeParserFactories are stored.
+     * This is a method used during bootstrapping to get hold of the scheme parsers - since the
+     * scheme parsers are required in order to decode a URL and find a value, we have to give a
+     * direct reference that the system can itself store in a location during bootstrapping.
+     * 
+     * @return The JsonObject where SchemeParserFactories are stored.
+     */
+    public JsonObject schemeParserFactories() {
+        return schemeParserFactories;
     }
 
-    private static String addBasePath(Url baseUrl, Url relativeUrl, String finalUrl) {
-        // If the relative URL didn't have a path, use the entire original path:
-        finalUrl += baseUrl.pathString();
-        // And if the relative URL had no query, use the entire original query if there was one:
-        if (relativeUrl.queryString() == null || relativeUrl.queryString()
-                .length() == 0) {
-            if (baseUrl.queryString() != null && baseUrl.queryString()
-                    .length() > 0) {
-                finalUrl += "?" + baseUrl.queryString();
-            }
-        } else {
-            // Otherwise add the relative URL's query:
-            finalUrl += "?" + relativeUrl.queryString();
-        }
-        return finalUrl;
-    }
-
-    private static List<String> combinePaths(Url baseUrlObj, Url relativeUrlObj) {
-        List<String> unreducedPath = new ArrayList<String>();
-        if (relativeUrlObj.path()
-                .get(0)
-                .equals("/")) {
-            unreducedPath.addAll(relativeUrlObj.path());
-        } else {
-            // Otherwise add the relative URL path to the base URL's directory:
-            int lastBaseElementToAdd;
-            // If it had a filename, stop before that.. unless the filename was ".."!
-            if (baseUrlObj.filename() != null && baseUrlObj.filename()
-                    .length() > 0) {
-                if (baseUrlObj.filename()
-                        .equals("..")) {
-                    lastBaseElementToAdd = baseUrlObj.path()
-                            .size() - 1;
-                } else {
-                    lastBaseElementToAdd = baseUrlObj.path()
-                            .size() - 2;
-                }
-            } else {
-                lastBaseElementToAdd = baseUrlObj.path()
-                        .size() - 1;
-            }
-            for (int i = 0; i <= lastBaseElementToAdd; ++i) {
-                unreducedPath.add(baseUrlObj.path()
-                        .get(i));
-            }
-            unreducedPath.addAll(relativeUrlObj.path());
-        }
-        return unreducedPath;
-    }
-
-    private String addRelativePath(Url baseUrlObj, Url relativeUrlObj, String finalUrl) {
-        // If the relative URL's path was absolute, ignore the base URL's path:
-        List<String> unreducedPath = UrlFactory.combinePaths(baseUrlObj, relativeUrlObj);
-        // Now, throw out the leading "/" entry for now, and remove any components consisting only of "."
-        List<String> reducedPath = reducePath(unreducedPath);
-        // Bearing in mind that the path should start with a slash...
-        if (reducedPath.size() > 0) {
-            for (int i = 0; i < reducedPath.size(); ++i) {
-                finalUrl += "/";
-                finalUrl += reducedPath.get(i);
-            }
-        } else {
-            finalUrl += "/";
-        }
-        // OK - now, if the relative URL ended with a "/" AND was not just the string "/" AND the final URL doesn't
-        // already end with a slash, append one...
-        if (relativeUrlObj.pathString()
-                .length() > 1 && relativeUrlObj.pathString()
-                .endsWith("/") && !finalUrl.endsWith("/")) {
-            finalUrl += "/";
-        }
-        // Now if the relative URL had a query, add it:
-        if (relativeUrlObj.queryString() != null && relativeUrlObj.queryString()
-                .length() > 0) {
-            finalUrl += "?" + relativeUrlObj.queryString();
-        }
-        return finalUrl;
+    @Override
+    public JsonSystem system() {
+        return system;
     }
 }

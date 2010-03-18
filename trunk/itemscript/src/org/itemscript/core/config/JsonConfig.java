@@ -50,18 +50,18 @@ public interface JsonConfig {
     public JsonCreator createJsonCreator(JsonSystem system);
 
     /**
-     * Generate a new random UUID.
-     * 
-     * @return A new random UUID.
-     */
-    public String generateUuid();
-
-    /**
      * Generate a new random b64id.
      * 
      * @return A new random b64id.
      */
     public String generateB64id();
+
+    /**
+     * Generate a new random UUID.
+     * 
+     * @return A new random UUID.
+     */
+    public String generateUuid();
 
     /**
      * Get a new random int.

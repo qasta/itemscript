@@ -29,7 +29,14 @@
 
 package org.itemscript.examples.gwt.client;
 
+import org.itemscript.core.JsonSystem;
+import org.itemscript.core.connectors.GetCallback;
+import org.itemscript.core.gwt.GwtSystem;
+import org.itemscript.core.values.JsonValue;
+
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 
 /**
  * A short GWT example.
@@ -39,28 +46,19 @@ import com.google.gwt.core.client.EntryPoint;
 public class GwtExample implements EntryPoint {
     @Override
     public void onModuleLoad() {
-    //        final JsonSystem system = GwtSystem.SYSTEM;
-    //        system.get(GWT.getHostPageBaseURL() + "test.json", new GetCallback() {
-    //            @Override
-    //            public void onError(Throwable e) {
-    //                throw new RuntimeException(e);
-    //            }
-    //
-    //            @Override
-    //            public void onSuccess(JsonValue value) {
-    //                Window.alert("Received value: " + value);
-    //                system.put(GWT.getHostPageBaseURL() + "ReflectJson", value, new PutCallback() {
-    //                    @Override
-    //                    public void onError(Throwable e) {
-    //                        throw new RuntimeException(e);
-    //                    }
-    //
-    //                    @Override
-    //                    public void onSuccess(PutResponse putResponse) {
-    //                        Window.alert("Reflected value: " + putResponse.value());
-    //                    }
-    //                });
-    //            }
-    //        });
+        final JsonSystem system = GwtSystem.SYSTEM;
+        system.copy(GWT.getHostPageBaseURL() + "cat.json", "cookie:test", null);
+        system.get(GWT.getHostPageBaseURL() + "test.json", new GetCallback() {
+            @Override
+            public void onError(Throwable e) {
+                throw new RuntimeException(e);
+            }
+
+            @Override
+            public void onSuccess(JsonValue value) {
+                Window.alert(value.item()
+                        .meta() + "");
+            }
+        });
     }
 }

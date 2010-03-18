@@ -44,40 +44,6 @@ import org.itemscript.core.url.UrlFactory;
  */
 public interface JsonUtil {
     /**
-     * Generate a random UUID string.
-     * 
-     * @return The new UUID.
-     */
-    public String generateUuid();
-
-    /**
-     * Generate a random base-64 unique-ID string. This is a 22-character representation of a 128-bit
-     * random unique-ID encoded as base64 without padding and containing only URL-safe characters.
-     * <p>
-     * Note: although this is a 128-bit random unique-ID, it is not technically a UUID because it may
-     * not have the flag bits set that say what type of ID it is.
-     * 
-     * @return The new b64id.
-     */
-    public String generateB64id();
-
-    /**
-     * Generate a new random int.
-     * 
-     * @return A new random int.
-     */
-    public int nextRandomInt();
-
-    /**
-     * Create a new Url object from the given Url string.
-     * 
-     * @param url The string to parse.
-     * @return A new Url object.
-     * @throws ItemscriptError If the string cannot be parsed as a Url.
-     */
-    public Url createUrl(String url);
-
-    /**
      * Create a new relative Url from the given base URL and relative URL.
      * 
      * @param baseUrl The base URL.
@@ -103,6 +69,40 @@ public interface JsonUtil {
      * @return A new Url object.
      */
     public Url createRelativeUrl(Url baseUrl, Url relativeUrl);
+
+    /**
+     * Create a new Url object from the given Url string.
+     * 
+     * @param url The string to parse.
+     * @return A new Url object.
+     * @throws ItemscriptError If the string cannot be parsed as a Url.
+     */
+    public Url createUrl(String url);
+
+    /**
+     * Generate a random base-64 unique-ID string. This is a 22-character representation of a 128-bit
+     * random unique-ID encoded as base64 without padding and containing only URL-safe characters.
+     * <p>
+     * Note: although this is a 128-bit random unique-ID, it is not technically a UUID because it may
+     * not have the flag bits set that say what type of ID it is.
+     * 
+     * @return The new b64id.
+     */
+    public String generateB64id();
+
+    /**
+     * Generate a random UUID string.
+     * 
+     * @return The new UUID.
+     */
+    public String generateUuid();
+
+    /**
+     * Generate a new random int.
+     * 
+     * @return A new random int.
+     */
+    public int nextRandomInt();
 
     /**
      * Get this system's associated {@link UrlFactory}.

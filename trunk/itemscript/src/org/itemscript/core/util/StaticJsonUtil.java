@@ -79,23 +79,6 @@ public final class StaticJsonUtil {
     }
 
     /**
-     * Take a {@link Map}<String,String> and return a new {@link JsonObject} corresponding to it,
-     * where keys in the original map will be keys in the JsonObject and values in the original
-     * map will be {@link JsonString} values in the JsonObject.
-     * 
-     * @param system The associated JsonSystem.
-     * @param map The map containing strings.
-     * @return A JsonObject.
-     */
-    public static JsonObject stringMapToObject(JsonSystem system, Map<String, String> map) {
-        JsonObject object = system.createObject();
-        for (String key : map.keySet()) {
-            object.put(key, map.get(key));
-        }
-        return object;
-    }
-
-    /**
      * HTML-encode a string. This simple method only replaces the five characters &, <, >, ", and '.
      * 
      * @param input the String to convert
@@ -139,5 +122,22 @@ public final class StaticJsonUtil {
             }
         }
         return buffer.toString();
+    }
+
+    /**
+     * Take a {@link Map}<String,String> and return a new {@link JsonObject} corresponding to it,
+     * where keys in the original map will be keys in the JsonObject and values in the original
+     * map will be {@link JsonString} values in the JsonObject.
+     * 
+     * @param system The associated JsonSystem.
+     * @param map The map containing strings.
+     * @return A JsonObject.
+     */
+    public static JsonObject stringMapToObject(JsonSystem system, Map<String, String> map) {
+        JsonObject object = system.createObject();
+        for (String key : map.keySet()) {
+            object.put(key, map.get(key));
+        }
+        return object;
     }
 }

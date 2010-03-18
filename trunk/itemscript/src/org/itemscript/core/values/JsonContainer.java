@@ -216,20 +216,6 @@ public interface JsonContainer extends JsonValue, JsonGetAccess {
     public Set<String> keySet();
 
     /**
-     * Remove a value from this container by key.
-     * 
-     * @param key The key to remove.
-     */
-    public void removeValue(String key);
-
-    /**
-     * Get the number of entries in this container.
-     * 
-     * @return The number of entries in this container.
-     */
-    public int size();
-
-    /**
      * Put a boolean value as a JsonBoolean.
      * 
      * @param key The key to put the value under.
@@ -315,4 +301,18 @@ public interface JsonContainer extends JsonValue, JsonGetAccess {
      * @param value The JsonValue to store.
      */
     public void putValue(String key, JsonValue value);
+
+    /**
+     * Remove a value from this container by key.
+     * 
+     * @param key The key to remove.
+     */
+    public void removeValue(String key);
+
+    /**
+     * Get the number of entries in this container.
+     * 
+     * @return The number of entries in this container.
+     */
+    public int size();
 }

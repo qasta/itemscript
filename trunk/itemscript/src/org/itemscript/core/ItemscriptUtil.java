@@ -56,26 +56,6 @@ class ItemscriptUtil implements JsonUtil, HasSystem {
     }
 
     @Override
-    public JsonSystem system() {
-        return system;
-    }
-
-    @Override
-    public String generateB64id() {
-        return config.generateB64id();
-    }
-
-    @Override
-    public int nextRandomInt() {
-        return config.nextRandomInt();
-    }
-
-    @Override
-    public String generateUuid() {
-        return config.generateUuid();
-    }
-
-    @Override
     public Url createRelativeUrl(String baseUrl, String relativeUrl) {
         return urlFactory.createRelative(baseUrl, relativeUrl);
     }
@@ -93,6 +73,26 @@ class ItemscriptUtil implements JsonUtil, HasSystem {
     @Override
     public Url createUrl(String url) {
         return urlFactory.create(url);
+    }
+
+    @Override
+    public String generateB64id() {
+        return config.generateB64id();
+    }
+
+    @Override
+    public String generateUuid() {
+        return config.generateUuid();
+    }
+
+    @Override
+    public int nextRandomInt() {
+        return config.nextRandomInt();
+    }
+
+    @Override
+    public JsonSystem system() {
+        return system;
     }
 
     @Override

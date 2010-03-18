@@ -34,8 +34,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
 import java.net.URLConnection;
 
 import org.itemscript.core.JsonSystem;
@@ -47,7 +45,6 @@ import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Url;
 import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonObject;
-import org.itemscript.core.values.JsonString;
 import org.itemscript.core.values.JsonValue;
 
 /**
@@ -68,6 +65,40 @@ public final class FileConnector extends ConnectorBase implements SyncGetConnect
     public JsonObject countItems(Url url) {
         return countObject(getKeys(url).asArray()
                 .size());
+    }
+
+    @Override
+    public JsonValue get(Url url) {
+        File file = getFile(url);
+        String contentType = URLConnection.guessContentTypeFromName(url.filename());
+        if (contentType == null) {
+            if (url.filename()
+                    .endsWith(".json")) {
+                contentType = "application/json";
+            } else {
+                contentType = "application/octet-stream";
+            }
+        }
+        if (file.isDirectory()) {
+            throw ItemscriptError.internalError(this, "get.was.directory", file + "");
+        } else {
+            try {
+                if (contentType.equals("application/json")) {
+                    return system().createItem(url + "", StandardUtil.readJson(system(), new FileReader(file)))
+                            .value();
+                } else if (contentType.startsWith("text")) {
+                    return system().createItem(url + "",
+                            StandardUtil.readText(system(), new BufferedReader(new FileReader(file))))
+                            .value();
+                } else {
+                    return system().createItem(url + "",
+                            StandardUtil.readBinary(system(), new FileInputStream(file)))
+                            .value();
+                }
+            } catch (IOException e) {
+                throw ioException(e);
+            }
+        }
     }
 
     private File getDirectory(Url url) {
@@ -97,67 +128,6 @@ public final class FileConnector extends ConnectorBase implements SyncGetConnect
         return system().createItem(url + "", keys)
                 .value()
                 .asArray();
-    }
-
-    @Override
-    public JsonValue get(Url url) {
-        File file = getFile(url);
-        String contentType = URLConnection.guessContentTypeFromName(url.filename());
-        if (contentType == null) {
-            if (url.filename()
-                    .endsWith(".json")) {
-                contentType = "application/json";
-            } else {
-                contentType = "application/octet-stream";
-            }
-        }
-        if (file.isDirectory()) {
-            throw ItemscriptError.internalError(this, "get.was.directory", file + "");
-        } else {
-            try {
-                if (contentType.equals("application/json")) {
-                    Reader reader = new FileReader(file);
-                    return readJson(system(), url, reader);
-                } else if (contentType.startsWith("text")) {
-                    BufferedReader reader = new BufferedReader(new FileReader(file));
-                    return readText(system(), url, reader);
-                } else {
-                    FileInputStream stream = new FileInputStream(file);
-                    return readBinary(system(), url, stream);
-                }
-            } catch (IOException e) {
-                throw ioException(e);
-            }
-        }
-    }
-
-    public static JsonValue readJson(JsonSystem system, Url url, Reader reader) throws IOException {
-        JsonValue value = system.parseReader(reader);
-        reader.close();
-        return system.createItem(url + "", value)
-                .value();
-    }
-
-    public static JsonValue readText(JsonSystem system, Url url, BufferedReader reader) throws IOException {
-        JsonArray array = system.createArray();
-        while (true) {
-            String line = reader.readLine();
-            if (line == null) {
-                break;
-            }
-            array.add(line);
-        }
-        reader.close();
-        return system.createItem(url + "", array)
-                .value();
-    }
-
-    public static JsonValue readBinary(JsonSystem system, Url url, InputStream stream) throws IOException {
-        byte[] contents = Util.readStreamToByteArray(stream);
-        stream.close();
-        JsonString value = system.createString(contents);
-        return system.createItem(url + "", value)
-                .value();
     }
 
     private ItemscriptError ioException(IOException e) {

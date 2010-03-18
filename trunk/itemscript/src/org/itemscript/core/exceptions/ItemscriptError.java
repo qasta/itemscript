@@ -165,6 +165,20 @@ public class ItemscriptError extends RuntimeException {
     }
 
     /**
+     * Create a new exception with the given message key and cause.
+     * 
+     * @param key The message key for this exception.
+     * @param cause The underlying cause of this exception.
+     */
+    public ItemscriptError(String key, Throwable cause) {
+        super(getErrorString(key, null, null, cause));
+        this.key = key;
+        this.params = null;
+        this.cause = cause;
+        this.singleParam = null;
+    }
+
+    /**
      * Get the message key for this exception.
      * 
      * @return The message key.
@@ -189,19 +203,5 @@ public class ItemscriptError extends RuntimeException {
      */
     public String singleParam() {
         return singleParam;
-    }
-
-    /**
-     * Create a new exception with the given message key and cause.
-     * 
-     * @param key The message key for this exception.
-     * @param cause The underlying cause of this exception.
-     */
-    public ItemscriptError(String key, Throwable cause) {
-        super(getErrorString(key, null, null, cause));
-        this.key = key;
-        this.params = null;
-        this.cause = cause;
-        this.singleParam = null;
     }
 }

@@ -108,12 +108,25 @@ public final class ItemscriptSystem implements JsonSystem {
     }
 
     @Override
-    public void copy(String fromUrl, String toUrl) {
-        copy(util().createUrl(fromUrl), util().createUrl(toUrl));
+    public PutResponse copy(String fromUrl, String toUrl) {
+        return put(toUrl, get(fromUrl).copy());
     }
 
-    public void copy(Url fromUrl, Url toUrl) {
-        put(toUrl, get(fromUrl).copy());
+    @Override
+    public void copy(String fromUrl, final String toUrl, final PutCallback callback) {
+        get(fromUrl, new GetCallback() {
+            @Override
+            public void onError(Throwable e) {
+                if (callback != null) {
+                    callback.onError(e);
+                }
+            }
+
+            @Override
+            public void onSuccess(JsonValue value) {
+                put(toUrl, value.copy(), callback);
+            }
+        });
     }
 
     @Override
@@ -258,24 +271,6 @@ public final class ItemscriptSystem implements JsonSystem {
         return interpretFragment(fullUrl, value);
     }
 
-    private JsonValue interpretFragment(Url fullUrl, JsonValue value) {
-        if (fullUrl.hasFragment()) {
-            if (fullUrl.fragment()
-                    .size() == 0) { return value; }
-            if (value == null) { throw ItemscriptError.internalError(this, "get.had.fragment.but.value.was.null",
-                    fullUrl + ""); }
-            if (value.isContainer()) {
-                return ((ItemscriptContainer) value).getByFragment(fullUrl.fragment());
-            } else {
-                throw ItemscriptError.internalError(this, "get.had.fragment.but.value.was.not.a.container",
-                        new Params().p("url", fullUrl + "")
-                                .p("value", value + ""));
-            }
-        } else {
-            return value;
-        }
-    }
-
     public void get(Url url, final GetCallback callback) {
         final Url fullUrl = createRootRelativeUrl(url);
         Connector connector = getConnector(fullUrl);
@@ -290,13 +285,13 @@ public final class ItemscriptSystem implements JsonSystem {
                     "get.connector.did.not.implement.AsyncGetConnector"); }
             ((AsyncGetConnector) connector).get(fullUrl, new GetCallback() {
                 @Override
-                public void onSuccess(JsonValue value) {
-                    callback.onSuccess(interpretFragment(fullUrl, value));
+                public void onError(Throwable e) {
+                    callback.onError(e);
                 }
 
                 @Override
-                public void onError(Throwable e) {
-                    callback.onError(e);
+                public void onSuccess(JsonValue value) {
+                    callback.onSuccess(interpretFragment(fullUrl, value));
                 }
             });
         }
@@ -374,6 +369,24 @@ public final class ItemscriptSystem implements JsonSystem {
     @Override
     public JsonValue getValue(String url) {
         return get(url);
+    }
+
+    private JsonValue interpretFragment(Url fullUrl, JsonValue value) {
+        if (fullUrl.hasFragment()) {
+            if (fullUrl.fragment()
+                    .size() == 0) { return value; }
+            if (value == null) { throw ItemscriptError.internalError(this, "get.had.fragment.but.value.was.null",
+                    fullUrl + ""); }
+            if (value.isContainer()) {
+                return ((ItemscriptContainer) value).getByFragment(fullUrl.fragment());
+            } else {
+                throw ItemscriptError.internalError(this, "get.had.fragment.but.value.was.not.a.container",
+                        new Params().p("url", fullUrl + "")
+                                .p("value", value + ""));
+            }
+        } else {
+            return value;
+        }
     }
 
     private boolean isNotMemSchemeAndHasFragment(final Url url) {
@@ -472,9 +485,14 @@ public final class ItemscriptSystem implements JsonSystem {
         Connector connector = getConnector(fullUrl);
         if (connector instanceof SyncPutConnector) {
             try {
-                callback.onSuccess(put(fullUrl, value));
+                PutResponse putResponse = put(fullUrl, value);
+                if (callback != null) {
+                    callback.onSuccess(putResponse);
+                }
             } catch (ItemscriptError e) {
-                callback.onError(e);
+                if (callback != null) {
+                    callback.onError(e);
+                }
             }
         } else {
             if (fullUrl.hasQuery()) {
@@ -524,9 +542,14 @@ public final class ItemscriptSystem implements JsonSystem {
         Connector connector = getConnector(fullUrl);
         if (connector instanceof SyncPutConnector) {
             try {
-                callback.onSuccess(remove(fullUrl));
+                RemoveResponse removeResponse = remove(fullUrl);
+                if (callback != null) {
+                    callback.onSuccess(removeResponse);
+                }
             } catch (ItemscriptError e) {
-                callback.onError(e);
+                if (callback != null) {
+                    callback.onError(e);
+                }
             }
         } else {
             ((AsyncPutConnector) connector).remove(fullUrl, callback);

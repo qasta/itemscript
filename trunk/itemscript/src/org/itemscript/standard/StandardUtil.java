@@ -27,60 +27,71 @@
  * Author: Jacob Davies
  */
 
-package org.itemscript.core.events;
+package org.itemscript.standard;
 
-import org.itemscript.core.values.JsonItem;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+
+import org.itemscript.core.JsonSystem;
+import org.itemscript.core.values.JsonArray;
+import org.itemscript.core.values.JsonString;
 import org.itemscript.core.values.JsonValue;
 
 /**
- * An event triggered on a {@link JsonItem}.
+ * Various utility methods for the standard Java environment.
  * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
- *
  */
-public class Event {
-    private final EventType eventType;
-    private final String fragment;
-    private final JsonValue value;
-
+public final class StandardUtil {
     /**
-     * Create a new Event.
+     * Read the given InputStream as binary into a JsonString.
      * 
-     * @param eventType The EventType of this event.
-     * @param fragment The URL fragment identifying the value that changed.
-     * @param value The value that changed, if applicable.
+     * @param system The associated JsonSystem.
+     * @param stream The InputStream to read.
+     * @return A new JsonString.
+     * @throws IOException
      */
-    public Event(EventType eventType, String fragment, JsonValue value) {
-        this.eventType = eventType;
-        this.fragment = fragment;
-        this.value = value;
-    }
-
-    /**
-     * Get the type of event that occurred.
-     * 
-     * @return The type of event.
-     */
-    public final EventType eventType() {
-        return eventType;
-    }
-
-    /**
-     * Get the URL fragment for the value that changed or was removed.
-     * 
-     * @return The URL fragment.
-     */
-    public final String fragment() {
-        return fragment;
-    }
-
-    /**
-     * For put events, get the new value that was put.
-     * For remove events, this will be null.
-     * 
-     * @return The new value, if applicable.
-     */
-    public final JsonValue value() {
+    public static JsonString readBinary(JsonSystem system, InputStream stream) throws IOException {
+        byte[] contents = Util.readStreamToByteArray(stream);
+        stream.close();
+        JsonString value = system.createString(contents);
         return value;
+    }
+
+    /**
+     * Read the given Reader as JSON into a new JsonValue.
+     * 
+     * @param system The associated JsonSystem.
+     * @param reader The Reader to read from.
+     * @return A new JsonValue.
+     * @throws IOException
+     */
+    public static JsonValue readJson(JsonSystem system, Reader reader) throws IOException {
+        JsonValue value = system.parseReader(reader);
+        reader.close();
+        return value;
+    }
+
+    /**
+     * Read the given BufferedReader as text into a JsonString. Line endings will be regularized to "\n".
+     * 
+     * @param system The associated JsonSystem.
+     * @param reader The BufferedReader to read.
+     * @return A new JsonString.
+     * @throws IOException
+     */
+    public static JsonString readText(JsonSystem system, BufferedReader reader) throws IOException {
+        StringBuffer sb = new StringBuffer();
+        while (true) {
+            String line = reader.readLine();
+            if (line == null) {
+                break;
+            }
+            sb.append(line + "\n");
+        }
+        reader.close();
+        return system.createString(sb.toString());
     }
 }

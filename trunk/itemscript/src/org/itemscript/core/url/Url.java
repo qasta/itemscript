@@ -451,6 +451,11 @@ public final class Url implements HasSystem {
         return scheme;
     }
 
+    @Override
+    public JsonSystem system() {
+        return system;
+    }
+
     /**
      * Returns the URL string. This may not be exactly as the string passed to create().
      */
@@ -483,11 +488,6 @@ public final class Url implements HasSystem {
         }
         return system().util()
                 .createUrl(sb.toString());
-    }
-
-    @Override
-    public JsonSystem system() {
-        return system;
     }
 
     /**
