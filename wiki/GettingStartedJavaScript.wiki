@@ -1,0 +1,4 @@
+#summary Getting started with the Itemscript library using JavaScript.
+#labels Featured
+
+A stub for now; see the README.txt file included in the JavaScript ZIP file, and for some examples: [http://code.google.com/p/itemscript/source/browse/trunk/itemscript/war/javascript-example.html javascript-example.html]
