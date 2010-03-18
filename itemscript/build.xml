@@ -7,7 +7,7 @@
 			</java>
 		</sequential>
 	</macrodef>
-	<property name="version" value="0.9.9" />
+	<property name="version" value="0.9.10" />
 	<target name="gwt-jar" description="Create the itemscript-gwt JAR file">
 		<jar destfile="dist/itemscript-gwt-${version}.jar" basedir="war/WEB-INF/classes" excludes="**/test/**,**/examples/**">
 			<fileset dir="src/" excludes="**/Itemscript.gwt.xml,**/examples/**,**/test/**" />
