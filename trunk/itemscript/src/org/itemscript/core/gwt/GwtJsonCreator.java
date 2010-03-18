@@ -31,14 +31,7 @@ package org.itemscript.core.gwt;
 
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.values.ItemscriptCreator;
-import org.itemscript.core.values.JsonArray;
-import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
-
-import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.json.client.JSONValue;
 
 /**
  * A JsonFactory for the GWT environment.
@@ -60,43 +53,41 @@ public class GwtJsonCreator extends ItemscriptCreator {
 
     @Override
     public JsonValue parse(String json) {
-        // FIXME disabled for debugging.
-        //        return GwtJsonParser.parse(system(), json);
-        JSONValue value = JSONParser.parse(json);
-        return convert(value);
+        return GwtJsonParser.parse(system(), json);
     }
 
-    private JsonValue convert(JSONValue value) {
-        if (value.isString() != null) {
-            return system().createString(value.isString()
-                    .stringValue());
-        } else if (value.isBoolean() != null) {
-            return system().createBoolean(value.isBoolean()
-                    .booleanValue());
-        } else if (value.isNull() != null) {
-            return system().createNull();
-        } else if (value.isNumber() != null) {
-            return system().createNumber(value.isNumber()
-                    .doubleValue());
-        } else if (value.isArray() != null) {
-            JSONArray origArray = value.isArray();
-            JsonArray array = system().createArray();
-            for (int i = 0; i < origArray.size(); ++i) {
-                array.add(convert(origArray.get(i)));
-            }
-            return array;
-        } else if (value.isObject() != null) {
-            JSONObject origObject = value.isObject();
-            JsonObject object = system().createObject();
-            for (String key : origObject.keySet()) {
-                object.put(key, convert(origObject.get(key)));
-            }
-            return object;
-        } else {
-            // Should never happen
-            throw new RuntimeException("Uknown value type: " + value);
-        }
-    }
+// This code converts GWT JSON values into Itemscript JSON values. It's commented because I only use it during debugging.
+//    private JsonValue convert(JSONValue value) {
+//        if (value.isString() != null) {
+//            return system().createString(value.isString()
+//                    .stringValue());
+//        } else if (value.isBoolean() != null) {
+//            return system().createBoolean(value.isBoolean()
+//                    .booleanValue());
+//        } else if (value.isNull() != null) {
+//            return system().createNull();
+//        } else if (value.isNumber() != null) {
+//            return system().createNumber(value.isNumber()
+//                    .doubleValue());
+//        } else if (value.isArray() != null) {
+//            JSONArray origArray = value.isArray();
+//            JsonArray array = system().createArray();
+//            for (int i = 0; i < origArray.size(); ++i) {
+//                array.add(convert(origArray.get(i)));
+//            }
+//            return array;
+//        } else if (value.isObject() != null) {
+//            JSONObject origObject = value.isObject();
+//            JsonObject object = system().createObject();
+//            for (String key : origObject.keySet()) {
+//                object.put(key, convert(origObject.get(key)));
+//            }
+//            return object;
+//        } else {
+//            // Should never happen
+//            throw new RuntimeException("Uknown value type: " + value);
+//        }
+//    }
 
     @Override
     public JsonValue parseReader(Object input) {
