@@ -32,16 +32,16 @@ public class GwtJavaScriptConnector implements SyncGetConnector, HasSystem {
         this.system = system;
     }
 
+    private native JavaScriptObject get(String name) /*-{
+                                                     return { "value" : $wnd[name] };
+                                                     }-*/;
+
     @Override
     public JsonValue get(Url url) {
         JsonValue value = GwtJsonParser.convert(system(), get(url.remainder()));
         return system().createItem(url + "", value)
                 .value();
     }
-
-    private native JavaScriptObject get(String name) /*-{
-        return {"value":$wnd[name]};
-    }-*/;
 
     @Override
     public JsonSystem system() {

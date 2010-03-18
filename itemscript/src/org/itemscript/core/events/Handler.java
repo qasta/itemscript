@@ -37,7 +37,6 @@ package org.itemscript.core.events;
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  *
  */
-@Deprecated
 public interface Handler {
     /**
      * Called when an event occurs.

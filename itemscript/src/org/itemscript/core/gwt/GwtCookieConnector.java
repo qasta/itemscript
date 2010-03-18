@@ -19,7 +19,9 @@ import com.google.gwt.user.client.Cookies;
 /**
  * A connector class that allows you to store values in browser cookies.
  * <p>
- * Only the path portion of supplied URLs will be used to distinguish between cookies.
+ * This is associated with the "cookie:" scheme in GWT. The remainder of the URL after the colon and before
+ * any fragment identifier is used as the name of the cookie. Cookies are set as persistent with a 10 year lifetime
+ * and no path.
  * <p>
  * Note: This is experimental and might change or go away if it proves not to be useful.
  * There are some potential problems with multiple browser windows attempting to access
@@ -42,14 +44,14 @@ public class GwtCookieConnector implements SyncGetConnector, SyncPutConnector, H
 
     @Override
     public JsonValue get(Url url) {
-        JsonValue value = system().parse(Cookies.getCookie(url.pathString()));
+        JsonValue value = system().parse(Cookies.getCookie(url.remainder()));
         system().createItem(url + "", value);
         return value;
     }
 
     @Override
     public PutResponse put(Url url, JsonValue value) {
-        Cookies.setCookie(url.pathString(), value.toCompactJsonString(), new Date(new Date().getTime()
+        Cookies.setCookie(url.remainder(), value.toCompactJsonString(), new Date(new Date().getTime()
                 + TEN_YEARS_MILLIS));
         JsonValue setValue = value.copy();
         system().createItem(url + "", setValue);

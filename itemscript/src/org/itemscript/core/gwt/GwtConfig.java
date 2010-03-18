@@ -31,8 +31,6 @@ package org.itemscript.core.gwt;
 
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.config.JsonConfig;
-import org.itemscript.core.url.HttpLikeSchemeParser;
-import org.itemscript.core.url.UrlFactory;
 import org.itemscript.core.util.Base64;
 import org.itemscript.core.values.JsonCreator;
 
@@ -49,6 +47,15 @@ public class GwtConfig implements JsonConfig {
     @Override
     public JsonCreator createJsonCreator(JsonSystem system) {
         return new GwtJsonCreator(system);
+    }
+
+    @Override
+    public String generateB64id() {
+        byte[] s = new byte[16];
+        for (int i = 0; i < 16; ++i) {
+            s[i] = (byte) (Math.abs(nextRandomInt()) % 256);
+        }
+        return new String(Base64.encodeForUrl(s));
     }
 
     @Override
@@ -84,15 +91,6 @@ public class GwtConfig implements JsonConfig {
     }
 
     @Override
-    public String generateB64id() {
-        byte[] s = new byte[16];
-        for (int i = 0; i < 16; ++i) {
-            s[i] = (byte) (Math.abs(nextRandomInt()) % 256);
-        }
-        return new String(Base64.encodeForUrl(s));
-    }
-
-    @Override
     public int nextRandomInt() {
         return com.google.gwt.user.client.Random.nextInt();
     }
@@ -106,6 +104,5 @@ public class GwtConfig implements JsonConfig {
         system.putNative(ITEMSCRIPT_CONNECTORS_PREFIX + "file", jsonHttpConnector);
         system.putNative(ITEMSCRIPT_CONNECTORS_PREFIX + "cookie", new GwtCookieConnector(system));
         system.putNative(ITEMSCRIPT_CONNECTORS_PREFIX + "javascript", new GwtJavaScriptConnector(system));
-        system.putNative(UrlFactory.SCHEME_PARSER_FACTORIES_PATH + "#cookie", new HttpLikeSchemeParser());
     }
 }

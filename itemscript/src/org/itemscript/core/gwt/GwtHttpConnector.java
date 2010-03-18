@@ -42,8 +42,10 @@ import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Url;
 import org.itemscript.core.values.ItemscriptPutResponse;
 import org.itemscript.core.values.ItemscriptRemoveResponse;
+import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 
+import com.google.gwt.http.client.Header;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.Response;
@@ -67,6 +69,15 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
         this.system = system;
     }
 
+    private JsonObject createMeta(Response response) {
+        JsonObject meta = system().createObject();
+        Header[] headers = response.getHeaders();
+        for (int i = 0; i < headers.length; ++i) {
+            meta.put(headers[i].getName(), headers[i].getValue());
+        }
+        return meta;
+    }
+
     @Override
     public void get(final Url url, final GetCallback callback) {
         RequestUtils.sendGetRequest(url + "", new RequestCallback() {
@@ -77,12 +88,29 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
 
             @Override
             public void onResponseReceived(Request request, Response response) {
-                if (response.getStatusCode() == 200) {
-                    callback.onSuccess(system().createItem(url + "", system().parse(response.getText()))
+                String statusCode = response.getStatusCode() + "";
+                // Currently only handles 2xx status codes... 3xx and so on are treated as errors.
+                String contentType = response.getHeader("Content-Type");
+                if (statusCode.startsWith("2")) {
+                    // Default to handling it as JSON...
+                    if (contentType == null) {
+                        contentType = "application/json";
+                    }
+                    // If it looks like JSON, parse it as JSON.
+                    JsonValue value;
+                    if (url.filename()
+                            .endsWith(".json") || contentType.equals("application/json")
+                            || contentType.equals("text/json") || contentType.equals("text/x-json")) {
+                        value = system().parse(response.getText());
+                    } else {
+                        // Otherwise return it as text.
+                        value = system().createString(response.getText());
+                    }
+                    callback.onSuccess(system().createItem(url + "", createMeta(response), value)
                             .value());
                 } else {
-                    callback.onError(ItemscriptError.internalError(this, "get.returned.non.200.status",
-                            new Params().p("status", response.getStatusCode() + "")
+                    callback.onError(ItemscriptError.internalError(this, "get.returned.non.2xx.status",
+                            new Params().p("status", statusCode)
                                     .p("text", response.getStatusText())));
                 }
             }
@@ -99,9 +127,18 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
 
             @Override
             public void onResponseReceived(Request request, Response response) {
-                callback.onSuccess(new ItemscriptPutResponse(url + "", null, system().createItem(url + "",
-                        system().parse(response.getText()))
-                        .value()));
+                String statusCode = response.getStatusCode() + "";
+                // Treat any 2xx or 3xx response code as successful... we should really treat certain 3xx
+                // status codes as indicating the real location of the resource but this will do for now.
+                if (statusCode.startsWith("2") || statusCode.startsWith("3")) {
+                    callback.onSuccess(new ItemscriptPutResponse(url + "", createMeta(response),
+                            system().createItem(url + "", system().parse(response.getText()))
+                                    .value()));
+                } else {
+                    callback.onError(ItemscriptError.internalError(this, "post.returned.non.2xx.or.3xx.status",
+                            new Params().p("status", statusCode)
+                                    .p("text", response.getStatusText())));
+                }
             }
         });
     }
@@ -116,9 +153,17 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
 
             @Override
             public void onResponseReceived(Request request, Response response) {
-                callback.onSuccess(new ItemscriptPutResponse(url + "", null, system().createItem(url + "",
-                        system().parse(response.getText()))
-                        .value()));
+                String statusCode = response.getStatusCode() + "";
+                // Currently any response to a put that isn't a 2xx is considered an error.
+                if (statusCode.startsWith("2")) {
+                    callback.onSuccess(new ItemscriptPutResponse(url + "", createMeta(response),
+                            system().createItem(url + "", system().parse(response.getText()))
+                                    .value()));
+                } else {
+                    callback.onError(ItemscriptError.internalError(this, "put.returned.non.2xx.status",
+                            new Params().p("status", statusCode)
+                                    .p("text", response.getStatusText())));
+                }
             }
         });
     }
@@ -133,7 +178,15 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
 
             @Override
             public void onResponseReceived(Request request, Response response) {
-                callback.onSuccess(new ItemscriptRemoveResponse(null));
+                String statusCode = response.getStatusCode() + "";
+                // Currently any response to a delete that isn't a 2xx is considered an error.
+                if (statusCode.startsWith("2")) {
+                    callback.onSuccess(new ItemscriptRemoveResponse(createMeta(response)));
+                } else {
+                    callback.onError(ItemscriptError.internalError(this, "put.returned.non.2xx.status",
+                            new Params().p("status", response.getStatusCode() + "")
+                                    .p("text", response.getStatusText())));
+                }
             }
         });
     }

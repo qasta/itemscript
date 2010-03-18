@@ -99,20 +99,22 @@ public class ItemscriptFoundry<T> implements JsonFactory<T>, HasSystem, JsonFoun
             return create(name, params);
         }
         JsonValue factoryValue = factoryObject.get(name);
-        if (factoryValue.isNative()) {
-            Object nativeValue = factoryValue.nativeValue();
-            JsonFactory<T> factory = (JsonFactory<T>) nativeValue;
-            return factory.create(params);
-        } else if (factoryValue.isObject()) {
-            JsonObject factoryObject = factoryValue.asObject();
-            String underlyingName = factoryObject.getString(nameKey);
-            if (underlyingName == null) {
-                underlyingName = findMissingName(factoryObject);
+        if (factoryValue != null) {
+            if (factoryValue.isNative()) {
+                Object nativeValue = factoryValue.nativeValue();
+                JsonFactory<T> factory = (JsonFactory<T>) nativeValue;
+                return factory.create(params);
+            } else if (factoryValue.isObject()) {
+                JsonObject factoryObject = factoryValue.asObject();
+                String underlyingName = factoryObject.getString(nameKey);
+                if (underlyingName == null) {
+                    underlyingName = findMissingName(factoryObject);
+                }
+                List<JsonObject> objects = new ArrayList<JsonObject>();
+                objects.add(factoryObject);
+                objects.add(params);
+                return create(underlyingName, new ChainObject(system(), objects));
             }
-            List<JsonObject> objects = new ArrayList<JsonObject>();
-            objects.add(factoryObject);
-            objects.add(params);
-            return create(underlyingName, new ChainObject(system(), objects));
         }
         throw ItemscriptError.internalError(this, "create.factory.not.found", new Params().p("name", name));
     }

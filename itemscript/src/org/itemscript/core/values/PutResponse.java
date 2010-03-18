@@ -36,19 +36,19 @@ package org.itemscript.core.values;
  */
 public interface PutResponse {
     /**
+     * Any additional metadata that was returned from the put operation.
+     * 
+     * @return A JsonObject containing metadata, or null if no metadata was available.
+     */
+    public JsonObject meta();
+
+    /**
      * The actual URL that the value was put under, which may differ from the URL that
      * was supplied to {@link JsonPutAccess#putValue} in the event that the URL contained a query string.
      * 
      * @return The actual URL that the value was put under.
      */
     public String url();
-
-    /**
-     * Any additional metadata that was returned from the put operation.
-     * 
-     * @return A JsonObject containing metadata, or null if no metadata was available.
-     */
-    public JsonObject meta();
 
     /**
      * If applicable, the actual JsonValue that was put, or null if the value is not available.

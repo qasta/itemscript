@@ -41,14 +41,20 @@ final class GwtJsonParser {
     private static final JavaScriptObject typeMap = initTypeMap();
 
     private static native JsonValue arrayGet(JsonSystem system, JavaScriptObject array, int index) /*-{
-        var v = array[index];
-        var func = @org.itemscript.core.gwt.GwtJsonParser::typeMap[typeof v];
-        return func ? func(system, v) : @org.itemscript.core.gwt.GwtJsonParser::throwUnknownTypeException(Ljava/lang/String;)(typeof v);
-    }-*/;
+                                                                                                   var v = array[index];
+                                                                                                   var func = @org.itemscript.core.gwt.GwtJsonParser::typeMap[typeof v];
+                                                                                                   return func ? func(system, v) : @org.itemscript.core.gwt.GwtJsonParser::throwUnknownTypeException(Ljava/lang/String;)(typeof v);
+                                                                                                   }-*/;
 
     private static native int arraySize(JavaScriptObject array) /*-{
-        return array.length;
-    }-*/;
+                                                                return array.length;
+                                                                }-*/;
+
+    static native JsonValue convert(JsonSystem system, JavaScriptObject value) /*-{
+                                                                               var v = value["value"];
+                                                                               var func = @org.itemscript.core.gwt.GwtJsonParser::typeMap[typeof v];
+                                                                               return func ? func(system,v) : @org.itemscript.core.gwt.GwtJsonParser::throwUnknownTypeException(Ljava/lang/String;)(typeof v);
+                                                                               }-*/;
 
     private static JsonValue createArray(JsonSystem system, JavaScriptObject o) {
         int size = arraySize(o);
@@ -72,25 +78,25 @@ final class GwtJsonParser {
     }
 
     private static native JsonValue createObject(JsonSystem system, Object o) /*-{
-        if (!o) {
-        return @org.itemscript.core.gwt.GwtJsonParser::createNull(Lorg/itemscript/core/JsonSystem;)(system);
-        }
-        var v = o.valueOf ? o.valueOf() : o;
-        if (v !== o) {
-        // It was a primitive wrapper, unwrap it and try again.
-        var func = @org.itemscript.core.gwt.GwtJsonParser::typeMap[typeof v];
-        return func ? func(system,v) : @org.itemscript.core.gwt.GwtJsonParser::throwUnknownTypeException(Ljava/lang/String;)(typeof v);
-        } else if (o instanceof Array || o instanceof $wnd.Array) {
-        // Looks like an Array; wrap as JsonArray.
-        // NOTE: this test can fail for objects coming from a different window,
-        // but we know of no reliable tests to determine if something is an Array
-        // in all cases.
-        return @org.itemscript.core.gwt.GwtJsonParser::createArray(Lorg/itemscript/core/JsonSystem;Lcom/google/gwt/core/client/JavaScriptObject;)(system,o);
-        } else {
-        // This is a basic JavaScript object; wrap as JsonObject.
-        return @org.itemscript.core.gwt.GwtJsonParser::reallyCreateObject(Lorg/itemscript/core/JsonSystem;Lcom/google/gwt/core/client/JavaScriptObject;)(system,o);
-        }
-    }-*/;
+                                                                              if (!o) {
+                                                                              return @org.itemscript.core.gwt.GwtJsonParser::createNull(Lorg/itemscript/core/JsonSystem;)(system);
+                                                                              }
+                                                                              var v = o.valueOf ? o.valueOf() : o;
+                                                                              if (v !== o) {
+                                                                              // It was a primitive wrapper, unwrap it and try again.
+                                                                              var func = @org.itemscript.core.gwt.GwtJsonParser::typeMap[typeof v];
+                                                                              return func ? func(system,v) : @org.itemscript.core.gwt.GwtJsonParser::throwUnknownTypeException(Ljava/lang/String;)(typeof v);
+                                                                              } else if (o instanceof Array || o instanceof $wnd.Array) {
+                                                                              // Looks like an Array; wrap as JsonArray.
+                                                                              // NOTE: this test can fail for objects coming from a different window,
+                                                                              // but we know of no reliable tests to determine if something is an Array
+                                                                              // in all cases.
+                                                                              return @org.itemscript.core.gwt.GwtJsonParser::createArray(Lorg/itemscript/core/JsonSystem;Lcom/google/gwt/core/client/JavaScriptObject;)(system,o);
+                                                                              } else {
+                                                                              // This is a basic JavaScript object; wrap as JsonObject.
+                                                                              return @org.itemscript.core.gwt.GwtJsonParser::reallyCreateObject(Lorg/itemscript/core/JsonSystem;Lcom/google/gwt/core/client/JavaScriptObject;)(system,o);
+                                                                              }
+                                                                              }-*/;
 
     private static JsonValue createString(JsonSystem system, String v) {
         return system.createString(v);
@@ -101,54 +107,48 @@ final class GwtJsonParser {
     }
 
     private static native JsonValue evaluate(JsonSystem system, String jsonString) /*-{
-        var v;
-        if (typeof(JSON) === 'object' && typeof(JSON.parse) === 'function') {
-        v = JSON.parse(jsonString);
-        } else {
-        v = eval('(' + jsonString + ')');
-        }
-        var func = @org.itemscript.core.gwt.GwtJsonParser::typeMap[typeof v];
-        return func ? func(system,v) : @org.itemscript.core.gwt.GwtJsonParser::throwUnknownTypeException(Ljava/lang/String;)(typeof v);
-    }-*/;
+                                                                                   var v;
+                                                                                   if (typeof(JSON) === 'object' && typeof(JSON.parse) === 'function') {
+                                                                                   v = JSON.parse(jsonString);
+                                                                                   } else {
+                                                                                   v = eval('(' + jsonString + ')');
+                                                                                   }
+                                                                                   var func = @org.itemscript.core.gwt.GwtJsonParser::typeMap[typeof v];
+                                                                                   return func ? func(system,v) : @org.itemscript.core.gwt.GwtJsonParser::throwUnknownTypeException(Ljava/lang/String;)(typeof v);
+                                                                                   }-*/;
 
     private static native JavaScriptObject initTypeMap() /*-{
-        return {
-        "boolean": @org.itemscript.core.gwt.GwtJsonParser::createBoolean(Lorg/itemscript/core/JsonSystem;Z),
-        "number": @org.itemscript.core.gwt.GwtJsonParser::createNumber(Lorg/itemscript/core/JsonSystem;D),
-        "string": @org.itemscript.core.gwt.GwtJsonParser::createString(Lorg/itemscript/core/JsonSystem;Ljava/lang/String;),
-        "object": @org.itemscript.core.gwt.GwtJsonParser::createObject(Lorg/itemscript/core/JsonSystem;Ljava/lang/Object;),
-        "function": @org.itemscript.core.gwt.GwtJsonParser::createObject(Lorg/itemscript/core/JsonSystem;Ljava/lang/Object;),
-        "undefined": @org.itemscript.core.gwt.GwtJsonParser::createUndefined(),
-        }
-    }-*/;
-
-    static native JsonValue convert(JsonSystem system, JavaScriptObject value) /*-{
-        var v = value["value"];
-        var func = @org.itemscript.core.gwt.GwtJsonParser::typeMap[typeof v];
-        return func ? func(system,v) : @org.itemscript.core.gwt.GwtJsonParser::throwUnknownTypeException(Ljava/lang/String;)(typeof v);
-    }-*/;
+                                                         return {
+                                                         "boolean": @org.itemscript.core.gwt.GwtJsonParser::createBoolean(Lorg/itemscript/core/JsonSystem;Z),
+                                                         "number": @org.itemscript.core.gwt.GwtJsonParser::createNumber(Lorg/itemscript/core/JsonSystem;D),
+                                                         "string": @org.itemscript.core.gwt.GwtJsonParser::createString(Lorg/itemscript/core/JsonSystem;Ljava/lang/String;),
+                                                         "object": @org.itemscript.core.gwt.GwtJsonParser::createObject(Lorg/itemscript/core/JsonSystem;Ljava/lang/Object;),
+                                                         "function": @org.itemscript.core.gwt.GwtJsonParser::createObject(Lorg/itemscript/core/JsonSystem;Ljava/lang/Object;),
+                                                         "undefined": @org.itemscript.core.gwt.GwtJsonParser::createUndefined(),
+                                                         }
+                                                         }-*/;
 
     private static native JsonValue objectGet(JsonSystem system, JavaScriptObject object, String key) /*-{
-        var v;
-        key = String(key);       
-        if (object.hasOwnProperty(key)) {
-        v = object[key];
-        }
-        var func = @org.itemscript.core.gwt.GwtJsonParser::typeMap[typeof v];
-        var ret = func ? func(system, v) : @org.itemscript.core.gwt.GwtJsonParser::throwUnknownTypeException(Ljava/lang/String;)(typeof v);
-        return ret;
-    }-*/;
+                                                                                                      var v;
+                                                                                                      key = String(key);       
+                                                                                                      if (object.hasOwnProperty(key)) {
+                                                                                                      v = object[key];
+                                                                                                      }
+                                                                                                      var func = @org.itemscript.core.gwt.GwtJsonParser::typeMap[typeof v];
+                                                                                                      var ret = func ? func(system, v) : @org.itemscript.core.gwt.GwtJsonParser::throwUnknownTypeException(Ljava/lang/String;)(typeof v);
+                                                                                                      return ret;
+                                                                                                      }-*/;
 
     private static native JsArrayString objectKeys(JavaScriptObject object) /*-{
-        var i = 0;
-        var result = [];
-        for (var key in object) {
-        if (object.hasOwnProperty(key)) {
-        result[i++] = key;
-        }
-        }
-        return result;
-    }-*/;
+                                                                            var i = 0;
+                                                                            var result = [];
+                                                                            for (var key in object) {
+                                                                            if (object.hasOwnProperty(key)) {
+                                                                            result[i++] = key;
+                                                                            }
+                                                                            }
+                                                                            return result;
+                                                                            }-*/;
 
     /**
      * Parse a String as JSON.

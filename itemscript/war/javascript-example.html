@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+<link type="text/css" rel="stylesheet" href="Example.css">
+
+<title>GWT Example</title>
+
+<!-- Load itemscript -->
+<script type="text/javascript" language="javascript"
+	src="org.itemscript.Itemscript/org.itemscript.Itemscript.nocache.js"></script>
+
+<body>
+<noscript>
+<div
+	style="width: 22em; position: absolute; left: 50%; margin-left: -11em; color: red; background-color: white; border: 1px solid red; padding: 4px; font-family: sans-serif">
+Your web browser must have JavaScript enabled in order for this
+application to display correctly.</div>
+</noscript>
+
+<script>
+function testMem() {
+    var value = {
+            "value":{
+	        "test-string" : "value",
+	        "test-int" : 1,
+	        "test-float" : 1.5,
+	        "test-boolean" : true,
+	        "test-null" : null,
+	        "test-object" : {
+	            "x" : "y"
+	        },
+	        "test-array" : [
+	            "abc",
+	            1,
+	            false
+	        ]
+	    }
+	};
+    var url = itemscript.put("/foo?b64id", value)["url"];
+    window.alert("get url: " + url + " value: " + JSON.stringify(itemscript.get(url)));
+    itemscript.remove(url);
+}
+function testHttp() {
+    var url = "http://127.0.0.1:8888/test.json"
+    var callback =  {
+        "onSuccess" : function(value) {
+            window.alert("getAsync url: " + url + " value: " + JSON.stringify(value));
+	    },
+	    "onError" : function(exception) {
+	        window.alert("error: " + JSON.stringify(exception));
+	    }
+	};
+    itemscript.getAsync(url, callback);
+}
+// For testJavascript, a global object:
+testObject = {
+    "xyz" : "abc"
+};
+function testJavascript() {
+    var url = "javascript:testObject";
+    window.alert("get url: " + url + " value: " + JSON.stringify(itemscript.get(url)));
+}
+function testCopy() {
+    itemscript.copyAsync("http://127.0.0.1:8888/test.json", "mem:/cat");
+}
+function testGetAfterCopy() {
+    window.alert("get url: mem:/cat value: " + JSON.stringify(itemscript.get("mem:/cat")));
+}
+</script>
+<input type="button" onClick="testMem()" value="Test mem:" />
+<input type="button" onClick="testHttp()" value="Test http:" />
+<input type="button" onClick="testJavascript()" value="Test javascript:" />
+<input type="button" onClick="testCopy()" value="Test copy" />
+<input type="button" onClick="testGetAfterCopy()" value="Test get after copy" />
+</body>
+</html>

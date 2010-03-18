@@ -132,7 +132,7 @@ public abstract class ItemscriptCreator implements JsonCreator, HasSystem {
      * @return A new JsonItem.
      */
     public final JsonItem createItem(Url sourceUrl, JsonObject meta, JsonValue value) {
-        return new ItemscriptItem(system, sourceUrl, value);
+        return new ItemscriptItem(system, sourceUrl, meta, value);
     }
 
     @Override

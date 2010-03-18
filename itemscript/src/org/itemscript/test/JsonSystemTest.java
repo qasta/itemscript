@@ -66,6 +66,62 @@ public class JsonSystemTest extends ItemscriptTestBase {
     static boolean getCompleted = false;
     static boolean putCompleted = false;
     static boolean removeCompleted = false;
+    private Random random = new Random();
+    private char[] letters = new char[26];
+    {
+        for (char l = 'a'; l <= 'z'; ++l) {
+            letters[l - 'a'] = l;
+        }
+    }
+
+    private JsonArray createRandomArray(int maxDepth, int depth) {
+        JsonArray array = system().createArray();
+        if (depth < maxDepth) {
+            int childNodes = Math.abs(random.nextInt()) % 10;
+            for (int i = 0; i < childNodes; ++i) {
+                array.add(createSomething(maxDepth, depth + 1));
+            }
+        }
+        return array;
+    }
+
+    private JsonObject createRandomObject(int maxDepth, int depth) {
+        JsonObject object = system().createObject();
+        if (depth < maxDepth) {
+            int childNodes = Math.abs(random.nextInt()) % 10;
+            for (int i = 0; i < childNodes; ++i) {
+                object.put(randomString(), createSomething(maxDepth, depth + 1));
+            }
+        }
+        return object;
+    }
+
+    private JsonValue createSomething(int maxDepth, int depth) {
+        int what = Math.abs(random.nextInt()) % 6;
+        switch (what) {
+            case 0 :
+                return createRandomObject(maxDepth, depth);
+            case 1 :
+                return createRandomArray(maxDepth, depth);
+            case 2 :
+                return system().createNull();
+            case 3 :
+                return system().createBoolean(random.nextBoolean());
+            case 4 :
+                return system().createString(randomString());
+            case 5 :
+            default :
+                return system().createNumber(random.nextDouble());
+        }
+    }
+
+    private String randomString() {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i <= (Math.abs(random.nextInt()) % 20); ++i) {
+            sb.append(letters[Math.abs(random.nextInt()) % 26]);
+        }
+        return sb.toString();
+    }
 
     private String randomUrl() {
         StringBuffer sb = new StringBuffer("mem:/foo");
@@ -123,6 +179,20 @@ public class JsonSystemTest extends ItemscriptTestBase {
         assertNull(system().get("/foo"));
     }
 
+    @Test
+    public void testB64idPut() {
+        PutResponse response = system().put("/foo?b64id", "foo");
+        Url source = system().util()
+                .createUrl(response.url());
+        assertEquals("/foo/", source.pathString()
+                .substring(0, 5));
+        String filename = source.filename();
+        assertEquals(22, filename.length());
+        JsonValue get = system().get(response.url());
+        assertEquals(response.url(), get.item()
+                .source());
+    }
+
     //    @Test
     //    public void testHttpPut() {
     //        JsonValue value = system().get("http://127.0.0.1:8888/test.json");
@@ -158,6 +228,14 @@ public class JsonSystemTest extends ItemscriptTestBase {
     }
 
     @Test
+    public void testCreate() {
+        JsonObject object = createRandomObject(15, 0);
+        String string = object.toJsonString();
+        JsonValue parsed = system().parse(string);
+        assertNotNull(parsed);
+    }
+
+    @Test
     public void testCtor() {
         Assert.assertNotNull(system());
     }
@@ -172,6 +250,22 @@ public class JsonSystemTest extends ItemscriptTestBase {
     }
 
     @Test
+    public void testFileGet() {
+        JsonArray array = system().get("file:" + basePath + "?keys")
+                .asArray();
+        assertTrue(array.contains(system().createString("test.json")));
+        JsonObject value = system().get("file:" + basePath + "test.json")
+                .asObject();
+        assertEquals("bar", value.getString("foo"));
+        assertEquals("bar", system().getString("file:" + basePath + "test.json#foo"));
+        String textValue = system().getString("file:" + basePath + "test.txt");
+        assertTrue(textValue.startsWith("one"));
+        JsonString imageValue = system().get("file:" + basePath + "test.png")
+                .asString();
+        assertNotNull(imageValue);
+    }
+
+    @Test
     public void testGet() {
         Assert.assertNotNull(system().get("mem:/itemscript"));
     }
@@ -182,29 +276,19 @@ public class JsonSystemTest extends ItemscriptTestBase {
                 .asObject();
         assertEquals("value", value.getString("test-string"));
         assertEquals("value", system().getString("http://itemscript.org/test.json#test-string"));
-        JsonArray textValue = system().getArray("http://itemscript.org/test.txt");
-        String firstLine = system().getString("http://itemscript.org/test.txt#0");
-        assertEquals("one", firstLine);
+        String textValue = system().getString("http://itemscript.org/test.txt");
+        assertTrue(textValue.startsWith("one"));
         JsonString imageValue = system().get("http://itemscript.org/test.png")
                 .asString();
         assertNotNull(imageValue);
     }
 
     @Test
-    public void testFileGet() {
-        JsonArray array = system().get("file:" + basePath + "?keys")
-                .asArray();
-        assertTrue(array.contains(system().createString("test.json")));
-        JsonObject value = system().get("file:" + basePath + "test.json")
-                .asObject();
-        assertEquals("bar", value.getString("foo"));
-        assertEquals("bar", system().getString("file:" + basePath + "test.json#foo"));
-        JsonArray textValue = system().getArray("file:" + basePath + "test.txt");
-        String firstLine = system().getString("file:" + basePath + "test.txt#0");
-        assertEquals("one", firstLine);
-        JsonString imageValue = system().get("file:" + basePath + "test.png")
-                .asString();
-        assertNotNull(imageValue);
+    public void testHttpMeta() {
+        JsonValue val = system().get("http://itemscript.org/test.json");
+        assertNotNull(val.item()
+                .meta()
+                .getString("Content-Type"));
     }
 
     @Test
@@ -401,87 +485,7 @@ public class JsonSystemTest extends ItemscriptTestBase {
     }
 
     @Test
-    public void testB64idPut() {
-        PutResponse response = system().put("/foo?b64id", "foo");
-        Url source = system().util()
-                .createUrl(response.url());
-        assertEquals("/foo/", source.pathString()
-                .substring(0, 5));
-        String filename = source.filename();
-        assertEquals(22, filename.length());
-        JsonValue get = system().get(response.url());
-        assertEquals(response.url(), get.item()
-                .source());
-    }
-
-    @Test
     public void testValidate() {
         system().get("classpath:org/itemscript/test/validate.json");
-    }
-
-    @Test
-    public void testCreate() {
-        JsonObject object = createRandomObject(15, 0);
-        String string = object.toJsonString();
-        System.err.println(string);
-        JsonValue parsed = system().parse(string);
-        assertNotNull(parsed);
-    }
-
-    Random random = new Random();
-    char[] letters = new char[26];
-    {
-        for (char l = 'a'; l <= 'z'; ++l) {
-            letters[l - 'a'] = l;
-        }
-    }
-
-    private String randomString() {
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i <= (Math.abs(random.nextInt()) % 20); ++i) {
-            sb.append(letters[Math.abs(random.nextInt()) % 26]);
-        }
-        return sb.toString();
-    }
-
-    private JsonValue createSomething(int maxDepth, int depth) {
-        int what = Math.abs(random.nextInt()) % 6;
-        switch (what) {
-            case 0 :
-                return createRandomObject(maxDepth, depth);
-            case 1 :
-                return createRandomArray(maxDepth, depth);
-            case 2 :
-                return system().createNull();
-            case 3 :
-                return system().createBoolean(random.nextBoolean());
-            case 4 :
-                return system().createString(randomString());
-            case 5 :
-            default :
-                return system().createNumber(random.nextDouble());
-        }
-    }
-
-    private JsonObject createRandomObject(int maxDepth, int depth) {
-        JsonObject object = system().createObject();
-        if (depth < maxDepth) {
-            int childNodes = Math.abs(random.nextInt()) % 10;
-            for (int i = 0; i < childNodes; ++i) {
-                object.put(randomString(), createSomething(maxDepth, depth + 1));
-            }
-        }
-        return object;
-    }
-
-    private JsonArray createRandomArray(int maxDepth, int depth) {
-        JsonArray array = system().createArray();
-        if (depth < maxDepth) {
-            int childNodes = Math.abs(random.nextInt()) % 10;
-            for (int i = 0; i < childNodes; ++i) {
-                array.add(createSomething(maxDepth, depth + 1));
-            }
-        }
-        return array;
     }
 }

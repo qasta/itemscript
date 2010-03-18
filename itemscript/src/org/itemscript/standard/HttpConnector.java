@@ -37,6 +37,8 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.List;
+import java.util.Map;
 
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.connectors.ConnectorBase;
@@ -47,6 +49,8 @@ import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Url;
 import org.itemscript.core.values.ItemscriptPutResponse;
 import org.itemscript.core.values.ItemscriptRemoveResponse;
+import org.itemscript.core.values.JsonArray;
+import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 import org.itemscript.core.values.PutResponse;
 import org.itemscript.core.values.RemoveResponse;
@@ -75,25 +79,49 @@ public final class HttpConnector extends ConnectorBase
         super(system);
     }
 
+    private JsonObject createMeta(URLConnection connection) {
+        JsonObject meta = system().createObject();
+        Map<String, List<String>> headers = connection.getHeaderFields();
+        for (String key : headers.keySet()) {
+            List<String> values = headers.get(key);
+            if (values.size() == 1) {
+                meta.put(key, values.get(0));
+            } else {
+                JsonArray headerList = meta.createArray(key);
+                for (int i = 0; i < values.size(); ++i) {
+                    headerList.add(values.get(i));
+                }
+            }
+        }
+        return meta;
+    }
+
     @Override
     public JsonValue get(Url url) {
         try {
-            URL javaUrl = new URL(url + "");
-            URLConnection connection = javaUrl.openConnection();
-            // Note: we are ignoring content-encoding for now.
+            URLConnection connection = new URL(url + "").openConnection();
+            // Note: we are ignoring content-encoding for now...
             String contentType = connection.getContentType();
             if (url.filename()
                     .endsWith(".json") || contentType.equals("application/json")
                     || contentType.equals("text/json") || contentType.equals("text/x-json")) {
-                return FileConnector.readJson(system(), url, new InputStreamReader(connection.getInputStream()));
+                return system().createItem(url + "", createMeta(connection),
+                        StandardUtil.readJson(system(), new InputStreamReader(connection.getInputStream())))
+                        .value();
             } else if (contentType.startsWith("text")) {
-                return FileConnector.readText(system(), url, new BufferedReader(new InputStreamReader(
-                        connection.getInputStream())));
+                return system().createItem(
+                        url + "",
+                        createMeta(connection),
+                        StandardUtil.readText(system(), new BufferedReader(new InputStreamReader(
+                                connection.getInputStream()))))
+                        .value();
             } else {
-                return FileConnector.readBinary(system(), url, connection.getInputStream());
+                return system().createItem(url + "", createMeta(connection),
+                        StandardUtil.readBinary(system(), connection.getInputStream()))
+                        .value();
             }
         } catch (IOException e) {
-            throw ItemscriptError.internalError(this, "IOException", e);
+            throw ItemscriptError.internalError(this, "get.IOException", e);
         }
     }
 
@@ -109,9 +137,9 @@ public final class HttpConnector extends ConnectorBase
             Writer w = new OutputStreamWriter(connection.getOutputStream());
             w.write(value.toCompactJsonString());
             w.close();
-            return new ItemscriptPutResponse(url + "", null, null);
+            return new ItemscriptPutResponse(url + "", createMeta(connection), null);
         } catch (IOException e) {
-            throw ItemscriptError.internalError(this, "IOException", e);
+            throw ItemscriptError.internalError(this, "post.IOException", e);
         }
     }
 
@@ -127,9 +155,9 @@ public final class HttpConnector extends ConnectorBase
             Writer w = new OutputStreamWriter(connection.getOutputStream());
             w.write(value.toCompactJsonString());
             w.close();
-            return new ItemscriptPutResponse(url + "", null, null);
+            return new ItemscriptPutResponse(url + "", createMeta(connection), null);
         } catch (IOException e) {
-            throw ItemscriptError.internalError(this, "IOException", e);
+            throw ItemscriptError.internalError(this, "put.IOException", e);
         }
     }
 
@@ -142,9 +170,9 @@ public final class HttpConnector extends ConnectorBase
             connection.connect();
             int response = connection.getResponseCode();
             String responseMessage = connection.getResponseMessage();
-            return new ItemscriptRemoveResponse(null);
+            return new ItemscriptRemoveResponse(createMeta(connection));
         } catch (IOException e) {
-            throw ItemscriptError.internalError(this, "IOException", e);
+            throw ItemscriptError.internalError(this, "remove.IOException", e);
         }
     }
 }

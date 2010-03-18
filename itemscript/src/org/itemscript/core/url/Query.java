@@ -92,30 +92,21 @@ public final class Query extends HashMap<String, List<String>> implements Map<St
     }
 
     /**
-     * Test whether this is a "countItems" query.
-     * 
-     * @return True if this is a "countItems" query, false otherwise.
-     */
-    public boolean isCountItemsQuery() {
-        return containsKey(COUNT_ITEMS_KEY);
-    }
-
-    /**
-     * Test whether this is a "uuid" query.
-     * 
-     * @return True if this is a "uuid" query, false otherwise.
-     */
-    public boolean isUuidQuery() {
-        return containsKey(UUID_KEY);
-    }
-
-    /**
      * Test whether this is a "b64id" query.
      * 
      * @return True if thsi is a "b64id" query, false otherwise.
      */
     public boolean isB64idQuery() {
         return containsKey(B64ID_KEY);
+    }
+
+    /**
+     * Test whether this is a "countItems" query.
+     * 
+     * @return True if this is a "countItems" query, false otherwise.
+     */
+    public boolean isCountItemsQuery() {
+        return containsKey(COUNT_ITEMS_KEY);
     }
 
     /**
@@ -161,6 +152,15 @@ public final class Query extends HashMap<String, List<String>> implements Map<St
      */
     public boolean isPagedKeysQuery() {
         return containsKey(PAGED_KEYS);
+    }
+
+    /**
+     * Test whether this is a "uuid" query.
+     * 
+     * @return True if this is a "uuid" query, false otherwise.
+     */
+    public boolean isUuidQuery() {
+        return containsKey(UUID_KEY);
     }
 
     /**
