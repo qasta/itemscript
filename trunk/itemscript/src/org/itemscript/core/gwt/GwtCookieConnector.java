@@ -44,7 +44,11 @@ public class GwtCookieConnector implements SyncGetConnector, SyncPutConnector, H
 
     @Override
     public JsonValue get(Url url) {
-        JsonValue value = system().parse(Cookies.getCookie(url.remainder()));
+        String cookie = Cookies.getCookie(url.remainder());
+        if (cookie == null) {
+            cookie = "null";
+        }
+        JsonValue value = system().parse(cookie);
         system().createItem(url + "", value);
         return value;
     }

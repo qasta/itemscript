@@ -73,7 +73,10 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
         JsonObject meta = system().createObject();
         Header[] headers = response.getHeaders();
         for (int i = 0; i < headers.length; ++i) {
-            meta.put(headers[i].getName(), headers[i].getValue());
+            Header header = headers[i];
+            if (header != null) {
+                meta.put(header.getName(), headers[i].getValue());
+            }
         }
         return meta;
     }

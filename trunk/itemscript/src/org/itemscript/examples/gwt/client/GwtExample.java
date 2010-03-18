@@ -47,7 +47,9 @@ public class GwtExample implements EntryPoint {
     @Override
     public void onModuleLoad() {
         final JsonSystem system = GwtSystem.SYSTEM;
-        system.copy(GWT.getHostPageBaseURL() + "cat.json", "cookie:test", null);
+        //        system.copy(GWT.getHostPageBaseURL() + "test.json", "cookie:test", null);
+        //        Window.alert(system.get("cookie:test")
+        //                .toCompactJsonString());
         system.get(GWT.getHostPageBaseURL() + "test.json", new GetCallback() {
             @Override
             public void onError(Throwable e) {
@@ -56,8 +58,7 @@ public class GwtExample implements EntryPoint {
 
             @Override
             public void onSuccess(JsonValue value) {
-                Window.alert(value.item()
-                        .meta() + "");
+                Window.alert(value + "");
             }
         });
     }
