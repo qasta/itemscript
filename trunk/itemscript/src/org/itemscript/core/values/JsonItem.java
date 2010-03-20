@@ -35,6 +35,7 @@ import org.itemscript.core.connectors.GetCallback;
 import org.itemscript.core.connectors.PutCallback;
 import org.itemscript.core.connectors.RemoveCallback;
 import org.itemscript.core.events.Handler;
+import org.itemscript.core.events.HandlerReg;
 
 /**
  * A JsonItem is associated with a JsonValue loaded from a particular source.
@@ -49,11 +50,20 @@ import org.itemscript.core.events.Handler;
 public interface JsonItem extends HasSystem, JsonGetAccess, JsonPutAccess {
     /**
      * Add an event handler to this item. The handler will be called any time the value of this item
-     * changes or is removed.  
+     * changes or is removed. The returned HandlerReg can be used to remove the event handler at a later date.
      * 
      * @param handler The Handler to attach to this JsonItem.
+     * @return The HandlerReg for this event handler.
      */
-    public void addHandler(Handler handler);
+    public HandlerReg addHandler(Handler handler);
+
+    /**
+     * Remove an event handler from this item. Use this to clean up event handlers when the object they point
+     * to needs to be garbage-collected; otherwise, they will leak memory.
+     * 
+     * @param reg The original HandlerReg that was returned from addHandler.
+     */
+    public void removeHandler(HandlerReg reg);
 
     /**
      * Get a value from (or relative to) this item by URL.

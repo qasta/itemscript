@@ -34,11 +34,10 @@ import java.util.Map;
 import org.itemscript.core.JsonSystem;
 
 /**
- * Provides access to contained {@link JsonValue} by string locators, which may be keys in the
- * case of {@link JsonContainer} classes, or URLs in the case of {@link JsonItem} or {@link JsonSystem} classes.
+ * Provides access to contained {@link JsonValue} by URLs for the {@link JsonItem} or {@link JsonSystem} classes.
  * 
- * For compatibility with the Map and List interfaces, the simple get, put, and remove methods on this class
- * are named getValue, putValue, and removeValue. Implementing classes should add get, put, and remove methods compatible
+ * For compatibility with the Map and List interfaces, the simple put and remove methods on this class
+ * are named putValue and removeValue. Implementing classes should add put and remove methods compatible
  * with Map and List as appropriate for their interface.
  * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
@@ -46,13 +45,29 @@ import org.itemscript.core.JsonSystem;
  */
 public interface JsonPutAccess {
     /**
+     * Create a new JsonObject at the given URL.
+     * 
+     * @param url The URL to create at.
+     * @return The PutResponse returned by the put operation.
+     */
+    public PutResponse createObject(String url);
+
+    /**
+     * Create a new JsonArray at the given URL.
+     * 
+     * @param url The URL to create at.
+     * @return The PutResponse returned by the put operation.
+     */
+    public PutResponse createArray(String url);
+
+    /**
      * Put a boolean value as a JsonBoolean.
      * 
-     * @param key The key to put the value under.
+     * @param url The URL to put the value under.
      * @param value The boolean value to store.
      * @return The PutResponse returned by the put operation.
      */
-    public PutResponse put(String key, Boolean value);
+    public PutResponse put(String url, Boolean value);
 
     /**
      * Put a binary value. The value will be base64-encoded and stored in a JsonString.
@@ -63,80 +78,80 @@ public interface JsonPutAccess {
      * method. So, if you need to make sure that the original is not changed, you must copy it before
      * supplying it to this method. 
      * 
-     * @param key The key to put the value under.
+     * @param url The URL to put the value under.
      * @param value The binary value to store.
      * @return The PutResponse returned by the put operation. 
      */
-    public PutResponse put(String key, byte[] value);
+    public PutResponse put(String url, byte[] value);
 
     /**
      * Put a double value as a JsonNumber.
      * 
-     * @param key The key to put the value under.
+     * @param url The URL to put the value under.
      * @param value The double value to store.
      * @return The PutResponse returned by the put operation. 
      */
-    public PutResponse put(String key, Double value);
+    public PutResponse put(String url, Double value);
 
     /**
      * Put a float value as a JsonNumber.
      * 
-     * @param key The key to put the value under.
+     * @param url The URL to put the value under.
      * @param value The float value to store.
      * @return The PutResponse returned by the put operation. 
      */
-    public PutResponse put(String key, Float value);
+    public PutResponse put(String url, Float value);
 
     /**
      * Put an int value as a JsonNumber.
      * 
-     * @param key The key to put the value under.
+     * @param url The URL to put the value under.
      * @param value The int value to store.
      * @return The PutResponse returned by the put operation. 
      */
-    public PutResponse put(String key, Integer value);
+    public PutResponse put(String url, Integer value);
 
     /**
      * Put a long value as a JsonString.
      * 
-     * @param key The key to put the value under.
+     * @param url The URL to put the value under.
      * @param value The long value to store.
      * @return The PutResponse returned by the put operation. 
      */
-    public PutResponse put(String key, Long value);
+    public PutResponse put(String url, Long value);
 
     /**
      * Put a string value as a JsonString.
      * 
-     * @param key The key to put the value under.
+     * @param url The URL to put the value under.
      * @param value The String value to store.
      * @return The PutResponse returned by the put operation. 
      */
-    public PutResponse put(String key, String value);
+    public PutResponse put(String url, String value);
 
     /**
      * Put a native object as a JsonNative.
      * 
-     * @param key The key to put the value under.
+     * @param url The URL to put the value under.
      * @param value The native object to store.
      * @return The PutResponse returned by the put operation. 
      */
-    public PutResponse putNative(String key, Object value);
+    public PutResponse putNative(String url, Object value);
 
     /**
      * Put a JsonValue.
      * <p>
      * Note that the return from this method is the value that was returned from the put operation, which differs
-     * from the {@link Map#put} method which returns any previous value that the map had under that key.<br/>
+     * from the {@link Map#put} method which returns any previous value that the map had under that url.<br/>
      * <p>
      * The <code>put</code> methods on JsonSystem and JsonItem are interchangeable
      * with this method.
      * 
-     * @param key The key to put the value under.
+     * @param url The URL to put the value under.
      * @param value The JsonValue to store.
      * @return The PutResponse returned by the put operation. 
      */
-    public PutResponse putValue(String key, JsonValue value);
+    public PutResponse putValue(String url, JsonValue value);
 
     /**
      * Remove a value.
@@ -145,8 +160,8 @@ public interface JsonPutAccess {
      * A method named "remove" will be provided by any class implementing this interface, and that
      * method should be used instead of this one, for brevity.
      * 
-     * @param key The key indicating the value to remove.
+     * @param url The URL indicating the value to remove.
      * @return The RemoveResponse returned by the remove operation.
      */
-    public RemoveResponse removeValue(String key);
+    public RemoveResponse removeValue(String url);
 }

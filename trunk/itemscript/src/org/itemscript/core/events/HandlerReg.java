@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright notice,
  *       this list of conditions and the following disclaimer in the documentation
  *       and/or other materials provided with the distribution.
- *     * Neither the names of Kalinda Software, DBA Software, Data Base Architects,
+ *     * Neither the names of Kalinda Software, DBA Software, Data Base Architects, Itemscript
  *       nor the names of its contributors may be used to endorse or promote products derived
  *       from this software without specific prior written permission.
  * 
@@ -27,47 +27,53 @@
  * Author: Jacob Davies
  */
 
-package org.itemscript.core.values;
+package org.itemscript.core.events;
 
-import org.itemscript.core.JsonSystem;
+import org.itemscript.core.values.JsonItem;
 
-class ItemscriptNative extends ItemscriptValue implements JsonNative {
-    private final Object value;
+/**
+ * The registration information for a newly-attached Handler. You can use this to remove the handler later,
+ * or get to the JsonItem it was attached to. Users should not need to create instances of this class.
+ * 
+ * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
+ */
+public class HandlerReg {
+    private final JsonItem item;
+    private final String id;
 
-    protected ItemscriptNative(JsonSystem system, Object value) {
-        super(system);
-        this.value = value;
+    /**
+     * Create a new HandlerReg with the associated JsonItem and id.
+     * 
+     * @param item The associated JsonItem.
+     * @param id The id.
+     */
+    public HandlerReg(JsonItem item, String id) {
+        this.item = item;
+        this.id = id;
     }
 
-    @Override
-    public JsonNative asNative() {
-        return this;
+    /**
+     * Get the associated JsonItem.
+     * 
+     * @return The associated JsonItem.
+     */
+    public JsonItem item() {
+        return item;
     }
 
-    @Override
-    public JsonValue copy() {
-        // JsonNative values are not copied even with a deep copy.
-        return system().createNative(null);
+    /**
+     * Get the id.
+     * 
+     * @return The id.
+     */
+    public String id() {
+        return id;
     }
 
-    @Override
-    public boolean isNative() {
-        return true;
-    }
-
-    @Override
-    public Object nativeValue() {
-        return value;
-    }
-
-    @Override
-    public String toCompactJsonString() {
-        return toJsonString();
-    }
-
-    @Override
-    public String toJsonString() {
-        return ItemscriptCreator.quotedString("__NATIVE__ | "
-                + (value != null ? value.getClass() : "(null)"));
+    /**
+     * Remove the Handler from the associated JsonItem.
+     */
+    public void remove() {
+        item.removeHandler(this);
     }
 }
