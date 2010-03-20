@@ -562,6 +562,16 @@ public final class ItemscriptSystem implements JsonSystem {
     }
 
     @Override
+    public PutResponse createArray(String url) {
+        return put(url, system().createArray());
+    }
+
+    @Override
+    public PutResponse createObject(String url) {
+        return put(url, system().createObject());
+    }
+
+    @Override
     public JsonSystem system() {
         return this;
     }

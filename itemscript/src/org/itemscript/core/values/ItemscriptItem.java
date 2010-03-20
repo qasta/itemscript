@@ -29,8 +29,8 @@
 
 package org.itemscript.core.values;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.itemscript.core.ItemscriptSystem;
 import org.itemscript.core.JsonSystem;
@@ -41,6 +41,7 @@ import org.itemscript.core.connectors.RemoveCallback;
 import org.itemscript.core.events.Event;
 import org.itemscript.core.events.EventType;
 import org.itemscript.core.events.Handler;
+import org.itemscript.core.events.HandlerReg;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Fragment;
 import org.itemscript.core.url.Url;
@@ -56,7 +57,7 @@ public final class ItemscriptItem implements JsonItem {
     private final Url source;
     private JsonValue value;
     private final JsonObject meta;
-    private List<Handler> handlers;
+    private Map<String, Handler> handlers;
 
     protected ItemscriptItem(JsonSystem system, Url source, JsonObject meta, JsonValue value) {
         this.system = system;
@@ -72,11 +73,23 @@ public final class ItemscriptItem implements JsonItem {
     }
 
     @Override
-    public void addHandler(Handler handler) {
-        if (handlers == null) {
-            handlers = new ArrayList<Handler>();
+    public void removeHandler(HandlerReg reg) {
+        if (handlers != null) {
+            handlers.remove(reg.id());
         }
-        handlers.add(handler);
+    }
+
+    @Override
+    public HandlerReg addHandler(Handler handler) {
+        if (handlers == null) {
+            handlers = new HashMap<String, Handler>();
+        }
+        String id = system().util()
+                .generateB64id();
+        handlers.put(id, handler);
+        System.err.println("source: " + source());
+        System.err.println("handlers: " + handlers);
+        return new HandlerReg(this, id);
     }
 
     @Override
@@ -216,64 +229,51 @@ public final class ItemscriptItem implements JsonItem {
 
     void notifyPut(String fragment, JsonValue newValue) {
         if (handlers != null) {
-            Event event = new Event(EventType.PUT, fragment, newValue);
-            for (int i = 0; i < handlers.size(); ++i) {
-                handlers.get(i)
-                        .handle(event);
-            }
+            dispatchEvent(new Event(EventType.PUT, fragment, newValue));
+        }
+    }
+
+    private void dispatchEvent(Event event) {
+        for (Handler handler : handlers.values()) {
+            handler.handle(event);
         }
     }
 
     void notifyRemove(String fragment) {
         if (handlers != null) {
-            Event event = new Event(EventType.REMOVE, fragment, null);
-            for (int i = 0; i < handlers.size(); ++i) {
-                handlers.get(i)
-                        .handle(event);
-            }
+            dispatchEvent(new Event(EventType.REMOVE, fragment, null));
         }
     }
 
     @Override
     public PutResponse put(String url, Boolean value) {
-        JsonBoolean jsonValue = system().createBoolean(value);
-        putValue(url, jsonValue);
-        return new ItemscriptPutResponse(url, null, jsonValue);
+        return putValue(url, system().createBoolean(value));
     }
 
     @Override
     public PutResponse put(String url, byte[] value) {
-        JsonString jsonValue = system().createString(value);
-        putValue(url, jsonValue);
-        return new ItemscriptPutResponse(url, null, jsonValue);
+        return putValue(url, system().createString(value));
     }
 
     @Override
     public PutResponse put(String url, Double value) {
-        JsonNumber jsonValue = system().createNumber(value);
-        putValue(url, jsonValue);
-        return new ItemscriptPutResponse(url, null, jsonValue);
+        return putValue(url, system().createNumber(value));
     }
 
     @Override
     public PutResponse put(String url, Float value) {
-        JsonNumber jsonValue = system().createNumber(value);
-        putValue(url, jsonValue);
-        return new ItemscriptPutResponse(url, null, jsonValue);
+        return putValue(url, system().createNumber(value));
     }
 
     @Override
     public PutResponse put(String url, Integer value) {
-        JsonNumber jsonValue = system().createNumber(value);
-        putValue(url, jsonValue);
-        return new ItemscriptPutResponse(url, null, jsonValue);
+        return putValue(url, system().createNumber(value));
     }
 
     @Override
     public PutResponse put(String url, JsonValue value) {
-        putValue(system().util()
+        return putValue(system().util()
                 .createUrl(url), value);
-        return new ItemscriptPutResponse(url, null, value);
     }
 
     @Override
@@ -284,16 +284,12 @@ public final class ItemscriptItem implements JsonItem {
 
     @Override
     public PutResponse put(String url, Long value) {
-        JsonString jsonValue = system().createString(value);
-        putValue(url, jsonValue);
-        return new ItemscriptPutResponse(url, null, jsonValue);
+        return putValue(url, system().createString(value));
     }
 
     @Override
     public PutResponse put(String url, String value) {
-        JsonString jsonValue = system().createString(value);
-        putValue(url, jsonValue);
-        return new ItemscriptPutResponse(url, null, jsonValue);
+        return putValue(url, system().createString(value));
     }
 
     private void put(Url url, JsonValue value, PutCallback callback) {
@@ -314,9 +310,7 @@ public final class ItemscriptItem implements JsonItem {
 
     @Override
     public PutResponse putNative(String url, Object value) {
-        JsonNative jsonValue = system().createNative(value);
-        put(url, jsonValue);
-        return new ItemscriptPutResponse(url, null, jsonValue);
+        return put(url, system().createNative(value));
     }
 
     @Override
@@ -446,5 +440,15 @@ public final class ItemscriptItem implements JsonItem {
     @Override
     public JsonValue value() {
         return value;
+    }
+
+    @Override
+    public PutResponse createArray(String url) {
+        return put(url, system().createArray());
+    }
+
+    @Override
+    public PutResponse createObject(String url) {
+        return put(url, system().createObject());
     }
 }
