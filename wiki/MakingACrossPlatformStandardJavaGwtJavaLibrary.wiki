@@ -3,7 +3,7 @@
 
 = Introduction =
 
-Making Java code that can be compiled in both the GWT and standard Java environments can be a bit of a challenge. There are a few simple things I learned while writing the Itemscript JSON library & DB that might be useful.
+Making Java code that can be compiled in both the GWT and standard Java environments can be a bit of a challenge. Here are a few simple things I learned while writing the Itemscript JSON library.
 
 == The problems ==
 
