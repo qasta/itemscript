@@ -35,7 +35,6 @@ import java.io.InputStream;
 import java.io.Reader;
 
 import org.itemscript.core.JsonSystem;
-import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonString;
 import org.itemscript.core.values.JsonValue;
 

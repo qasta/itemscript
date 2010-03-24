@@ -34,9 +34,13 @@ import java.util.Random;
 import org.itemscript.core.connectors.GetCallback;
 import org.itemscript.core.connectors.PutCallback;
 import org.itemscript.core.connectors.RemoveCallback;
+import org.itemscript.core.events.Event;
+import org.itemscript.core.events.EventType;
+import org.itemscript.core.events.Handler;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Url;
 import org.itemscript.core.values.JsonArray;
+import org.itemscript.core.values.JsonItem;
 import org.itemscript.core.values.JsonNull;
 import org.itemscript.core.values.JsonNumber;
 import org.itemscript.core.values.JsonObject;
@@ -374,6 +378,16 @@ public class JsonSystemTest extends ItemscriptTestBase {
                 .asArray();
         assertEquals(1, array3.size());
         assertEquals("2", array3.getString(0));
+        // reverse sort.
+        JsonArray array4 = system().get("?pagedKeys&ascending=false")
+                .asArray();
+        assertEquals("z", array4.item()
+                .getString(array4.getString(0)));
+        // skip "itemscript" entry...
+        assertEquals("y", array4.item()
+                .getString(array4.getString(2)));
+        assertEquals("x", array4.item()
+                .getString(array4.getString(3)));
     }
 
     @Test
@@ -487,5 +501,79 @@ public class JsonSystemTest extends ItemscriptTestBase {
     @Test
     public void testValidate() {
         system().get("classpath:org/itemscript/test/validate.json");
+    }
+
+    @Test
+    public void testOrderBy() {
+        JsonObject o1 = system().createObject()
+                .p("x", "a");
+        JsonObject o2 = system().createObject()
+                .p("x", "b");
+        JsonObject o3 = system().createObject()
+                .p("x", "c");
+        system().put("/Sort/?b64id", o1);
+        system().put("/Sort/?b64id", o2);
+        system().put("/Sort/?b64id", o3);
+        JsonArray array = system().getArray("/Sort/?pagedItems&numRows=3&orderBy=x");
+        assertEquals(3, array.size());
+        assertEquals("a", array.getArray(0)
+                .getObject(1)
+                .getString("x"));
+        assertEquals("b", array.getArray(1)
+                .getObject(1)
+                .getString("x"));
+        assertEquals("c", array.getArray(2)
+                .getObject(1)
+                .getString("x"));
+        JsonArray array2 = system().getArray("/Sort/?pagedItems&numRows=3&orderBy=x&ascending=false");
+        assertEquals(3, array2.size());
+        assertEquals("c", array2.getArray(0)
+                .getObject(1)
+                .getString("x"));
+        assertEquals("b", array2.getArray(1)
+                .getObject(1)
+                .getString("x"));
+        assertEquals("a", array2.getArray(2)
+                .getObject(1)
+                .getString("x"));
+    }
+
+    private static boolean nestedRemoveHandlerCalled1 = false;
+    private static boolean nestedRemoveHandlerCalled2 = false;
+
+    @Test
+    public void testNestedRemoveHandler() {
+        system().put("/a/b/c", "x");
+        JsonItem item = system().get("/a/b/c")
+                .item();
+        item.addHandler(new Handler() {
+            @Override
+            public void handle(Event event) {
+                if (event.eventType()
+                        .equals(EventType.REMOVE)) {
+                    if (event.fragment()
+                            .equals("#")) {
+                        nestedRemoveHandlerCalled1 = true;
+                    }
+                }
+            }
+        });
+        JsonItem item2 = system().get("/a/b")
+                .item();
+        item2.addHandler(new Handler() {
+            @Override
+            public void handle(Event event) {
+                if (event.eventType()
+                        .equals(EventType.REMOVE)) {
+                    if (event.fragment()
+                            .equals("#")) {
+                        nestedRemoveHandlerCalled2 = true;
+                    }
+                }
+            }
+        });
+        system().remove("/a");
+        assertTrue(nestedRemoveHandlerCalled1);
+        assertTrue(nestedRemoveHandlerCalled2);
     }
 }

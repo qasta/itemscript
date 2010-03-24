@@ -40,17 +40,8 @@ import java.util.Map;
 public final class Pagination {
     private final int startRow;
     private final int numRows;
-
-    /**
-     * Create a new Pagination.
-     * 
-     * @param startRow The starting row, numbered from 0.
-     * @param numRows The number of rows to return.
-     */
-    public Pagination(int startRow, int numRows) {
-        this.startRow = startRow;
-        this.numRows = numRows;
-    }
+    private final String orderBy;
+    private final boolean ascending;
 
     /**
      * Create a new Pagination from a set of URL query parameters.
@@ -70,6 +61,19 @@ public final class Pagination {
         } else {
             numRows = 10;
         }
+        if (params.containsKey(Query.ORDER_BY_KEY)) {
+            orderBy = params.get(Query.ORDER_BY_KEY)
+                    .get(0);
+        } else {
+            orderBy = null;
+        }
+        if (params.containsKey(Query.ASCENDING_KEY)) {
+            ascending = params.get(Query.ASCENDING_KEY)
+                    .get(0)
+                    .equalsIgnoreCase("true");
+        } else {
+            ascending = true;
+        }
     }
 
     /**
@@ -88,5 +92,23 @@ public final class Pagination {
      */
     public int startRow() {
         return startRow;
+    }
+
+    /**
+     * Get the column to order by.
+     * 
+     * @return The name of the column to order by.
+     */
+    public String orderBy() {
+        return orderBy;
+    }
+
+    /**
+     * Get whether this pagination is ascending or descending.
+     * 
+     * @return True if this pagination is ascending, false if it is descending.
+     */
+    public boolean ascending() {
+        return ascending;
     }
 }

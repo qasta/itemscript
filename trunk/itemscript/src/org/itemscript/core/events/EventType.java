@@ -49,4 +49,8 @@ public final class EventType {
     private EventType(String eventType) {
         this.eventType = eventType;
     }
+
+    public String toString() {
+        return "[EventType " + eventType + "]";
+    }
 }
