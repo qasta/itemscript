@@ -87,8 +87,6 @@ public final class ItemscriptItem implements JsonItem {
         String id = system().util()
                 .generateB64id();
         handlers.put(id, handler);
-        System.err.println("source: " + source());
-        System.err.println("handlers: " + handlers);
         return new HandlerReg(this, id);
     }
 
@@ -227,7 +225,13 @@ public final class ItemscriptItem implements JsonItem {
         return meta;
     }
 
-    void notifyPut(String fragment, JsonValue newValue) {
+    /**
+     * Notify this item that the value attached to it has had something put in it.
+     * 
+     * @param fragment The fragment of the value that has been put; "#" if we put a new value for this item.
+     * @param newValue The new value that was put.
+     */
+    public void notifyPut(String fragment, JsonValue newValue) {
         if (handlers != null) {
             dispatchEvent(new Event(EventType.PUT, fragment, newValue));
         }
@@ -239,7 +243,12 @@ public final class ItemscriptItem implements JsonItem {
         }
     }
 
-    void notifyRemove(String fragment) {
+    /**
+     * Notify this item that the value attached to it has had something removed from it.
+     * 
+     * @param fragment The fragment of the value that has been removed; "#" if we are removing this item.
+     */
+    public void notifyRemove(String fragment) {
         if (handlers != null) {
             dispatchEvent(new Event(EventType.REMOVE, fragment, null));
         }

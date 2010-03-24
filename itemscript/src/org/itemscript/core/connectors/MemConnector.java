@@ -30,6 +30,7 @@
 package org.itemscript.core.connectors;
 
 import java.util.Arrays;
+import java.util.Comparator;
 
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.exceptions.ItemscriptError;
@@ -37,6 +38,7 @@ import org.itemscript.core.url.Pagination;
 import org.itemscript.core.url.Path;
 import org.itemscript.core.url.Query;
 import org.itemscript.core.url.Url;
+import org.itemscript.core.values.ItemscriptItem;
 import org.itemscript.core.values.ItemscriptPutResponse;
 import org.itemscript.core.values.ItemscriptRemoveResponse;
 import org.itemscript.core.values.JsonArray;
@@ -60,6 +62,51 @@ public final class MemConnector extends ConnectorBase
             SyncLoadConnector,
             SyncPostConnector {
     /**
+     * Used in {@link #sortByField}.
+     */
+    private class KeyAndField {
+        final String key;
+        final String field;
+
+        private KeyAndField(String key, String field) {
+            this.key = key;
+            this.field = field;
+        }
+
+        public String toString() {
+            return "[KeyAndField key=" + key + " field=" + field + "]";
+        }
+    }
+
+    /**
+     * Used in {@link #sortByKey}.
+     */
+    private static final Comparator<String> reverseStringComparator = new Comparator<String>() {
+        @Override
+        public int compare(String o1, String o2) {
+            return o2.compareTo(o1);
+        }
+    };
+    /**
+     * Used in {@link #sortByField}.
+     */
+    private static final Comparator<KeyAndField> fieldComparator = new Comparator<KeyAndField>() {
+        @Override
+        public int compare(KeyAndField o1, KeyAndField o2) {
+            return o1.field.compareTo(o2.field);
+        }
+    };
+    /**
+     * Used in {@link #sortByField}.
+     */
+    private static final Comparator<KeyAndField> reverseFieldComparator = new Comparator<KeyAndField>() {
+        @Override
+        public int compare(KeyAndField o1, KeyAndField o2) {
+            return o2.field.compareTo(o1.field);
+        }
+    };
+
+    /**
      * Create the MemConnector for an {@link JsonSystem}.
      * 
      * This initializes the system and returns the JsonObject from the location
@@ -81,6 +128,11 @@ public final class MemConnector extends ConnectorBase
 
     private final ItemNode root;
 
+    /**
+     * Create a new MemConnector.
+     * 
+     * @param system
+     */
     private MemConnector(JsonSystem system) {
         super(system);
         root = new ItemNode(system().createItem(JsonSystem.ROOT_URL, system.createNull()));
@@ -103,6 +155,12 @@ public final class MemConnector extends ConnectorBase
         return dumpNode(node);
     }
 
+    /**
+     * Dump the given node and sub-nodes recursively.
+     * 
+     * @param node
+     * @return
+     */
     private JsonObject dumpNode(ItemNode node) {
         JsonObject dump = system().createObject();
         dump.put("value", node.item()
@@ -116,6 +174,12 @@ public final class MemConnector extends ConnectorBase
         return dump;
     }
 
+    /**
+     * Find an ItemNode from the root for the given URL.
+     * 
+     * @param url
+     * @return
+     */
     private ItemNode findNode(Url url) {
         ItemNode node = root;
         // We start at 1 because the first element of any path is always "/".
@@ -168,7 +232,8 @@ public final class MemConnector extends ConnectorBase
     public JsonArray pagedItems(Url url) {
         ItemNode node = findNode(url);
         if (node == null) { return null; }
-        String[] keyArray = sortedKeys(node);
+        String[] keyArray = sortedKeys(node, url.query()
+                .pagination());
         Pagination pagination = url.query()
                 .pagination();
         int beginIndex = 0;
@@ -200,7 +265,8 @@ public final class MemConnector extends ConnectorBase
     public JsonArray pagedKeys(Url url) {
         ItemNode node = findNode(url);
         if (node == null) { return null; }
-        String[] keyArray = sortedKeys(node);
+        String[] keyArray = sortedKeys(node, url.query()
+                .pagination());
         Pagination pagination = url.query()
                 .pagination();
         int beginIndex = 0;
@@ -288,16 +354,104 @@ public final class MemConnector extends ConnectorBase
                         .remove("#" + url.fragmentString());
             }
         } else {
-            node.remove(path.lastKey());
+            String lastKey = path.lastKey();
+            ItemNode lastNode = node.get(lastKey);
+            node.remove(lastKey);
+            if (lastNode != null) {
+                notifyAllOfRemove(lastNode);
+            }
         }
         return new ItemscriptRemoveResponse(null);
     }
 
-    private String[] sortedKeys(ItemNode node) {
+    /**
+     * Notify the given ItemNode and all of its sub-nodes that they have been removed.
+     * 
+     * @param removedNode
+     */
+    private static void notifyAllOfRemove(ItemNode removedNode) {
+        for (String key : removedNode.keySet()) {
+            ItemNode next = removedNode.get(key);
+            notifyAllOfRemove(next);
+        }
+        ((ItemscriptItem) removedNode.item()).notifyRemove("#");
+    }
+
+    /**
+     * Sort the given key array for the given node by the pagination criteria.
+     * 
+     * @param node
+     * @param pagination
+     * @param keyArray
+     */
+    private void sortByField(ItemNode node, Pagination pagination, String[] keyArray) {
+        String orderBy = pagination.orderBy();
+        KeyAndField[] keysAndFields = new KeyAndField[keyArray.length];
+        for (int i = 0; i < keyArray.length; ++i) {
+            String key = keyArray[i];
+            JsonObject object = node.get(key)
+                    .item()
+                    .value()
+                    .asObject();
+            String field;
+            if (object == null) {
+                field = "";
+            } else {
+                JsonValue fieldValue = object.get(orderBy);
+                if (fieldValue == null) {
+                    field = "";
+                } else if (fieldValue.isString()) {
+                    field = fieldValue.stringValue();
+                } else if (fieldValue.isNumber()) {
+                    field = fieldValue.doubleValue() + "";
+                } else if (fieldValue.isBoolean()) {
+                    field = fieldValue.booleanValue() + "";
+                } else {
+                    field = "";
+                }
+            }
+            keysAndFields[i] = new KeyAndField(key, field);
+        }
+        if (pagination.ascending()) {
+            Arrays.sort(keysAndFields, fieldComparator);
+        } else {
+            Arrays.sort(keysAndFields, reverseFieldComparator);
+        }
+        for (int i = 0; i < keysAndFields.length; ++i) {
+            keyArray[i] = keysAndFields[i].key;
+        }
+    }
+
+    /**
+     * Sort the given key array by key.
+     * 
+     * @param pagination
+     * @param keyArray
+     */
+    private void sortByKey(Pagination pagination, String[] keyArray) {
+        if (pagination.ascending()) {
+            Arrays.sort(keyArray);
+        } else {
+            Arrays.sort(keyArray, reverseStringComparator);
+        }
+    }
+
+    /**
+     * Get a sorted list of keys for the given node by the given pagination criteria.
+     * 
+     * @param node
+     * @param pagination
+     * @return
+     */
+    private String[] sortedKeys(ItemNode node, Pagination pagination) {
         String[] keyArray = new String[1];
         keyArray = node.keySet()
                 .toArray(keyArray);
-        Arrays.sort(keyArray);
+        if (pagination.orderBy() == null) {
+            sortByKey(pagination, keyArray);
+        } else {
+            sortByField(node, pagination, keyArray);
+        }
         return keyArray;
     }
 }

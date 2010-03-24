@@ -63,6 +63,15 @@ public final class Query extends HashMap<String, List<String>> implements Map<St
      */
     public static final String PAGED_ITEMS_KEY = "pagedItems";
     /**
+     * The key used to indicate the primary ordering for pagedItems or pagedKeys query.
+     */
+    public static final String ORDER_BY_KEY = "orderBy";
+    /**
+     * The key used to indicate whether the primary ordering for pagedItems and pagedKeys
+     * should be used in an ascending or descending sense.
+     */
+    public static final String ASCENDING_KEY = "ascending";
+    /**
      * The key used to indicate a request to count the number of keys for an item.
      */
     public static final String COUNT_ITEMS_KEY = "countItems";
