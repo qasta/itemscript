@@ -43,10 +43,6 @@ import org.itemscript.core.values.JsonObject;
  * 
  * For an example implementation, see {@link MemConnector}.
  * 
- * Note: at present this interface does not specify behavior for queries requesting lists of results ordered by fields
- * or in reverse-sorted order, but this is a scheduled feature, as are queries that return only certain fields with "pagedItems".
- * As such, <b>all</b> other keys are reserved in combination with any of the keys used with this interface. 
- * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  *
  */
@@ -156,9 +152,14 @@ public interface SyncBrowseConnector extends Connector {
      * <ul>
      * <li>"startRow" - The row to begin the page of keys, where 0 would be the first row.</li>
      * <li>"numRows" - The number of rows to return in the page of keys.</li>
+     * <li>"orderBy" - The field in the value of the sub-items to order by. This must be a top-level field of the object values
+     * of the sub-items, and must have a scalar value, not a container value. The ordering of sub-items whose values are not objects
+     * or which are objects without the given field or where the field is a container value is undefined.</li>
+     * <li>"ascending" - With a value of "true" or "false", whether to sort results in ascending or descending order.</li>
      * </ul>
      * 
-     * The sorting of the results should be alphabetically by key, or failing that, any other deterministic method of sorting.
+     * If "orderBy" is not present, results should be sorted by key name, or failing that, by any other deterministic method appropriate
+     * to the system.
      * 
      * @param url The URL to query.
      * @return A JsonArray containing JsonStrings giving the keys of sub-items.

@@ -39,7 +39,7 @@ import org.itemscript.core.url.Url;
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
 public abstract class ItemscriptCreator implements JsonCreator, HasSystem {
-    static String quotedString(String value) {
+    public static String quotedString(String value) {
         if (value == null || value.length() == 0) { return "\"\""; }
         char b;
         char c = 0;

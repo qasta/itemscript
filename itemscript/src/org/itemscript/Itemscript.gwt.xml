@@ -27,8 +27,6 @@
 -->
 <module>
 	<source path="core" />
-
 	<inherits name="com.google.gwt.user.User" />
-
 	<entry-point class="org.itemscript.core.gwt.GwtSystem" />
 </module>

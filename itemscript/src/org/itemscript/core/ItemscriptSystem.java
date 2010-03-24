@@ -375,8 +375,7 @@ public final class ItemscriptSystem implements JsonSystem {
         if (fullUrl.hasFragment()) {
             if (fullUrl.fragment()
                     .size() == 0) { return value; }
-            if (value == null) { throw ItemscriptError.internalError(this, "get.had.fragment.but.value.was.null",
-                    fullUrl + ""); }
+            if (value == null) { return null; }
             if (value.isContainer()) {
                 return ((ItemscriptContainer) value).getByFragment(fullUrl.fragment());
             } else {
