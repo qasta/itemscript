@@ -297,7 +297,7 @@ Note that the actual `JsonArray` value we retrieved from the database _is_ the v
 
 == Store a value under a generated UUID ==
 
-You can store a value under a UUID that will be generated randomly for you. This is useful when your data has no natural key, or you want to make sure you don't overwrite any existing data with the same key - overwriting an existing value using `put` does not generate an error.
+You can store a value under a UUID that will be generated randomly for you by supplying the query parameter `uuid` to a `put` operation. This is useful when your data has no natural key, or you want to make sure you don't overwrite any existing data with the same key - overwriting an existing value using `put` does not generate an error.
 
 In order to determine what UUID was returned, you need to examine the result of the `put` operation. Values stored in the database have an associated `JsonItem` object, which has a method `source()` that returns the URL they are associated with.
 
@@ -323,6 +323,8 @@ i: 7 uuidValue.item().source(): mem:/Test/0c3ce92e-1b90-4999-9ac0-1ef8e4c6840e
 i: 8 uuidValue.item().source(): mem:/Test/e674bbcd-5d75-43a6-ad1f-1c5d45e066bf
 i: 9 uuidValue.item().source(): mem:/Test/1682f797-a7bc-47c1-911a-0c9861cfe136
 }}}
+
+You can also supply the query parameter `b64id` for a shorter, 22-character 128-bit random ID, which is recommended where shorter URLs are important.
 
 == Dump and load parts of the database ==
 
