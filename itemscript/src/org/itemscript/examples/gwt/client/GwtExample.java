@@ -32,7 +32,7 @@ package org.itemscript.examples.gwt.client;
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.connectors.GetCallback;
 import org.itemscript.core.gwt.GwtSystem;
-import org.itemscript.core.util.JsonUtil;
+import org.itemscript.core.util.StaticJsonUtil;
 import org.itemscript.core.values.JsonValue;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -58,7 +58,7 @@ public class GwtExample implements EntryPoint {
             @Override
             public void onSuccess(JsonValue value) {
                 RootPanel.get()
-                        .add(new HTML(JsonUtil.toHtmlJson(value)));
+                        .add(new HTML(StaticJsonUtil.toHtmlJson(value)));
             }
         });
     }

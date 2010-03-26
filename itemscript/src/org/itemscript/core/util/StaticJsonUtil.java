@@ -35,6 +35,7 @@ import java.util.Map;
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.mappings.Mapper;
 import org.itemscript.core.mappings.Mapping;
+import org.itemscript.core.url.Url;
 import org.itemscript.core.values.ItemscriptCreator;
 import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonObject;
@@ -47,7 +48,7 @@ import org.itemscript.core.values.JsonValue;
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  *
  */
-public final class JsonUtil {
+public final class StaticJsonUtil {
     private static final String TO_HTML_JSON_DEFAULT_COLOR_MAP_PATH = "/itemscript/toHtmlJson#defaultColorMap";
     public static final String STRING = "string";
     public static final String NUMBER = "number";
@@ -195,7 +196,7 @@ public final class JsonUtil {
      * Convert the supplied JsonValue to a pretty-printed HTML string, using the supplied color map.
      * 
      * @param value The value to convert.
-     * @param colorMap The color map to use; see {@link JsonUtil} for constants to use as keys in the map.
+     * @param colorMap The color map to use; see {@link StaticJsonUtil} for constants to use as keys in the map.
      * @return An HTML string.
      */
     public static String toHtmlJson(JsonValue value, JsonObject colorMap) {
@@ -263,5 +264,22 @@ public final class JsonUtil {
                 sb.append("<span style='color:" + colorMap.getString(OBJECT_CLOSE) + ";'>}</span>");
             }
         }
+    }
+
+    /**
+     * Test the supplied URL and Content-Type to see if they look like JSON. A pretty crude test - if the filename
+     * ends with .json, or the content type is application/json, text/json, or text/x-json, or application/x-javascript,
+     * we will treat it as JSON.
+     * 
+     * @param url The URL of the resource.
+     * @param contentType The Content-Type string of the resource.
+     * @return True if the resource looks like JSON, false otherwise.
+     */
+    public static boolean looksLikeJson(Url url, String contentType) {
+        return url.filename()
+                .toLowerCase()
+                .endsWith(".json") || contentType.startsWith("application/json")
+                || contentType.startsWith("text/json") || contentType.startsWith("text/x-json")
+                || contentType.startsWith("application/x-javascript");
     }
 }
