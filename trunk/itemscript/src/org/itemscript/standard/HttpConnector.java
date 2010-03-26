@@ -45,8 +45,10 @@ import org.itemscript.core.connectors.ConnectorBase;
 import org.itemscript.core.connectors.SyncGetConnector;
 import org.itemscript.core.connectors.SyncPostConnector;
 import org.itemscript.core.connectors.SyncPutConnector;
+import org.itemscript.core.connectors.SyncQueryConnector;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Url;
+import org.itemscript.core.util.StaticJsonUtil;
 import org.itemscript.core.values.ItemscriptPutResponse;
 import org.itemscript.core.values.ItemscriptRemoveResponse;
 import org.itemscript.core.values.JsonArray;
@@ -66,7 +68,8 @@ public final class HttpConnector extends ConnectorBase
         implements
             SyncGetConnector,
             SyncPutConnector,
-            SyncPostConnector {
+            SyncPostConnector,
+            SyncQueryConnector {
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String APPLICATION_JSON = "application/json";
 
@@ -102,9 +105,7 @@ public final class HttpConnector extends ConnectorBase
             URLConnection connection = new URL(url + "").openConnection();
             // Note: we are ignoring content-encoding for now...
             String contentType = connection.getContentType();
-            if (url.filename()
-                    .endsWith(".json") || contentType.equals("application/json")
-                    || contentType.equals("text/json") || contentType.equals("text/x-json")) {
+            if (StaticJsonUtil.looksLikeJson(url, contentType)) {
                 return system().createItem(url + "", createMeta(connection),
                         StandardUtil.readJson(system(), new InputStreamReader(connection.getInputStream())))
                         .value();
@@ -174,5 +175,10 @@ public final class HttpConnector extends ConnectorBase
         } catch (IOException e) {
             throw ItemscriptError.internalError(this, "remove.IOException", e);
         }
+    }
+
+    @Override
+    public JsonValue query(Url url) {
+        return get(url);
     }
 }

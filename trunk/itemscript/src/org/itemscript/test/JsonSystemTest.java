@@ -296,6 +296,15 @@ public class JsonSystemTest extends ItemscriptTestBase {
     }
 
     @Test
+    public void testHttpQuery() {
+        JsonValue val =
+                system().get(
+                        "http://api.flickr.com/services/feeds/photos_public.gne?tags=cat&tagmode=any&format=json&nojsoncallback=1");
+        assertNotNull(val.asObject()
+                .getString("title"));
+    }
+
+    @Test
     public void testLoad() {
         system().put("/xyz", "abc");
         system().put("/xyz/one", "123");

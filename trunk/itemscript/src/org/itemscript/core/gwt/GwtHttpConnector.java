@@ -40,6 +40,7 @@ import org.itemscript.core.connectors.PutCallback;
 import org.itemscript.core.connectors.RemoveCallback;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Url;
+import org.itemscript.core.util.StaticJsonUtil;
 import org.itemscript.core.values.ItemscriptPutResponse;
 import org.itemscript.core.values.ItemscriptRemoveResponse;
 import org.itemscript.core.values.JsonObject;
@@ -101,9 +102,7 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
                     }
                     // If it looks like JSON, parse it as JSON.
                     JsonValue value;
-                    if (url.filename()
-                            .endsWith(".json") || contentType.equals("application/json")
-                            || contentType.equals("text/json") || contentType.equals("text/x-json")) {
+                    if (StaticJsonUtil.looksLikeJson(url, contentType)) {
                         try {
                             value = system().parse(response.getText());
                         } catch (ItemscriptError e) {
