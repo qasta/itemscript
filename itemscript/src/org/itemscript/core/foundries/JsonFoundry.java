@@ -30,6 +30,7 @@
 package org.itemscript.core.foundries;
 
 import org.itemscript.core.values.JsonObject;
+import org.itemscript.core.values.JsonValue;
 
 /**
  * A JsonFoundry is a class that facilitates the creation of instance objects.
@@ -41,9 +42,17 @@ import org.itemscript.core.values.JsonObject;
  *
  * @param <T> The supertype of the types that this foundry will create.
  */
-public interface JsonFoundry<T> extends JsonFactory<T> {
-    @Override
-    public abstract T create(JsonObject parameters);
+public interface JsonFoundry<T> {
+    /**
+     * Create a new object using the supplied JsonValue as a parameter.
+     * If the supplied value is a JsonString, the value will be used as a name to look up the right
+     * factory. If the supplied value is a JsonObject, a key in the JsonObject will be used to find the
+     * right factory.
+     * 
+     * @param parameters The parameters for creating an object.
+     * @return The newly created object.
+     */
+    public abstract T create(JsonValue parameters);
 
     /**
      * Create an instance of an object using the supplied name to find the

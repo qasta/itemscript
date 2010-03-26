@@ -48,7 +48,7 @@ import org.itemscript.core.values.JsonValue;
  * 
  * @param <T> The supertype that this foundry will create.
  */
-public class ItemscriptFoundry<T> implements JsonFactory<T>, HasSystem, JsonFoundry<T> {
+public class ItemscriptFoundry<T> implements HasSystem, JsonFoundry<T> {
     private JsonSystem system;
     private final String location;
     private final JsonObject factoryObject;
@@ -70,16 +70,23 @@ public class ItemscriptFoundry<T> implements JsonFactory<T>, HasSystem, JsonFoun
     }
 
     private void checkName(String name) {
-        if (name == null || name.length() == 0) { throw ItemscriptError.internalError(this, "empty.name.in.put"); }
+        if (name == null || name.length() == 0) { throw ItemscriptError.internalError(this,
+                "checkName.empty.name.in.put"); }
     }
 
     @Override
-    public T create(JsonObject params) {
-        String name = params.getString(nameKey);
-        if (name == null) {
-            name = findMissingName(params);
+    public T create(JsonValue params) {
+        if (params.isString()) { return create(params.stringValue()); }
+        if (params.isObject()) {
+            JsonObject p = params.asObject();
+            String name = p.getString(nameKey);
+            if (name == null) {
+                name = findMissingName(p);
+            }
+            return create(name, p);
         }
-        return create(name, params);
+        throw ItemscriptError.internalError(this, "create.params.must.be.JsonString.or.JsonObject",
+                params.toCompactJsonString());
     }
 
     @Override
