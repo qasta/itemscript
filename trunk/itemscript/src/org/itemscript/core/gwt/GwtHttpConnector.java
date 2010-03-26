@@ -104,7 +104,12 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
                     if (url.filename()
                             .endsWith(".json") || contentType.equals("application/json")
                             || contentType.equals("text/json") || contentType.equals("text/x-json")) {
-                        value = system().parse(response.getText());
+                        try {
+                            value = system().parse(response.getText());
+                        } catch (ItemscriptError e) {
+                            callback.onError(e);
+                            return;
+                        }
                     } else {
                         // Otherwise return it as text.
                         value = system().createString(response.getText());
@@ -134,9 +139,14 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
                 // Treat any 2xx or 3xx response code as successful... we should really treat certain 3xx
                 // status codes as indicating the real location of the resource but this will do for now.
                 if (statusCode.startsWith("2") || statusCode.startsWith("3")) {
-                    callback.onSuccess(new ItemscriptPutResponse(url + "", createMeta(response),
-                            system().createItem(url + "", system().parse(response.getText()))
-                                    .value()));
+                    try {
+                        callback.onSuccess(new ItemscriptPutResponse(url + "", createMeta(response),
+                                system().createItem(url + "", system().parse(response.getText()))
+                                        .value()));
+                    } catch (ItemscriptError e) {
+                        callback.onError(e);
+                        return;
+                    }
                 } else {
                     callback.onError(ItemscriptError.internalError(this, "post.returned.non.2xx.or.3xx.status",
                             new Params().p("status", statusCode)
@@ -159,9 +169,14 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
                 String statusCode = response.getStatusCode() + "";
                 // Currently any response to a put that isn't a 2xx is considered an error.
                 if (statusCode.startsWith("2")) {
-                    callback.onSuccess(new ItemscriptPutResponse(url + "", createMeta(response),
-                            system().createItem(url + "", system().parse(response.getText()))
-                                    .value()));
+                    try {
+                        callback.onSuccess(new ItemscriptPutResponse(url + "", createMeta(response),
+                                system().createItem(url + "", system().parse(response.getText()))
+                                        .value()));
+                    } catch (ItemscriptError e) {
+                        callback.onError(e);
+                        return;
+                    }
                 } else {
                     callback.onError(ItemscriptError.internalError(this, "put.returned.non.2xx.status",
                             new Params().p("status", statusCode)
