@@ -223,6 +223,26 @@ pagedItems: [
 
 Each of the items in the returned array is itself an array; each of those sub-arrays has as its first element the key of the sub-item, and as the second element the actual value of that sub-item.
 
+You can retrieve paged results (either `pagedKeys` or `pagedItems`) sorted in descending order:
+
+{{{
+        JsonArray pagedKeys = system.getArray("/Test?pagedKeys&startRow=0&numRows=4&ascending=false");
+        System.out.println("pagedKeys: " + pagedKeys);
+}}}
+
+prints:
+
+{{{
+pagedKeys: [
+    "d",
+    "c",
+    "b",
+    "a"
+]
+}}}
+
+You can also supply a parameter `orderBy` to `pagedKeys` or `pagedItems` queries to sort by a particular field of those sub-items that have `JsonObject` values.
+
 By implementing the same queries on an HTTP REST server, you can interchangeably switch between accessing a database locally using the `mem:` scheme, and a remote database using the `http:` scheme.
 
 == Remove an entire item ==
