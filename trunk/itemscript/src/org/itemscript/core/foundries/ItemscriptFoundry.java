@@ -59,7 +59,7 @@ public class ItemscriptFoundry<T> implements HasSystem, JsonFoundry<T> {
      * 
      * @param system The associated JsonSystem.
      * @param location The mem:/ location that factories in this foundry will be stored under.
-     * @param nameKey The key in the objects supplied to {@link #create(JsonObject)} that contains the name of the factory.
+     * @param nameKey The key in the objects supplied to {@link #create(JsonValue)} that contains the name of the factory.
      */
     public ItemscriptFoundry(JsonSystem system, String location, String nameKey) {
         this.system = system;
