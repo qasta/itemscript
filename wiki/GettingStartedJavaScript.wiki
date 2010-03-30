@@ -30,4 +30,37 @@ The versions suffixed with "Async" operate asychronously; unless you know that t
 
 ==`itemscript.get`==
 
+Example:
+{{{
+var cat = itemscript.get("mem:/cat");
+}}}
+
+Takes one argument - the URL to retrieve - and returns a JavaScript value with a copy of the resource referred to. You can use a fragment identifier to retrieve only part of a value:
+
+{{{
+var name = itemscript.get("mem:/cat#name");
+}}}
+
+Values returned will be one of: a JavaScript object, a JavaScript array, a string, a number, a boolean, or null.
+
+==`itemscript.getAsync`==
+
+Example:
+{{{
+    var url = "http://127.0.0.1:8888/test.json"
+    var callback =  {
+        "onSuccess" : function(value) {
+            window.alert("getAsync url: " + url + " value: " + JSON.stringify(value));
+	    },
+	    "onError" : function(exception) {
+	        window.alert("error: " + JSON.stringify(exception));
+	    }
+	};
+    itemscript.getAsync(url, callback);
+}}}
+
+Takes two arguments. The first is the URL to retrieve; the second is a JavaScript object containing the callback functions to call when the get operation completes. The field "onSuccess" must contain a function that will be called with a single argument containing the value returned when the operation completes successfully. The field "onError" must contain a function that will be called with a single argument containing a JavaScript object representation of an exception when the operation encounters an error.
+
+----
+
 See also the README.txt file included in the JavaScript ZIP file, and for some examples: [http://code.google.com/p/itemscript/source/browse/trunk/itemscript/war/javascript-example.html javascript-example.html]
