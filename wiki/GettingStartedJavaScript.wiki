@@ -1,4 +1,33 @@
 #summary Getting started with the Itemscript library using JavaScript.
 #labels Featured
 
-A stub for now; see the README.txt file included in the JavaScript ZIP file, and for some examples: [http://code.google.com/p/itemscript/source/browse/trunk/itemscript/war/javascript-example.html javascript-example.html]
+The Itemscript library exposes only a few methods to JavaScript; most of those used for manipulating JSON values aren't particularly useful in JavaScript, where native JavaScript objects and values are more useful.
+
+==Include the Itemscript library==
+
+Inside the itemscript-javascript-x.x.x.zip archive is a directory called `org.itemscript.Itemscript`. Copy this directory and its contents to the same directory as your HTML file.
+
+Then include the script file with a line like this:
+{{{
+<script type="text/javascript" language="javascript"
+        src="org.itemscript.Itemscript/org.itemscript.Itemscript.nocache.js"></script>
+}}}
+
+==The Itemscript API for JavaScript==
+
+These are the functions made available in JavaScript by the library:
+
+  * `itemscript.get`
+  * `itemscript.getAsync`
+  * `itemscript.put`
+  * `itemscript.putAsync`
+  * `itemscript.remove`
+  * `itemscript.removeAsync`
+  * `itemscript.copy`
+  * `itemscript.copyAsync`
+
+The versions suffixed with "Async" operate asychronously; unless you know that the call will return immediately (e.g. that it is to a `mem:` or `cookie:` URL) the Async versions are probably the ones you need to use, as any attempt to store or retrieve using HTTP must be performed asynchronously.
+
+==`itemscript.get`==
+
+See also the README.txt file included in the JavaScript ZIP file, and for some examples: [http://code.google.com/p/itemscript/source/browse/trunk/itemscript/war/javascript-example.html javascript-example.html]
