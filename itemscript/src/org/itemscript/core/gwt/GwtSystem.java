@@ -59,32 +59,32 @@ public final class GwtSystem implements EntryPoint {
     public static JsonSystem SYSTEM;
 
     private static native void add(JavaScriptObject array, boolean value) /*-{
-                                                                          array.push(value);
-                                                                          }-*/;
+        array.push(value);
+    }-*/;
 
     private static native void add(JavaScriptObject array, double value) /*-{
-                                                                         array.push(value);
-                                                                         }-*/;
+        array.push(value);
+    }-*/;
 
     private static native void add(JavaScriptObject array, JavaScriptObject value) /*-{
-                                                                                   array.push(value);
-                                                                                   }-*/;
+        array.push(value);
+    }-*/;
 
     private static native void add(JavaScriptObject array, String value) /*-{
-                                                                         array.push(value);
-                                                                         }-*/;
+        array.push(value);
+    }-*/;
 
     private static native void addNull(JavaScriptObject array) /*-{
-                                                               array.push(null);
-                                                               }-*/;
+        array.push(null);
+    }-*/;
 
     private static native void callOnError(JavaScriptObject callback, JavaScriptObject exception) /*-{
-                                                                                                  callback.onError(exception);
-                                                                                                  }-*/;
+        callback.onError(exception);
+    }-*/;
 
     private static native void callOnSuccess(JavaScriptObject callback, JavaScriptObject value) /*-{
-                                                                                                callback.onSuccess(value);
-                                                                                                }-*/;
+        callback.onSuccess(value);
+    }-*/;
 
     /**
      * Create a JavaScriptObject wrapper around a converted JsonValue, where the JS
@@ -233,49 +233,49 @@ public final class GwtSystem implements EntryPoint {
     }
 
     private static native JavaScriptObject createJsArray() /*-{
-                                                           return [];
-                                                           }-*/;
+        return [];
+    }-*/;
 
     private static native JavaScriptObject createJsObject() /*-{
-                                                            return {};
-                                                            }-*/;
+        return {};
+    }-*/;
 
     private static native JavaScriptObject createString(String value) /*-{
-                                                                      return value;
-                                                                      }-*/;
+        return value;
+    }-*/;
 
     private static native void exportCalls() /*-{
-                                             $wnd.itemscript = {};
-                                             $wnd.itemscript.getGwt = $entry(@org.itemscript.core.gwt.GwtSystem::get(Ljava/lang/String;));
-                                             $wnd.itemscript.get = function(url) {
-                                             return $wnd.itemscript.getGwt(url)["value"];
-                                             };
-                                             $wnd.itemscript.getAsyncGwt = 
-                                             $entry(@org.itemscript.core.gwt.GwtSystem::getAsync(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;));
-                                             $wnd.itemscript.getAsync = function(url, callback) {
-                                             $wnd.itemscript.getAsyncGwt(url, {
-                                             "onSuccess" : function(value) {
-                                             callback["onSuccess"](value["value"]);
-                                             },
-                                             "onError" : function(message) {
-                                             callback["onError"](message);
-                                             }
-                                             });
-                                             };
-                                             $wnd.itemscript.putGwt = $entry(@org.itemscript.core.gwt.GwtSystem::put(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;));
-                                             $wnd.itemscript.put = function(url, value) {
-                                             return $wnd.itemscript.putGwt(url, {"value" : value});
-                                             };
-                                             $wnd.itemscript.putAsyncGwt = $entry(@org.itemscript.core.gwt.GwtSystem::putAsync(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;Lcom/google/gwt/core/client/JavaScriptObject;));
-                                             $wnd.itemscript.putAsync = function(url, value, callback) {
-                                             $wnd.itemscript.putAsyncGwt(url, {"value" : value}, callback);
-                                             };
-                                             $wnd.itemscript.remove = $entry(@org.itemscript.core.gwt.GwtSystem::remove(Ljava/lang/String;));
-                                             $wnd.itemscript.removeAsync = $entry(@org.itemscript.core.gwt.GwtSystem::removeAsync(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;));
-                                             $wnd.itemscript.copy = $entry(@org.itemscript.core.gwt.GwtSystem::copy(Ljava/lang/String;Ljava/lang/String;));
-                                             $wnd.itemscript.copyAsync = $entry(@org.itemscript.core.gwt.GwtSystem::copyAsync(Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;));
-                                             $wnd.itemscript.setTrace = $entry(@org.itemscript.core.gwt.GwtSystem::setTrace(Z));
-                                             }-*/;
+        $wnd.itemscript = {};
+        $wnd.itemscript.getGwt = $entry(@org.itemscript.core.gwt.GwtSystem::get(Ljava/lang/String;));
+        $wnd.itemscript.get = function(url) {
+        return $wnd.itemscript.getGwt(url)["value"];
+        };
+        $wnd.itemscript.getAsyncGwt = 
+        $entry(@org.itemscript.core.gwt.GwtSystem::getAsync(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;));
+        $wnd.itemscript.getAsync = function(url, callback) {
+        $wnd.itemscript.getAsyncGwt(url, {
+        "onSuccess" : function(value) {
+        callback["onSuccess"](value["value"]);
+        },
+        "onError" : function(message) {
+        callback["onError"](message);
+        }
+        });
+        };
+        $wnd.itemscript.putGwt = $entry(@org.itemscript.core.gwt.GwtSystem::put(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;));
+        $wnd.itemscript.put = function(url, value) {
+        return $wnd.itemscript.putGwt(url, {"value" : value});
+        };
+        $wnd.itemscript.putAsyncGwt = $entry(@org.itemscript.core.gwt.GwtSystem::putAsync(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;Lcom/google/gwt/core/client/JavaScriptObject;));
+        $wnd.itemscript.putAsync = function(url, value, callback) {
+        $wnd.itemscript.putAsyncGwt(url, {"value" : value}, callback);
+        };
+        $wnd.itemscript.remove = $entry(@org.itemscript.core.gwt.GwtSystem::remove(Ljava/lang/String;));
+        $wnd.itemscript.removeAsync = $entry(@org.itemscript.core.gwt.GwtSystem::removeAsync(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;));
+        $wnd.itemscript.copy = $entry(@org.itemscript.core.gwt.GwtSystem::copy(Ljava/lang/String;Ljava/lang/String;));
+        $wnd.itemscript.copyAsync = $entry(@org.itemscript.core.gwt.GwtSystem::copyAsync(Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;));
+        $wnd.itemscript.setTrace = $entry(@org.itemscript.core.gwt.GwtSystem::setTrace(Z));
+    }-*/;
 
     /**
      * Get a value.
@@ -315,20 +315,20 @@ public final class GwtSystem implements EntryPoint {
     }
 
     private static native void put(JavaScriptObject object, String key, boolean value) /*-{
-                                                                                       object[key] = value;
-                                                                                       }-*/;;
+        object[key] = value;
+    }-*/;;
 
     private static native void put(JavaScriptObject object, String key, double value) /*-{
-                                                                                      object[key] = value;
-                                                                                      }-*/;
+        object[key] = value;
+    }-*/;
 
     private static native void put(JavaScriptObject object, String key, JavaScriptObject value) /*-{
-                                                                                                object[key] = value;
-                                                                                                }-*/;
+        object[key] = value;
+    }-*/;
 
     private static native void put(JavaScriptObject object, String key, String value) /*-{
-                                                                                      object[key] = value;
-                                                                                      }-*/;
+        object[key] = value;
+    }-*/;
 
     /**
      * Put a value.
@@ -373,8 +373,8 @@ public final class GwtSystem implements EntryPoint {
     }
 
     private static native void putNull(JavaScriptObject object, String key) /*-{
-                                                                            object[key] = null;
-                                                                            }-*/;
+        object[key] = null;
+    }-*/;
 
     public static JavaScriptObject remove(String url) {
         if (trace) {
