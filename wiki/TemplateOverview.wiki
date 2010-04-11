@@ -3,7 +3,7 @@
 
 = Introduction =
 
-The Itemscript system includes a simple template module for producing text templates.
+The Itemscript system includes a simple template module for interpreting text templates.
 
 This template text:
 {{{
@@ -173,7 +173,193 @@ Nested directives:
 
 == The Java API ==
 
-(See also Template JavaDoc.)
+(See also `Template` JavaDoc.)
 {{{
-
+    Template template = new Template(system(), text);
+    JsonObject context = system().getObject(contextUrl);
+    String output = template.interpret(context);
 }}}
+
+== The JavaScript API ==
+
+(To-do.)
+
+== The basics ==
+
+A template is some text mixed with tags. Certain tags - those starting with a dot,
+like `{.foreach}` - are directives that enclose sections of the template to be treated
+in various different ways, and may cause the context to change for their contents. Other tags can be used to include values from the context or loaded from the Itemscript system.
+
+At any point in the interpretation of a template, a context value exists that can be referenced by tags.
+
+== Ordinary text ==
+
+The text outside of any template tags can contain any characters except `{` and `}`. All characters in the text will be included, including carriage returns and other whitespace.
+
+== Tags ==
+
+A tag is contained within curly brackets, like this: `{fieldName}`. It can contain any characters except carriage returns and curly brackets. Leading and trailing whitespace inside the tag is ignored. The contents are divided by spaces into a series of tokens. The first token controls what kind of tag it is.
+
+Tags with a special character at the start of the first token are interpreted in various special ways.
+
+Tags whose first token starts with a letter or number are treated as references to a field in the surrounding context.
+
+The second token in a tag, if present, can cause the value produced by the first token to be transformed in some way. Right now that means if the second token is "html" the value is HTML-escaped before being included, and if the second token is "url" the value is URL-encoded before being included. For instance, `{userSuppliedText html}` or `?key={value url}`.
+
+An empty tag refers to the present context as a whole. This is often useful inside a `{.foreach}` segment that is iterating over an array of strings, for instance.
+
+== Field tags ==
+
+A tag whose first character is a letter or digit is treated as a field in the surrounding context.
+
+For instance, `{name}` or `{0}`
+
+Field names are URL-decoded before being used, so you should URL-encode any special character you need to - in particular, `{`, `}`, and spaces need to be URL-encoded. `{` and `}` are not always encoded by URI-encoding routines, so `Template` provides static methods to additionally encode those characters for use in tags.
+
+A tag whose first character is `:` is also treated as a field reference. The portion after the `:` is treated as the field name in the same way described above.
+
+For instance, `{:name}`
+
+== Comment tags ==
+
+A tag whose first character is a `#` sign is treated as a comment. The rest of the contents are discarded. Note that comments may not include carriage returns or curly braces.
+
+For instance, `{# This is a comment }`
+
+== URL tags ==
+
+A tag whose first character is an `@` sign is treated as a URL reference. The value referred to by the URL is loaded and included in the template at that point. If the URL is relative, it is treated as relative to the system base URL or to the base URL supplied when interpreting the template. The value must be something that can be converted to a string, in other words, not an array or object.
+
+For instance: `{@http://itemscript.org/templateInclude.txt}` or `{@file.txt}` or `{@#fragment}`.
+
+Note that in the last example, `#fragment` will be interpreted as relative to the JsonItem of the surrounding context; if the context has no attached JsonItem, it is an error to use a fragment URL.
+
+== Literal tags ==
+
+A tag whose first character is a `&` sign is treated as a string literal. The remainder of the first token is URL-decoded and included in the template at that point.
+
+For instance: `{&b%3D%7B%25}`
+
+== Braces tags ==
+
+Tags whose first character is `(` or `)` will cause an opening or closing curly brace to be included at that point in the template. This is useful when you need the output text to contain (a few) curly braces. (If you need it to contain a lot of curly braces, it's probably best to create them in some other way.)
+
+For instance:  `{(}` or `{)}`
+
+== Directive tags ==
+
+Directives are tags whose first character is a period/dot (`.`). The template portion between an opening directive and its corresponding `{.end}` directive belongs to a segment attached to the opening directive. Different directives cause the enclosed template portion to be interpreted in different ways. The template portion may be divided into different sections by other directives.
+
+For instance: `{.foreach array}` or `{.end}`
+
+== {.section} directive ==
+
+The `{.section}` directive lets you create a new context for the contained content based on a field in the surrounding context. This lets you "move into" nested objects in your context to access their fields. The field is specified in the token following the `.section` token, and is URL-decoded before being used to look up the value.
+
+For instance, the template:
+{{{
+Name: {name}
+{.section address}
+Street: {street}
+{.end}
+}}}
+interpreted with the context:
+{{{
+{
+    "name" : "Jacob",
+    "address" : {
+        "street" : "10 A Street"
+    }
+}
+}}}
+produces the output:
+{{{
+Name: Jacob
+
+Street: 10 A Street
+}}}
+
+You can also specify a section to be included if the field to move into is missing or null, by including an `{.or}` directive before the `{.end}` directive.
+
+For instance:
+{{{
+{.section address}
+(Address stuff)
+{.or}
+(No address given)
+{.end}
+}}}
+
+== {.if} directive ==
+
+The `{.if}` directive lets you test for the existence and "truth" of a field in the context and include different template portions depending on the result. The field is specified in the token following the `.if` token, and is URL-decoded before being used to look up the value. If no field is specified, the surrounding context itself is tested; this is useful, for instance, if you are iterating through a list of boolean values.
+
+The optional `{.else}` directive, if included before the `{.end}` directive, can be used to specify a section that is included if the value is false.
+
+Values are true if they exist in the surrounding context and:
+  * are boolean and true
+  * are numbers and not zero
+  * are strings of length greater than zero
+
+Otherwise they are false. Objects and arrays are false; if you want to test for their existence, the `{.section}` directive is probably what you want.
+
+For instance, the template:
+{{{
+{.foreach people}
+{.if alive}Alive{.else}Dead{.end}
+{.end}
+}}}
+interpreted with the context:
+{{{
+{
+    "people" : [
+        {
+            "alive" : true
+        },
+        {
+            "alive" : false
+        }
+    ]
+}
+}}}
+produces the output:
+{{{
+Alive
+
+Dead
+}}}
+
+== {.foreach directive} ==
+
+The `{.foreach}` directive can be used to include the contained template section repeatedly, once for each element in an array. The context for each inclusion will be the corresponding element in the array. The field is specified in the token following the `.foreach` token, and is URL-decoded before being used to look up the value.  If no field is specified, the surrounding context itself is used; this is useful when iterating through an array of arrays.
+
+For example:
+{{{
+{.foreach letters}"{}"{.join} {.end}
+}}}
+interpreted with the context:
+{{{
+{
+    "letters" : ["a", "b", "c"]
+}
+}}}
+produces the output:
+{{{
+    "a" "b" "c"
+}}}
+
+You can include a section to be included between entries by including a `{.join}` directive before the `{.end}` directive. If no entries or only one are included, the join section will not be used.
+
+At present there is no way to retrieve the array index or to iterate over a JsonObject.
+
+== Notes on use ==
+
+Remember to use the `html` or `url` parameters in tags as appropriate to make sure content included in a template is correctly escaped. User-supplied input included in web pages should almost always be HTML-escaped. Data included in a URL query-string should almost always be URL-encoded.
+
+== Future development ==
+
+Planned but not scheduled for the near future:
+  * Inclusion of other template files
+  * An expression language for testing and manipulating values
+  * Number-formatting parameter for numeric values
+  * Substring parameter for string values
