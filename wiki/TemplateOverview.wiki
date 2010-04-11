@@ -1,0 +1,171 @@
+#summary An overview of the Itemscript template system.
+
+= Introduction =
+
+The Itemscript system includes a simple template module for producing text templates.
+
+This template:
+{{{
+This is a number: - {number} -
+This is a string: - {text} -
+This is a boolean: - {trueBoolean} -
+
+This is a field reference: {:text}
+
+This is a URL reference: {@classpath:org/itemscript/test/templateInclude.txt}
+
+This is a fragment reference: {@#object/a}
+
+This is a comment: {# This is some comment text. }
+
+This is an encoded literal: {&b%3D%7B%25}
+
+These are some braces: {(} {)}
+
+This a value HTML-encoded: {containsHtmlChars html}
+
+This is a value URL-encoded: {containsUrlChars url}
+
+Section:
+{.section object}
+A: {a}
+B: {b}
+C: {c}
+Missing field: {d}
+{.end}
+
+Foreach:
+{.foreach array}Entry: {}{.join} - {.end}
+
+{# Note the .join section.}
+{# Note also the empty field used when the values in the array are not themselves container objects.}
+
+If:
+{.if trueBoolean}Yes{.else}No{.end}
+{.if falseBoolean}Yes{.else}No{.end}
+
+Missing section:
+{.section doesntExist}
+This won't show up.
+{.or}
+This will show up.
+{.end}
+
+Nested directives:
+{.foreach arrayOfObjects}
+    Name: {name}
+    {.section address}
+        Street: {street}
+        Zip: {zip}
+    {.end}
+{.end}
+}}}
+interpreted with this context:
+{{{
+{
+    "text" : "xyz",
+    "number" : "1.5",
+    "trueBoolean" : true,
+    "falseBoolean" : false,
+    "object" : {
+        "a" : "A",
+        "b" : "B",
+        "c" : "C"
+    },
+    "array" : [
+        "a",
+        "b",
+        "c"
+    ],
+    "arrayOfObjects" : [
+        {
+            "name" : "Jacob",
+            "address" : {
+                "street" : "10 A Street",
+                "zip" : "54321"
+            }
+        },
+        {
+            "name" : "Loki",
+            "address" : {
+                "street" : "20 B Street",
+                "zip" : "75633"
+            }
+        },
+        {
+            "name" : "Victoria",
+            "address" : {
+                "street" : "40 C Street",
+                "zip" : "34391"
+            }
+        }
+    ],
+    "containsHtmlChars" : "<hi> &",
+    "containsUrlChars" : "foo&bar:"
+}
+}}}
+produces this result:
+{{{
+This is a number: - 1.5 -
+This is a string: - xyz -
+This is a boolean: - true -
+
+This is a field reference: xyz
+
+This is a URL reference: Included text. Note, tags are {not} interpreted.
+
+
+This is a fragment reference: A
+
+This is a comment: 
+
+This is an encoded literal: b={%
+
+These are some braces: { }
+
+This a value HTML-encoded: &lt;hi&gt; &amp;
+
+This is a value URL-encoded: foo%26bar%3a
+
+Section:
+
+A: A
+B: B
+C: C
+Missing field: 
+
+
+Foreach:
+Entry: a - Entry: b - Entry: c
+
+
+
+
+If:
+Yes
+No
+
+Missing section:
+
+This will show up.
+
+
+Nested directives:
+
+    Name: Jacob
+    
+        Street: 10 A Street
+        Zip: 54321
+    
+
+    Name: Loki
+    
+        Street: 20 B Street
+        Zip: 75633
+    
+
+    Name: Victoria
+    
+        Street: 40 C Street
+        Zip: 34391
+}}}
