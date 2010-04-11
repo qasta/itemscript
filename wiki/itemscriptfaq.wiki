@@ -1,4 +1,4 @@
-#labels Featured,Phase-Requirements
+#labels Phase-Requirements
 =What is Itemscript?=
 
 The *Itemscript project* intends to provide a set of technologies and standard conventions for building applications from Itemscript components. 
