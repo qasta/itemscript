@@ -327,7 +327,7 @@ Alive
 Dead
 }}}
 
-== {.foreach directive} ==
+== {.foreach} directive ==
 
 The `{.foreach}` directive can be used to include the contained template section repeatedly, once for each element in an array. The context for each inclusion will be the corresponding element in the array. The field is specified in the token following the `.foreach` token, and is URL-decoded before being used to look up the value.  If no field is specified, the surrounding context itself is used; this is useful when iterating through an array of arrays.
 
