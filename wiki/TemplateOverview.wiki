@@ -1,10 +1,11 @@
 #summary An overview of the Itemscript template system.
+#labels Phase-Implementation
 
 = Introduction =
 
 The Itemscript system includes a simple template module for producing text templates.
 
-This template:
+This template text:
 {{{
 This is a number: - {number} -
 This is a string: - {text} -
@@ -168,4 +169,11 @@ Nested directives:
     
         Street: 40 C Street
         Zip: 34391
+}}}
+
+== The Java API ==
+
+(See also Template JavaDoc.)
+{{{
+
 }}}
