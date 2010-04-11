@@ -188,9 +188,7 @@ Nested directives:
 
 A template is some text mixed with tags. Certain tags - those starting with a dot,
 like `{.foreach}` - are directives that enclose sections of the template to be treated
-in various different ways, and may cause the context to change for their contents. Other tags can be used to include values from the context or loaded from the Itemscript system.
-
-At any point in the interpretation of a template, a context value exists that can be referenced by tags.
+in various different ways, and may cause the context to change for their contents. Other tags can be used to include values from the context, or to load them from the Itemscript system.
 
 == Ordinary text ==
 
