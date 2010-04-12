@@ -70,6 +70,20 @@ final class ItemscriptArray extends ItemscriptContainer implements JsonArray {
     }
 
     @Override
+    public boolean equals(Object other) {
+        if (other instanceof JsonArray) {
+            JsonArray otherArray = (JsonArray) other;
+            if (otherArray.size() == size()) {
+                for (int i = 0; i < size(); ++i) {
+                    if (!get(i).equals(otherArray.get(i))) { return false; }
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public JsonArray a(Boolean value) {
         add(value);
         return this;
@@ -159,7 +173,7 @@ final class ItemscriptArray extends ItemscriptContainer implements JsonArray {
         boolean ret = values.add(value);
         prepareValueForPut(index + "", value);
         if (item() != null) {
-            ((ItemscriptItem) item()).notifyPut(value.fragment(), value);
+            ((ItemscriptItem) item()).notifyPut(value.fragment());
         }
         return ret;
     }
@@ -546,7 +560,7 @@ final class ItemscriptArray extends ItemscriptContainer implements JsonArray {
         JsonValue previous = values.set(index, value);
         updateRemovedValue(previous);
         if (item() != null) {
-            ((ItemscriptItem) item()).notifyPut(value.fragment(), value);
+            ((ItemscriptItem) item()).notifyPut(value.fragment());
         }
         return previous;
     }

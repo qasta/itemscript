@@ -27,60 +27,43 @@
  * Author: Jacob Davies
  */
 
-package org.itemscript.core.events;
+package org.itemscript.core.template;
 
-import org.itemscript.core.values.JsonItem;
-import org.itemscript.core.values.JsonValue;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * An event triggered on a {@link JsonItem}.
- * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
- *
  */
-public class Event {
-    private final EventType eventType;
-    private final String fragment;
-    private final JsonValue value;
+class Section extends Segment {
+    private final String field;
+    private final List<Element> sectionContents = new ArrayList<Element>();
+    private final List<Element> orContents = new ArrayList<Element>();
 
-    /**
-     * Create a new Event.
-     * 
-     * @param eventType The EventType of this event.
-     * @param fragment The URL fragment identifying the value that changed.
-     * @param value The value of the item in which this event occurred.
-     */
-    public Event(EventType eventType, String fragment, JsonValue value) {
-        this.eventType = eventType;
-        this.fragment = fragment;
-        this.value = value;
+    public Section(String field) {
+        super();
+        this.field = field;
     }
 
-    /**
-     * Get the type of event that occurred.
-     * 
-     * @return The type of event.
-     */
-    public final EventType eventType() {
-        return eventType;
+    @Override
+    public Section asSection() {
+        return this;
     }
 
-    /**
-     * Get the URL fragment for the value that changed or was removed.
-     * 
-     * @return The URL fragment.
-     */
-    public final String fragment() {
-        return fragment;
+    public String field() {
+        return field;
     }
 
-    /**
-     * Get the value of the item where the change occurred. If the event was the
-     * removal of the entire item, this will be null.
-     * 
-     * @return The value of the item where the change occurred.
-     */
-    public final JsonValue value() {
-        return value;
+    @Override
+    public boolean isSection() {
+        return true;
+    }
+
+    public List<Element> orContents() {
+        return orContents;
+    }
+
+    public List<Element> regularContents() {
+        return sectionContents;
     }
 }

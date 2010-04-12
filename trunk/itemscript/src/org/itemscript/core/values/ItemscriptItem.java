@@ -217,6 +217,7 @@ public final class ItemscriptItem implements JsonItem {
     }
 
     private boolean isFragmentOnly(Url url) {
+        if (url == null) { return false; }
         return (url.fragment() != null) && (!url.hasScheme()) && (!url.hasPath()) && (!url.hasQuery());
     }
 
@@ -229,11 +230,10 @@ public final class ItemscriptItem implements JsonItem {
      * Notify this item that the value attached to it has had something put in it.
      * 
      * @param fragment The fragment of the value that has been put; "#" if we put a new value for this item.
-     * @param newValue The new value that was put.
      */
-    public void notifyPut(String fragment, JsonValue newValue) {
+    public void notifyPut(String fragment) {
         if (handlers != null) {
-            dispatchEvent(new Event(EventType.PUT, fragment, newValue));
+            dispatchEvent(new Event(EventType.PUT, fragment, value()));
         }
     }
 
@@ -250,7 +250,7 @@ public final class ItemscriptItem implements JsonItem {
      */
     public void notifyRemove(String fragment) {
         if (handlers != null) {
-            dispatchEvent(new Event(EventType.REMOVE, fragment, null));
+            dispatchEvent(new Event(EventType.REMOVE, fragment, value()));
         }
     }
 
@@ -356,7 +356,7 @@ public final class ItemscriptItem implements JsonItem {
                 ((ItemscriptValue) prevValue).setItem(null);
                 ((ItemscriptValue) value).setItem(this);
                 this.value = value;
-                notifyPut("#", value);
+                notifyPut("#");
             }
             return new ItemscriptPutResponse(system().util()
                     .createRelativeUrl(source(), url + "") + "", null, value);

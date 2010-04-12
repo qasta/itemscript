@@ -1,0 +1,41 @@
+{
+    "text" : "xyz",
+    "number" : "1.5",
+    "trueBoolean" : true,
+    "falseBoolean" : false,
+    "object" : {
+        "a" : "A",
+        "b" : "B",
+        "c" : "C"
+    },
+    "array" : [
+        "a",
+        "b",
+        "c"
+    ],
+    "arrayOfObjects" : [
+        {
+            "name" : "Jacob",
+            "address" : {
+                "street" : "10 A Street",
+                "zip" : "54321"
+            }
+        },
+        {
+            "name" : "Loki",
+            "address" : {
+                "street" : "20 B Street",
+                "zip" : "75633"
+            }
+        },
+        {
+            "name" : "Victoria",
+            "address" : {
+                "street" : "40 C Street",
+                "zip" : "34391"
+            }
+        }
+    ],
+    "containsHtmlChars" : "<hi> &",
+    "containsUrlChars" : "foo&bar:"
+}

@@ -91,8 +91,7 @@ final class ItemscriptString extends ItemscriptScalar implements JsonString {
 
     @Override
     public boolean equals(Object other) {
-        if (other instanceof JsonString) { return stringValue.equals(((JsonString) other).stringValue()); }
-        if (other instanceof String) { return stringValue.equals(other); }
+        if (other instanceof JsonString) { return stringValue().equals(((JsonString) other).stringValue()); }
         return false;
     }
 

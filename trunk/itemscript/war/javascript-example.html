@@ -18,21 +18,19 @@ application to display correctly.</div>
 <script>
 function testMem() {
     var value = {
-            "value":{
-	        "test-string" : "value",
-	        "test-int" : 1,
-	        "test-float" : 1.5,
-	        "test-boolean" : true,
-	        "test-null" : null,
-	        "test-object" : {
-	            "x" : "y"
-	        },
-	        "test-array" : [
-	            "abc",
-	            1,
-	            false
-	        ]
-	    }
+       "test-string" : "value",
+       "test-int" : 1,
+       "test-float" : 1.5,
+       "test-boolean" : true,
+       "test-null" : null,
+       "test-object" : {
+           "x" : "y"
+       },
+       "test-array" : [
+           "abc",
+           1,
+           false
+       ]
 	};
     var url = itemscript.put("/foo?b64id", value)["url"];
     window.alert("get url: " + url + " value: " + JSON.stringify(itemscript.get(url)));
@@ -64,6 +62,36 @@ function testCopy() {
 function testGetAfterCopy() {
     window.alert("get url: mem:/cat value: " + JSON.stringify(itemscript.get("mem:/cat")));
 }
+function testTemplate() {
+    var text = "a {test-string} c";
+    var context = {
+        "test-string" : "value",
+        "test-int" : 1,
+        "test-float" : 1.5,
+        "test-boolean" : true,
+        "test-null" : null,
+        "test-object" : {
+            "x" : "y"
+        },
+        "test-array" : [
+            "abc",
+            1,
+            false
+        ]
+    };
+    itemscript.put("mem:/GwtExample/context", context);
+    window.alert("template result: " + itemscript.template.interpret(text, "mem:/GwtExample/context"));
+}
+function testLoadAndInterpret() {
+    itemscript.template.getAndInterpret("template.txt", "templateContext.json", {
+        "onSuccess" : function(value) {
+            window.alert("loaded and interpreted: " + value);
+        },
+        "onError" : function(error) {
+            window.alert("error: " + error["message"]);
+        }
+    });
+}
 </script>
 <input type="button" onClick="testMem()" value="Test mem:" />
 <input type="button" onClick="testHttp()" value="Test http:" />
@@ -71,5 +99,9 @@ function testGetAfterCopy() {
 <input type="button" onClick="testCopy()" value="Test copy" />
 <input type="button" onClick="testGetAfterCopy()"
 	value="Test get after copy" />
+<input type="button" onClick="testTemplate()"
+	value="Test template interpret" />
+<input type="button" onClick="testLoadAndInterpret()"
+	value="Test load & interpret" />
 </body>
 </html>

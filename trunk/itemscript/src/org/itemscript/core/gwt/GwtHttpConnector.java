@@ -72,11 +72,14 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
 
     private JsonObject createMeta(Response response) {
         JsonObject meta = system().createObject();
-        Header[] headers = response.getHeaders();
-        for (int i = 0; i < headers.length; ++i) {
-            Header header = headers[i];
-            if (header != null) {
-                meta.put(header.getName(), headers[i].getValue());
+        // responses with a status code of 0 don't have headers.
+        if (!(response.getStatusCode() == 0)) {
+            Header[] headers = response.getHeaders();
+            for (int i = 0; i < headers.length; ++i) {
+                Header header = headers[i];
+                if (header != null) {
+                    meta.put(header.getName(), headers[i].getValue());
+                }
             }
         }
         return meta;
@@ -94,12 +97,13 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
             public void onResponseReceived(Request request, Response response) {
                 String statusCode = response.getStatusCode() + "";
                 // Currently only handles 2xx status codes... 3xx and so on are treated as errors.
+                // Status code "0" is returned when retrieving "file:" URLs
                 String contentType = response.getHeader("Content-Type");
-                if (statusCode.startsWith("2")) {
-                    // Default to handling it as JSON...
-                    if (contentType == null) {
-                        contentType = "application/json";
-                    }
+                // Default to content type of HTML.
+                if (contentType == null) {
+                    contentType = "text/html";
+                }
+                if ((url.scheme().equals("file") && statusCode.equals("0")) || statusCode.startsWith("2")) {
                     // If it looks like JSON, parse it as JSON.
                     JsonValue value;
                     if (StaticJsonUtil.looksLikeJson(url, contentType)) {
@@ -117,7 +121,8 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
                             .value());
                 } else {
                     callback.onError(ItemscriptError.internalError(this, "get.returned.non.2xx.status",
-                            new Params().p("status", statusCode)
+                            new Params().p("url", url + "")
+                                    .p("status", statusCode)
                                     .p("text", response.getStatusText())));
                 }
             }
@@ -148,7 +153,8 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
                     }
                 } else {
                     callback.onError(ItemscriptError.internalError(this, "post.returned.non.2xx.or.3xx.status",
-                            new Params().p("status", statusCode)
+                            new Params().p("url", url + "")
+                                    .p("status", statusCode)
                                     .p("text", response.getStatusText())));
                 }
             }
@@ -178,7 +184,8 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
                     }
                 } else {
                     callback.onError(ItemscriptError.internalError(this, "put.returned.non.2xx.status",
-                            new Params().p("status", statusCode)
+                            new Params().p("url", url + "")
+                                    .p("status", statusCode)
                                     .p("text", response.getStatusText())));
                 }
             }
@@ -186,7 +193,7 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
     }
 
     @Override
-    public void remove(Url url, final RemoveCallback callback) {
+    public void remove(final Url url, final RemoveCallback callback) {
         RequestUtils.sendDeleteRequest(url + "", new RequestCallback() {
             @Override
             public void onError(Request request, Throwable exception) {
@@ -201,7 +208,8 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
                     callback.onSuccess(new ItemscriptRemoveResponse(createMeta(response)));
                 } else {
                     callback.onError(ItemscriptError.internalError(this, "put.returned.non.2xx.status",
-                            new Params().p("status", response.getStatusCode() + "")
+                            new Params().p("url", url + "")
+                                    .p("status", response.getStatusCode() + "")
                                     .p("text", response.getStatusText())));
                 }
             }

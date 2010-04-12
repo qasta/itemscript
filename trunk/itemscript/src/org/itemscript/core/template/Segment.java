@@ -27,60 +27,44 @@
  * Author: Jacob Davies
  */
 
-package org.itemscript.core.events;
-
-import org.itemscript.core.values.JsonItem;
-import org.itemscript.core.values.JsonValue;
+package org.itemscript.core.template;
 
 /**
- * An event triggered on a {@link JsonItem}.
- * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
- *
  */
-public class Event {
-    private final EventType eventType;
-    private final String fragment;
-    private final JsonValue value;
-
-    /**
-     * Create a new Event.
-     * 
-     * @param eventType The EventType of this event.
-     * @param fragment The URL fragment identifying the value that changed.
-     * @param value The value of the item in which this event occurred.
-     */
-    public Event(EventType eventType, String fragment, JsonValue value) {
-        this.eventType = eventType;
-        this.fragment = fragment;
-        this.value = value;
+class Segment extends Element {
+    public Foreach asForeach() {
+        return null;
     }
 
-    /**
-     * Get the type of event that occurred.
-     * 
-     * @return The type of event.
-     */
-    public final EventType eventType() {
-        return eventType;
+    public If asIf() {
+        // heh heh, AS IF...
+        return null;
     }
 
-    /**
-     * Get the URL fragment for the value that changed or was removed.
-     * 
-     * @return The URL fragment.
-     */
-    public final String fragment() {
-        return fragment;
+    public Section asSection() {
+        return null;
     }
 
-    /**
-     * Get the value of the item where the change occurred. If the event was the
-     * removal of the entire item, this will be null.
-     * 
-     * @return The value of the item where the change occurred.
-     */
-    public final JsonValue value() {
-        return value;
+    @Override
+    public Segment asSegment() {
+        return this;
+    }
+
+    public boolean isForeach() {
+        return false;
+    }
+
+    public boolean isIf() {
+        return false;
+    }
+
+    public boolean isSection() {
+        return false;
+    }
+
+    @Override
+    public boolean isSegment() {
+        return true;
     }
 }

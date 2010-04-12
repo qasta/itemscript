@@ -43,11 +43,11 @@ public final class Params extends HashMap<String, String> {
      * Put a value in this {@link Params}, returning the Params object itself.
      * 
      * @param key The key to put under.
-     * @param value The value to put.
+     * @param value The value to put; this value will be converted to a String with <code>+ ""</code>.
      * @return This Params object.
      */
-    public Params p(String key, String value) {
-        put(key, value);
+    public Params p(String key, Object value) {
+        put(key, value + "");
         return this;
     }
 }
