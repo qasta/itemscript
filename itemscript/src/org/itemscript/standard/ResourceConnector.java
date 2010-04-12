@@ -29,6 +29,7 @@
 
 package org.itemscript.standard;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -60,8 +61,7 @@ public final class ResourceConnector extends ConnectorBase implements SyncGetCon
 
     @Override
     public JsonValue get(Url url) {
-        return system().createItem(url + "", getResource(url))
-                .value();
+        return getResource(url);
     }
 
     private JsonValue getResource(Url url) {
@@ -71,7 +71,37 @@ public final class ResourceConnector extends ConnectorBase implements SyncGetCon
                     new URL(null, noFragmentUrl + "", new ResourceHandler(ClassLoader.getSystemClassLoader()));
             URLConnection connection = resourceUrl.openConnection();
             connection.connect();
-            return system().parseReader(new InputStreamReader(connection.getInputStream()));
+            String filename;
+            String noFragmentUrlString = noFragmentUrl + "";
+            int lastSlash = noFragmentUrlString.lastIndexOf('/');
+            if (lastSlash == -1) {
+                filename = noFragmentUrl.remainder();
+            } else {
+                filename = noFragmentUrlString.substring(lastSlash + 1);
+            }
+            String contentType = URLConnection.guessContentTypeFromName(filename);
+            if (contentType == null) {
+                if (filename.endsWith(".json")) {
+                    contentType = "application/json";
+                } else {
+                    contentType = "application/octet-stream";
+                }
+            }
+            if (contentType.equals("application/json")) {
+                return system().createItem(url + "",
+                        StandardUtil.readJson(system(), new InputStreamReader(connection.getInputStream())))
+                        .value();
+            } else if (contentType.startsWith("text")) {
+                return system().createItem(
+                        url + "",
+                        StandardUtil.readText(system(), new BufferedReader(new InputStreamReader(
+                                connection.getInputStream()))))
+                        .value();
+            } else {
+                return system().createItem(url + "",
+                        StandardUtil.readBinary(system(), connection.getInputStream()))
+                        .value();
+            }
         } catch (IOException e) {
             throw ItemscriptError.internalError(this, "getResource.IOException", e);
         }

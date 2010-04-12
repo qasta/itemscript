@@ -49,7 +49,7 @@ import org.itemscript.core.values.JsonValue;
  *
  */
 public final class StaticJsonUtil {
-    private static final String TO_HTML_JSON_DEFAULT_COLOR_MAP_PATH = "/itemscript/toHtmlJson#defaultColorMap";
+    public static final String DEFAULT_COLOR_MAP_PATH = "/itemscript/toHtmlJson#defaultColorMap";
     public static final String STRING = "string";
     public static final String NUMBER = "number";
     public static final String NULL = "null";
@@ -93,21 +93,6 @@ public final class StaticJsonUtil {
         });
     }
 
-    /**
-     * HTML-encode a string. This simple method only replaces the five characters &, <, >, ", and '.
-     * 
-     * @param input the String to convert
-     * @return a new String with HTML encoded characters
-     */
-    public static String htmlEncode(String input) {
-        String output = input.replaceAll("&", "&amp;");
-        output = output.replaceAll("<", "&lt;");
-        output = output.replaceAll(">", "&gt;");
-        output = output.replaceAll("\"", "&quot;");
-        output = output.replaceAll("'", "&#039;");
-        return output;
-    }
-
     private static void indent(int indent, StringBuffer sb) {
         for (int i = 0; i < indent; ++i) {
             sb.append("    ");
@@ -115,34 +100,20 @@ public final class StaticJsonUtil {
     }
 
     /**
-     * Returns true if the supplied int is even, false if it is odd.
+     * Test the supplied URL and Content-Type to see if they look like JSON. A pretty crude test - if the filename
+     * ends with .json, or the content type is application/json, text/json, or text/x-json, or application/x-javascript,
+     * we will treat it as JSON.
      * 
-     * @param i The number to test.
-     * @return True if the number was even, false if it was odd.
+     * @param url The URL of the resource.
+     * @param contentType The Content-Type string of the resource.
+     * @return True if the resource looks like JSON, false otherwise.
      */
-    public static boolean isEven(int i) {
-        return (i % 2) == 0;
-    }
-
-    /**
-     * Join a list of strings with the given joining string.
-     * 
-     * @param strings The strings to join.
-     * @param join The string to join them with, or null if no string is to be used.
-     * @return The string consisting of the strings joined together.
-     */
-    public static String join(List<String> strings, String join) {
-        StringBuffer buffer = new StringBuffer();
-        for (int i = 0; i < strings.size(); ++i) {
-            String entry = strings.get(i);
-            buffer.append(entry);
-            if (join != null) {
-                if (i < (strings.size() - 1)) {
-                    buffer.append(join);
-                }
-            }
-        }
-        return buffer.toString();
+    public static boolean looksLikeJson(Url url, String contentType) {
+        return (url.filename() != null && url.filename()
+                .toLowerCase()
+                .endsWith(".json")) || contentType.startsWith("application/json")
+                || contentType.startsWith("text/json") || contentType.startsWith("text/x-json")
+                || contentType.startsWith("application/x-javascript");
     }
 
     /**
@@ -163,6 +134,38 @@ public final class StaticJsonUtil {
     }
 
     /**
+     * Compare two JsonObjects; returns a new JsonObject containing a key for each key in the original JsonObject that was
+     * not present in the updated JsonObject, or that was changed, and a key for each key in the updated JsonObject that was not
+     * present in the original JsonObject. The values in the new JsonObject are undefined; only the presence or absence of a key is
+     * significant.
+     * 
+     * @param original The original JsonObject.
+     * @param updated The updated JsonObject.
+     * @return A new JsonObject containing the changed keys between the original and updated objects.
+     */
+    public static JsonObject changedKeys(JsonObject original, JsonObject updated) {
+        JsonObject changedKeys = original.system()
+                .createObject();
+        for (String key : original.keySet()) {
+            if (!updated.containsKey(key)) {
+                changedKeys.put(key, true);
+            } else {
+                JsonValue origValue = original.get(key);
+                JsonValue updatedValue = updated.get(key);
+                if (!origValue.equals(updatedValue)) {
+                    changedKeys.put(key, true);
+                }
+            }
+        }
+        for (String key : updated.keySet()) {
+            if (!original.containsKey(key)) {
+                changedKeys.put(key, true);
+            }
+        }
+        return changedKeys;
+    }
+
+    /**
      * Convert the supplied JsonValue to a pretty-printed HTML representation, using the default
      * color map.
      * 
@@ -171,10 +174,10 @@ public final class StaticJsonUtil {
      */
     public static String toHtmlJson(JsonValue value) {
         JsonObject defaultColorMap = value.system()
-                .getObject(TO_HTML_JSON_DEFAULT_COLOR_MAP_PATH);
+                .getObject(DEFAULT_COLOR_MAP_PATH);
         if (defaultColorMap == null) {
             defaultColorMap = value.system()
-                    .createObject(TO_HTML_JSON_DEFAULT_COLOR_MAP_PATH)
+                    .createObject(DEFAULT_COLOR_MAP_PATH)
                     .value()
                     .asObject();
             defaultColorMap.p(STRING, "#483D8B")
@@ -213,15 +216,15 @@ public final class StaticJsonUtil {
     private static void toHtmlJson(JsonValue value, StringBuffer sb, JsonObject colorMap, int indent) {
         if (value.isString()) {
             sb.append("<span style='color:" + colorMap.getString(STRING) + ";'>"
-                    + htmlEncode(value.toJsonString()) + "</span>");
+                    + GeneralUtil.htmlEncode(value.toJsonString()) + "</span>");
         } else if (value.isNumber()) {
             sb.append("<span style='color:" + colorMap.getString(NUMBER) + ";'>"
-                    + htmlEncode(value.toJsonString()) + "</span>");
+                    + GeneralUtil.htmlEncode(value.toJsonString()) + "</span>");
         } else if (value.isNull()) {
             sb.append("<span style='color:" + colorMap.getString(NULL) + ";'>null</span>");
         } else if (value.isBoolean()) {
             sb.append("<span style='color:" + colorMap.getString(BOOLEAN) + ";'>"
-                    + htmlEncode(value.toJsonString()) + "</span>");
+                    + GeneralUtil.htmlEncode(value.toJsonString()) + "</span>");
         } else if (value.isArray()) {
             JsonArray array = value.asArray();
             if (array.size() == 0) {
@@ -264,22 +267,5 @@ public final class StaticJsonUtil {
                 sb.append("<span style='color:" + colorMap.getString(OBJECT_CLOSE) + ";'>}</span>");
             }
         }
-    }
-
-    /**
-     * Test the supplied URL and Content-Type to see if they look like JSON. A pretty crude test - if the filename
-     * ends with .json, or the content type is application/json, text/json, or text/x-json, or application/x-javascript,
-     * we will treat it as JSON.
-     * 
-     * @param url The URL of the resource.
-     * @param contentType The Content-Type string of the resource.
-     * @return True if the resource looks like JSON, false otherwise.
-     */
-    public static boolean looksLikeJson(Url url, String contentType) {
-        return url.filename()
-                .toLowerCase()
-                .endsWith(".json") || contentType.startsWith("application/json")
-                || contentType.startsWith("text/json") || contentType.startsWith("text/x-json")
-                || contentType.startsWith("application/x-javascript");
     }
 }

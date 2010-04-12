@@ -94,5 +94,5 @@ public interface JsonFoundry<T> {
      * @param name The name of the factory.
      * @param factoryObject The <code>JsonObject</code> describing the factory. 
      */
-    public abstract void put(String name, JsonObject factoryObject);
+    public abstract void put(String name, JsonValue factoryObject);
 }

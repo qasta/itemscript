@@ -57,7 +57,6 @@ final class ItemscriptBoolean extends ItemscriptScalar implements JsonBoolean {
     @Override
     public boolean equals(Object other) {
         if (other instanceof JsonBoolean) { return value == ((JsonBoolean) other).booleanValue(); }
-        if (other instanceof Boolean) { return value == ((Boolean) other).booleanValue(); }
         return false;
     }
 

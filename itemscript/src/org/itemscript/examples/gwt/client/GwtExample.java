@@ -30,15 +30,9 @@
 package org.itemscript.examples.gwt.client;
 
 import org.itemscript.core.JsonSystem;
-import org.itemscript.core.connectors.GetCallback;
 import org.itemscript.core.gwt.GwtSystem;
-import org.itemscript.core.util.StaticJsonUtil;
-import org.itemscript.core.values.JsonValue;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * A short GWT example.
@@ -49,17 +43,17 @@ public class GwtExample implements EntryPoint {
     @Override
     public void onModuleLoad() {
         final JsonSystem system = GwtSystem.SYSTEM;
-        system.get(GWT.getHostPageBaseURL() + "test.json", new GetCallback() {
-            @Override
-            public void onError(Throwable e) {
-                throw new RuntimeException(e);
-            }
-
-            @Override
-            public void onSuccess(JsonValue value) {
-                RootPanel.get()
-                        .add(new HTML(StaticJsonUtil.toHtmlJson(value)));
-            }
-        });
+        //        system.get(GWT.getHostPageBaseURL() + "test.json", new GetCallback() {
+        //            @Override
+        //            public void onError(Throwable e) {
+        //                throw new RuntimeException(e);
+        //            }
+        //
+        //            @Override
+        //            public void onSuccess(JsonValue value) {
+        //                RootPanel.get()
+        //                        .add(new HTML(StaticJsonUtil.toHtmlJson(value)));
+        //            }
+        //        });
     }
 }

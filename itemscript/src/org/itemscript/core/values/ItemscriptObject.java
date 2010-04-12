@@ -77,6 +77,20 @@ final class ItemscriptObject extends ItemscriptContainer implements JsonObject {
     }
 
     @Override
+    public boolean equals(Object other) {
+        if (other instanceof JsonObject) {
+            JsonObject otherObject = (JsonObject) other;
+            if (otherObject.size() == size()) {
+                for (String key : keySet()) {
+                    if (!get(key).equals(otherObject.get(key))) { return false; }
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public JsonObject copy() {
         JsonObject newObject = system().createObject();
         for (String key : keySet()) {
@@ -170,7 +184,7 @@ final class ItemscriptObject extends ItemscriptContainer implements JsonObject {
         updateRemovedValue(previous);
         if (item() != null) {
             if (((ItemscriptItem) item()).hasHandlers()) {
-                ((ItemscriptItem) item()).notifyPut(value.fragment(), value);
+                ((ItemscriptItem) item()).notifyPut(value.fragment());
             }
         }
         return previous;

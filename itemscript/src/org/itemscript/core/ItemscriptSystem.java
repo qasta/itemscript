@@ -113,6 +113,11 @@ public final class ItemscriptSystem implements JsonSystem {
     }
 
     @Override
+    public PutResponse copy(JsonValue value, String toUrl) {
+        return put(toUrl, parse(value.toCompactJsonString()));
+    }
+
+    @Override
     public void copy(String fromUrl, final String toUrl, final PutCallback callback) {
         get(fromUrl, new GetCallback() {
             @Override

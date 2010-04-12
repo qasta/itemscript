@@ -30,6 +30,7 @@
 package org.itemscript.core.values;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,7 +52,7 @@ import org.itemscript.core.util.JsonAccessHelper;
  * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
-public class ChainObject implements JsonObject {
+public class OverlayObject implements JsonObject {
     private final JsonSystem system;
     private final List<JsonObject> objects;
 
@@ -61,7 +62,7 @@ public class ChainObject implements JsonObject {
      * @param system The associated JsonSystem.
      * @param objects The list of objects to search.
      */
-    public ChainObject(JsonSystem system, List<JsonObject> objects) {
+    public OverlayObject(JsonSystem system, List<JsonObject> objects) {
         this.system = system;
         this.objects = objects;
         for (int i = 0; i < objects.size(); ++i) {
@@ -420,7 +421,12 @@ public class ChainObject implements JsonObject {
 
     @Override
     public Set<String> keySet() {
-        throw new UnsupportedOperationException();
+        Set<String> keySet = new HashSet<String>();
+        for (int i = 0; i < objects.size(); ++i) {
+            keySet.addAll(objects.get(i)
+                    .keySet());
+        }
+        return keySet;
     }
 
     @Override

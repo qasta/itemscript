@@ -27,60 +27,42 @@
  * Author: Jacob Davies
  */
 
-package org.itemscript.core.events;
+package org.itemscript.core.template;
 
-import org.itemscript.core.values.JsonItem;
-import org.itemscript.core.values.JsonValue;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * An event triggered on a {@link JsonItem}.
- * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
- *
  */
-public class Event {
-    private final EventType eventType;
-    private final String fragment;
-    private final JsonValue value;
+class If extends Segment {
+    private final List<Element> trueContents = new ArrayList<Element>();
+    private final List<Element> falseContents = new ArrayList<Element>();
+    private String field;
 
-    /**
-     * Create a new Event.
-     * 
-     * @param eventType The EventType of this event.
-     * @param fragment The URL fragment identifying the value that changed.
-     * @param value The value of the item in which this event occurred.
-     */
-    public Event(EventType eventType, String fragment, JsonValue value) {
-        this.eventType = eventType;
-        this.fragment = fragment;
-        this.value = value;
+    public If(String field) {
+        this.field = field;
     }
 
-    /**
-     * Get the type of event that occurred.
-     * 
-     * @return The type of event.
-     */
-    public final EventType eventType() {
-        return eventType;
+    @Override
+    public If asIf() {
+        return this;
     }
 
-    /**
-     * Get the URL fragment for the value that changed or was removed.
-     * 
-     * @return The URL fragment.
-     */
-    public final String fragment() {
-        return fragment;
+    public List<Element> falseContents() {
+        return falseContents;
     }
 
-    /**
-     * Get the value of the item where the change occurred. If the event was the
-     * removal of the entire item, this will be null.
-     * 
-     * @return The value of the item where the change occurred.
-     */
-    public final JsonValue value() {
-        return value;
+    public String field() {
+        return field;
+    }
+
+    @Override
+    public boolean isIf() {
+        return true;
+    }
+
+    public List<Element> trueContents() {
+        return trueContents;
     }
 }

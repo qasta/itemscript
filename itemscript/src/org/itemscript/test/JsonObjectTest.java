@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.itemscript.core.exceptions.ItemscriptError;
+import org.itemscript.core.util.StaticJsonUtil;
 import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
@@ -67,6 +68,41 @@ public class JsonObjectTest extends ItemscriptTestBase {
             errorThrown = true;
         }
         assertTrue(errorThrown);
+    }
+
+    @Test
+    public void testChangedKeys() {
+        JsonObject a = system().createObject()
+                .p("a", "x")
+                .p("b", 1)
+                .p("c", true)
+                .p("d", system().createObject()
+                        .p("foo", "bar"))
+                .p("e", system().createArray()
+                        .a("foo"))
+                .p("f", system().createObject()
+                        .p("foo", "bar"))
+                .p("g", system().createArray()
+                        .a("foo"));
+        JsonObject b = a.copy()
+                .asObject();
+        b.remove("c");
+        b.put("h", true);
+        b.put("a", "y");
+        b.put("b", "z");
+        b.getObject("d")
+                .put("foo", "new");
+        b.getArray("e")
+                .add("something");
+        JsonObject changedKeys = StaticJsonUtil.changedKeys(a, b);
+        assertTrue(changedKeys.containsKey("a"));
+        assertTrue(changedKeys.containsKey("b"));
+        assertTrue(changedKeys.containsKey("c"));
+        assertTrue(changedKeys.containsKey("d"));
+        assertTrue(changedKeys.containsKey("e"));
+        assertFalse(changedKeys.containsKey("f"));
+        assertFalse(changedKeys.containsKey("g"));
+        assertTrue(changedKeys.containsKey("h"));
     }
 
     @Test

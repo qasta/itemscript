@@ -1,0 +1,53 @@
+This is a number: - {number} -
+This is a string: - {text} -
+This is a boolean: - {trueBoolean} -
+
+This is a field reference: {:text}
+
+This is a URL reference: {@classpath:org/itemscript/test/templateInclude.txt}
+
+This is a fragment reference: {@#object/a}
+
+This is a comment: {# This is some comment text. }
+
+This is an encoded literal: {&b%3D%7B%25}
+
+These are some braces: {(} {)}
+
+This a value HTML-encoded: {containsHtmlChars html}
+
+This is a value URL-encoded: {containsUrlChars url}
+
+Section:
+{.section object}
+A: {a}
+B: {b}
+C: {c}
+Missing field: {d}
+{.end}
+
+Foreach:
+{.foreach array}Entry: {}{.join} - {.end}
+
+{# Note the .join section.}
+{# Note also the empty field used when the values in the array are not themselves container objects.}
+
+If:
+{.if trueBoolean}Yes{.else}No{.end}
+{.if falseBoolean}Yes{.else}No{.end}
+
+Missing section:
+{.section doesntExist}
+This won't show up.
+{.or}
+This will show up.
+{.end}
+
+Nested directives:
+{.foreach arrayOfObjects}
+    Name: {name}
+    {.section address}
+        Street: {street}
+        Zip: {zip}
+    {.end}
+{.end}

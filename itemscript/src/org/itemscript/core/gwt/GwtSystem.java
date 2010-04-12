@@ -54,7 +54,7 @@ public final class GwtSystem implements EntryPoint {
     private static boolean trace = false;
     private static final String VALUE_KEY = "value";
     /**
-     * A single, static instance of a JsonSystem.
+     * A single, static instance of a JsonSystem configured with a GwtConfig.
      */
     public static JsonSystem SYSTEM;
 
@@ -78,13 +78,28 @@ public final class GwtSystem implements EntryPoint {
         array.push(null);
     }-*/;
 
+    static void callOnError(JavaScriptObject callback, Throwable e) {
+        callOnError(callback, convertException(e));
+    }
+
     private static native void callOnError(JavaScriptObject callback, JavaScriptObject exception) /*-{
         callback.onError(exception);
     }-*/;
 
-    private static native void callOnSuccess(JavaScriptObject callback, JavaScriptObject value) /*-{
+    static native void callOnSuccess(JavaScriptObject callback, JavaScriptObject value) /*-{
         callback.onSuccess(value);
     }-*/;
+
+    /**
+     * Convert a URL to one relative to the host page URL.
+     * 
+     * @param url The relative URL.
+     * @return The result of treating the URL as relative to the host page URL.
+     */
+    public static String hostPageRelative(String url) {
+        return GwtSystem.SYSTEM.util()
+                .createRelativeUrl(GWT.getHostPageBaseURL(), url) + "";
+    }
 
     /**
      * Create a JavaScriptObject wrapper around a converted JsonValue, where the JS
@@ -160,7 +175,7 @@ public final class GwtSystem implements EntryPoint {
         }
     }
 
-    private static JavaScriptObject convertException(Throwable e) {
+    static JavaScriptObject convertException(Throwable e) {
         JavaScriptObject object = createJsObject();
         if (e instanceof ItemscriptError) {
             ItemscriptError err = (ItemscriptError) e;
@@ -219,7 +234,7 @@ public final class GwtSystem implements EntryPoint {
             @Override
             public void onError(Throwable e) {
                 if (callback != null) {
-                    callOnError(callback, convertException(e));
+                    callOnError(callback, e);
                 }
             }
 
@@ -257,8 +272,8 @@ public final class GwtSystem implements EntryPoint {
         "onSuccess" : function(value) {
         callback["onSuccess"](value["value"]);
         },
-        "onError" : function(message) {
-        callback["onError"](message);
+        "onError" : function(error) {
+        callback["onError"](error);
         }
         });
         };
@@ -275,6 +290,10 @@ public final class GwtSystem implements EntryPoint {
         $wnd.itemscript.copy = $entry(@org.itemscript.core.gwt.GwtSystem::copy(Ljava/lang/String;Ljava/lang/String;));
         $wnd.itemscript.copyAsync = $entry(@org.itemscript.core.gwt.GwtSystem::copyAsync(Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;));
         $wnd.itemscript.setTrace = $entry(@org.itemscript.core.gwt.GwtSystem::setTrace(Z));
+    }-*/;
+
+    private static native String stringify(JavaScriptObject object) /*-{
+        return JSON.stringify(object);
     }-*/;
 
     /**
@@ -303,7 +322,7 @@ public final class GwtSystem implements EntryPoint {
         SYSTEM.get(url, new GetCallback() {
             @Override
             public void onError(Throwable e) {
-                callOnError(callback, convertException(e));
+                callOnError(callback, e);
             }
 
             @Override
@@ -359,7 +378,7 @@ public final class GwtSystem implements EntryPoint {
             @Override
             public void onError(Throwable e) {
                 if (callback != null) {
-                    callOnError(callback, convertException(e));
+                    callOnError(callback, e);
                 }
             }
 
@@ -391,7 +410,7 @@ public final class GwtSystem implements EntryPoint {
             @Override
             public void onError(Throwable e) {
                 if (callback != null) {
-                    callOnError(callback, convertException(e));
+                    callOnError(callback, e);
                 }
             }
 
@@ -417,5 +436,6 @@ public final class GwtSystem implements EntryPoint {
     public void onModuleLoad() {
         SYSTEM = new ItemscriptSystem(new GwtConfig());
         exportCalls();
+        GwtTemplate.exportCalls();
     }
 }

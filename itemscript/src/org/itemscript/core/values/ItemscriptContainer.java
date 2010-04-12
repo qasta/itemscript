@@ -133,6 +133,7 @@ public abstract class ItemscriptContainer extends ItemscriptValue implements Jso
     }
 
     private JsonValue getNext(JsonValue next, String key) {
+        if (next == null) { return null; }
         if (next.isContainer()) {
             next = next.asContainer()
                     .getValue(key);
