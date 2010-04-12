@@ -246,7 +246,7 @@ For instance:  `{(}` or `{)}`
 
 == {!b64id} - Function tags ==
 
-Tags whose first character is `!` will cause the first token to be treated as the name of a function chosen from a limited subset. At present, the only one is `{!b64id}` which generates a unique random ID using only URL-safe characters, for instance "H2eBRN-55bZsRzM6xCdU6Q".
+Tags whose first character is `!` will cause the first token to be treated as the name of a function chosen from a limited subset. At present, the only one is `{!b64id}` which generates a unique random ID using only URL-safe characters, for instance "`H2eBRN-55bZsRzM6xCdU6Q`".
 
 == {.directive} - Directive tags ==
 
