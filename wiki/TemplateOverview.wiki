@@ -1,6 +1,8 @@
 #summary An overview of the Itemscript template system.
 #labels Phase-Implementation
 
+_This is implemented and scheduled for the next release, but is not in the current release._
+
 = Introduction =
 
 The Itemscript system includes a simple template module for interpreting text templates.
@@ -370,4 +372,4 @@ Planned but not scheduled for the near future:
   * Number-formatting parameter for numeric values
   * Substring parameter for string values
   * Restartable interpretation for asynchronous inclusion of values in GWT/JavaScript
-  * 
+  * Automatic caching of compiled templates
