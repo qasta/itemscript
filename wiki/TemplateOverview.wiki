@@ -194,7 +194,7 @@ in various different ways, and may cause the context to change for their content
 
 The text outside of any template tags can contain any characters except `{` and `}`. All characters in the text will be included, including carriage returns and other whitespace.
 
-== Tags ==
+== {tag} - Tags ==
 
 A tag is contained within curly brackets, like this: `{fieldName}`. It can contain any characters except carriage returns and curly brackets. Leading and trailing whitespace inside the tag is ignored. The contents are divided by spaces into a series of tokens. The first token controls what kind of tag it is.
 
@@ -206,7 +206,7 @@ The second token in a tag, if present, can cause the value produced by the first
 
 An empty tag refers to the present context as a whole. This is often useful inside a `{.foreach}` segment that is iterating over an array of strings, for instance.
 
-== Field tags ==
+== {field} or {:field} - Field tags ==
 
 A tag whose first character is a letter or digit is treated as a field in the surrounding context.
 
@@ -218,13 +218,13 @@ A tag whose first character is `:` is also treated as a field reference. The por
 
 For instance, `{:name}`
 
-== Comment tags ==
+== {# comment} - Comment tags ==
 
 A tag whose first character is a `#` sign is treated as a comment. The rest of the contents are discarded. Note that comments may not include carriage returns or curly braces.
 
 For instance, `{# This is a comment }`
 
-== URL tags ==
+== {@url} - URL tags ==
 
 A tag whose first character is an `@` sign is treated as a URL reference. The value referred to by the URL is loaded and included in the template at that point. If the URL is relative, it is treated as relative to the system base URL or to the base URL supplied when interpreting the template. The value must be something that can be converted to a string, in other words, not an array or object.
 
@@ -232,19 +232,23 @@ For instance: `{@http://itemscript.org/templateInclude.txt}` or `{@file.txt}` or
 
 Note that in the last example, `#fragment` will be interpreted as relative to the JsonItem of the surrounding context; if the context has no attached JsonItem, it is an error to use a fragment URL.
 
-== Literal tags ==
+== {&literal} - Literal tags ==
 
 A tag whose first character is a `&` sign is treated as a string literal. The remainder of the first token is URL-decoded and included in the template at that point.
 
 For instance: `{&b%3D%7B%25}`
 
-== Braces tags ==
+== {(} - Braces tags ==
 
 Tags whose first character is `(` or `)` will cause an opening or closing curly brace to be included at that point in the template. This is useful when you need the output text to contain (a few) curly braces. (If you need it to contain a lot of curly braces, it's probably best to create them in some other way.)
 
 For instance:  `{(}` or `{)}`
 
-== Directive tags ==
+== {!b64id} - Function tags ==
+
+Tags whose first character is `!` will cause the first token to be treated as the name of a function chosen from a limited subset. At present, the only one is `{!b64id}` which generates a unique random ID.
+
+== {.directive} - Directive tags ==
 
 Directives are tags whose first character is a period/dot (`.`). The template portion between an opening directive and its corresponding `{.end}` directive belongs to a segment attached to the opening directive. Different directives cause the enclosed template portion to be interpreted in different ways. The template portion may be divided into different sections by other directives.
 
@@ -350,9 +354,13 @@ You can include a section to be included between entries by including a `{.join}
 
 At present there is no way to retrieve the array index or to iterate over a JsonObject.
 
-== Notes on use ==
+== Security notes ==
 
 Remember to use the `html` or `url` parameters in tags as appropriate to make sure content included in a template is correctly escaped. User-supplied input included in web pages should almost always be HTML-escaped. Data included in a URL query-string should almost always be URL-encoded.
+
+At present, permission to write a template should be treated as permission to execute arbitrary code as the current user. So, user-supplied templates should not be used except where that condition is acceptable. A restricted subset of the template system that can interpret templates without giving so much access is a possibility for future development. 
+
+This page at the doctype project has a good overview of the potential security problems when displaying user-supplied content: [http://code.google.com/p/doctype/wiki/ArticlesXSS]
 
 == Future development ==
 
@@ -361,3 +369,5 @@ Planned but not scheduled for the near future:
   * An expression language for testing and manipulating values
   * Number-formatting parameter for numeric values
   * Substring parameter for string values
+  * Restartable interpretation for asynchronous inclusion of values in GWT/JavaScript
+  * 
