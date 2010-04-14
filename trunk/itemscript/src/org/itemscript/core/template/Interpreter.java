@@ -33,11 +33,10 @@ import java.util.List;
 
 import org.itemscript.core.HasSystem;
 import org.itemscript.core.JsonSystem;
-import org.itemscript.core.Params;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Url;
-import org.itemscript.core.util.GeneralUtil;
 import org.itemscript.core.values.JsonArray;
+import org.itemscript.core.values.JsonString;
 import org.itemscript.core.values.JsonValue;
 
 /**
@@ -47,13 +46,16 @@ class Interpreter implements HasSystem {
     private final String baseUrl;
     private final JsonSystem system;
     private StringBuffer out;
+    private UrlEncodeFunction urlEncodeFunction = new UrlEncodeFunction();
+    private HtmlEscapeFunction htmlEncodeFunction = new HtmlEscapeFunction();
+    private B64idFunction b64idFunction = new B64idFunction();
 
     public Interpreter(JsonSystem system, String baseUrl) {
         this.system = system;
         this.baseUrl = baseUrl;
     }
 
-    private String coerceToString(JsonValue value) {
+    public static String coerceToString(JsonValue value) {
         if (value == null || value.isNull()) {
             return "";
         } else if (value.isString()) {
@@ -63,15 +65,16 @@ class Interpreter implements HasSystem {
         } else if (value.isBoolean()) {
             return value.booleanValue() + "";
         } else {
-            throw ItemscriptError.internalError(this, "coerceToString.value.could.not.be.converted.to.a.string",
+            throw new ItemscriptError(
+                    "error.itemscript.Template.coerceToString.value.could.not.be.converted.to.a.string",
                     value.toCompactJsonString());
         }
     }
 
-    private String getFromContext(JsonValue context, String field) {
+    private JsonValue getFromContext(JsonValue context, String field) {
         if (context.isContainer()) {
-            return coerceToString(context.asContainer()
-                    .getValue(field));
+            return context.asContainer()
+                    .getValue(field);
         } else {
             throw ItemscriptError.internalError(this, "getFromContext.context.was.not.a.container",
                     context.toCompactJsonString());
@@ -100,16 +103,12 @@ class Interpreter implements HasSystem {
         return value;
     }
 
-    private JsonValue getValue(Segment segment, JsonValue context, String field) {
+    private JsonValue getValue(Segment segment, JsonValue context, List<String> fieldTokens) {
         JsonValue innerContext;
-        if (field.length() == 0) {
+        if (fieldTokens.size() == 0) {
             innerContext = context;
         } else {
-            if (!context.isContainer()) { throw ItemscriptError.internalError(this,
-                    "getInnerContext.had.field.but.context.was.not.container", new Params().p("segment", segment)
-                            .p("context", context.toCompactJsonString())); }
-            innerContext = context.asContainer()
-                    .getValue(field);
+            return interpretTokenSequence(context, fieldTokens);
         }
         return innerContext;
     }
@@ -118,10 +117,6 @@ class Interpreter implements HasSystem {
         this.out = new StringBuffer();
         interpretElements(elements, context);
         return out.toString();
-    }
-
-    private String interpretBareFieldValue(String value, JsonValue context) {
-        return getFromContext(context, Url.decode(value));
     }
 
     private void interpretElements(List<Element> elements, JsonValue context) {
@@ -135,17 +130,17 @@ class Interpreter implements HasSystem {
         }
     }
 
-    private String interpretFieldValue(String value, JsonValue context) {
+    private JsonValue interpretFieldToken(String value, JsonValue context) {
         String field = Url.decode(value.substring(1));
         if (field.length() == 0) {
-            return coerceToString(context);
+            return context;
         } else {
             return getFromContext(context, field);
         }
     }
 
     private void interpretForeach(Foreach foreach, JsonValue context) {
-        JsonValue innerContext = getValue(foreach, context, foreach.field());
+        JsonValue innerContext = getValue(foreach, context, foreach.fieldTokens());
         if (innerContext != null && innerContext.isArray()) {
             JsonArray array = innerContext.asArray();
             boolean hasJoin = foreach.join()
@@ -164,21 +159,22 @@ class Interpreter implements HasSystem {
         }
     }
 
-    private String interpretFunction(String first, JsonValue context) {
-        String rest = first.substring(1);
-        if (rest.length() == 0) { throw ItemscriptError.internalError(this,
-                "interpretFunction.no.function.specified", first); }
-        // FIXME - this should really look up functions somewhere, but...
-        if (rest.equals("b64id")) {
-            return system().util()
-                    .generateB64id();
+    private JsonValue executeFunction(String token, JsonValue context, JsonValue input) {
+        if (token.length() == 0) { throw ItemscriptError.internalError(this,
+                "interpretFunction.no.function.specified", token); }
+        if (token.equals("b64id")) {
+            return FunctionHelper.execute(context, b64idFunction, input, null);
+        } else if (token.equals("html")) {
+            return FunctionHelper.execute(context, htmlEncodeFunction, input, null);
+        } else if (token.equals("uri") || token.equals("url")) {
+            return FunctionHelper.execute(context, urlEncodeFunction, input, null);
         } else {
-            throw ItemscriptError.internalError(this, "interpretFunction.unknown.function", first);
+            throw ItemscriptError.internalError(this, "interpretFunction.unknown.function", token);
         }
     }
 
     private void interpretIf(If ifSegment, JsonValue context) {
-        JsonValue value = getValue(ifSegment, context, ifSegment.field());
+        JsonValue value = getValue(ifSegment, context, ifSegment.fieldTokens());
         if (isTrueValue(value)) {
             // Interpret the true section in the current context;
             interpretElements(ifSegment.trueContents(), context);
@@ -188,13 +184,13 @@ class Interpreter implements HasSystem {
         }
     }
 
-    private String interpretLiteralValue(String value, JsonValue context) {
+    private JsonString interpretLiteralToken(String value, JsonValue context) {
         // Trim the leading "&", decode & return the rest.
-        return Url.decode(value.substring(1));
+        return system().createString(Url.decode(value.substring(1)));
     }
 
     private void interpretSection(Section section, JsonValue context) {
-        JsonValue innerContext = getValue(section, context, section.field());
+        JsonValue innerContext = getValue(section, context, section.fieldTokens());
         if (innerContext != null) {
             // Interpret the regular section in the inner context;
             interpretElements(section.regularContents(), innerContext);
@@ -216,57 +212,44 @@ class Interpreter implements HasSystem {
         }
     }
 
-    private void interpretTag(Tag tag, JsonValue context) {
-        if (tag.size() == 0) {
-            // If the tag was empty, we're referring to the context itself.
-            out.append(coerceToString(context));
+    private JsonValue interpretToken(String token, JsonValue context, JsonValue input) {
+        if (token.length() == 0) { throw ItemscriptError.internalError(this,
+                "interpretToken.token.was.zero.length"); }
+        char c = token.charAt(0);
+        if (c == Template.COMMENT_CHAR) {
+            throw ItemscriptError.internalError(this, "interpretToken.unexpected.comment.token", token);
+        } else if (c == Template.OPEN_PARAN_CHAR) {
+            return system().createString(Template.OPEN_TAG_CHAR + "");
+        } else if (c == Template.CLOSE_PARAN_CHAR) {
+            return system().createString(Template.CLOSE_TAG_CHAR + "");
+        } else if (c == Template.FIELD_CHAR) {
+            return interpretFieldToken(token, context);
+        } else if (c == Template.LOAD_CHAR) {
+            return interpretLoadToken(token, context);
+        } else if (c == Template.LITERAL_CHAR) {
+            return interpretLiteralToken(token, context);
+        } else if (Character.isLetter(c)) {
+            return executeFunction(token, context, input);
         } else {
-            String first = tag.get(0);
-            String value;
-            char firstChar = first.charAt(0);
-            if (Character.isLetter(firstChar) || Character.isDigit(firstChar)) {
-                // If it starts with a letter or digit, un-encode it and treat it as a field name in the
-                // context.
-                value = interpretBareFieldValue(first, context);
-            } else if (firstChar == Template.FIELD_CHAR) {
-                // If it starts with a ":" treat the rest of the value as a field name.
-                value = interpretFieldValue(first, context);
-            } else if (firstChar == Template.LOAD_CHAR) {
-                // If it starts with an "@" sign treat the rest of the value as a URL.
-                value = interpretUrlValue(first, context);
-            } else if (firstChar == Template.COMMENT_CHAR) {
-                // If it starts with a "#" treat it as a comment.
-                return;
-            } else if (firstChar == Template.LITERAL_CHAR) {
-                // If it starts with a "&" treat it as an encoded string literal.
-                value = interpretLiteralValue(first, context);
-            } else if (firstChar == Template.FUNCTION_CHAR) {
-                // If it starts with a "!" treat it as a function.
-                value = interpretFunction(first, context);
-            } else if (firstChar == Template.OPEN_PARAN_CHAR) {
-                value = Template.OPEN_TAG_CHAR + "";
-            } else if (firstChar == Template.CLOSE_PARAN_CHAR) {
-                value = Template.CLOSE_TAG_CHAR + "";
-            } else {
-                throw ItemscriptError.internalError(this, "interpretTag.couldnt.handle.tag", tag + "");
-            }
-            // Silently ignore null values.
-            if (value != null) {
-                if (tag.size() > 1) {
-                    String next = tag.get(1);
-                    if (next.equals(Template.URL_PARAM) || next.equals(Template.URI_PARAM)) {
-                        value = Url.encode(value);
-                    } else if (next.equals(Template.HTML_PARAM)) {
-                        value = GeneralUtil.htmlEncode(value);
-                    } else {
-                        throw ItemscriptError.internalError(this, "interpretTag.unknown.parameter", tag + "");
-                    }
-                    if (tag.size() > 2) { throw ItemscriptError.internalError(this,
-                            "interpretTag.unknown.parameter", tag + ""); }
-                }
-                out.append(value);
-            }
+            throw ItemscriptError.internalError(this, "interpretToken.unknown.token", token);
         }
+    }
+
+    private void interpretTag(Tag tag, JsonValue context) {
+        out.append(coerceToString(interpretTokenSequence(context, tag.contents())));
+    }
+
+    private JsonValue interpretTokenSequence(JsonValue context, List<String> tokens) {
+        JsonValue output = system().createNull();
+        for (int i = 0; i < tokens.size(); ++i) {
+            String token = tokens.get(i);
+            // If this token is a comment, stop interpreting the tag.
+            if (token.length() > 0 && token.charAt(0) == Template.COMMENT_CHAR) {
+                break;
+            }
+            output = interpretToken(token, context, output);
+        }
+        return output;
     }
 
     private void interpretToken(Token token, JsonValue context) {
@@ -284,9 +267,9 @@ class Interpreter implements HasSystem {
         }
     }
 
-    private String interpretUrlValue(String value, JsonValue context) {
+    private JsonValue interpretLoadToken(String value, JsonValue context) {
         // Trim the leading "@", treat the rest as a URL and get it.
-        return coerceToString(getFromUrl(value.substring(1), context));
+        return getFromUrl(value.substring(1), context);
     }
 
     private boolean isTrueValue(JsonValue value) {
