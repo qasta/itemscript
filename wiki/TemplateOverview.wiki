@@ -48,18 +48,18 @@ If:
 {.if falseBoolean}Yes{.else}No{.end}
 
 Missing section:
-{.section doesntExist}
+{.section :doesntExist}
 This won't show up.
 {.or}
 This will show up.
 {.end}
 
 Nested directives:
-{.foreach arrayOfObjects}
-    Name: {name}
-    {.section address}
-        Street: {street}
-        Zip: {zip}
+{.foreach :arrayOfObjects}
+    Name: {:name}
+    {.section :address}
+        Street: {:street}
+        Zip: {:zip}
     {.end}
 {.end}
 }}}
@@ -198,19 +198,15 @@ The text outside of any template tags can contain any characters except `{` and 
 
 == {tag} - Tags ==
 
-A tag is contained within curly brackets, like this: `{fieldName}`. It can contain any characters except carriage returns and curly brackets. Leading and trailing whitespace inside the tag is ignored. The contents are divided by spaces into a series of tokens. The first token controls what kind of tag it is.
+A tag is contained within curly brackets, like this: `{fieldName}`. It can contain any characters except carriage returns and curly brackets. Leading and trailing whitespace inside the tag is ignored. The contents are divided by spaces into a series of tokens.
 
-Tags with a special character at the start of the first token are interpreted in various special ways.
-
-Tags whose first token starts with a letter or number are treated as references to a field in the surrounding context.
-
-The second token in a tag, if present, can cause the value produced by the first token to be transformed in some way. Right now that means if the second token is "html" the value is HTML-escaped before being included, and if the second token is "url" the value is URL-encoded before being included. For instance, `{userSuppliedText html}` or `?key={value url}`.
+Tags whose first token starts with a dot `.` are treated as directives and interpreted in a special way. Similarly, tags whose first token starts with a `#` are treated in a special way. Otherwise the contents of the tag are evaluated left-to-right; usually the first token causes a value to be retrieved (either from the surrounding context or from the system) and subsequent tokens cause that value to be changed in some way.
 
 An empty tag refers to the present context as a whole. This is often useful inside a `{.foreach}` segment that is iterating over an array of strings, for instance.
 
 == {:field} - Field tags ==
 
-A tag whose first character is `:` is treated as a field reference. The portion after the `:` is treated as the field name in the surrounding context.
+A token whose first character is `:` is treated as a field reference. The portion after the `:` is treated as the field name in the surrounding context.
 
 Field names are URL-decoded before being used, so you should URL-encode any special character you need to - in particular, `{`, `}`, and spaces need to be URL-encoded. `{` and `}` are not always encoded by URI-encoding routines, so `Template` provides static methods to additionally encode those characters for use in tags. There is currently no quoting mechanism, only an escaping mechanism.
 
@@ -222,17 +218,17 @@ A tag whose first character is a `#` sign is treated as a comment. The rest of t
 
 For instance, `{# This is a comment }`
 
-== {@url} - URL tags ==
+== {@url} - URL tokens ==
 
-A tag whose first character is an `@` sign is treated as a URL reference. The value referred to by the URL is loaded and included in the template at that point. If the URL is relative, it is treated as relative to the system base URL or to the base URL supplied when interpreting the template. The value must be something that can be converted to a string, in other words, not an array or object.
+A token whose first character is an `@` sign is treated as a URL reference. The value referred to by the URL is returned. If the URL is relative, it is treated as relative to the system base URL or to the base URL supplied when interpreting the template.
 
 For instance: `{@http://itemscript.org/templateInclude.txt}` or `{@file.txt}` or `{@#fragment}`.
 
 Note that in the last example, `#fragment` will be interpreted as relative to the JsonItem of the surrounding context; if the context has no attached JsonItem, it is an error to use a fragment URL.
 
-== {&literal} - Literal tags ==
+== {&literal} - Literal token ==
 
-A tag whose first character is a `&` sign is treated as a string literal. The remainder of the first token is URL-decoded and included in the template at that point.
+A token whose first character is a `&` sign is treated as a string literal. The remainder of the first token is URL-decoded and included in the template at that point.
 
 For instance: `{&b%3D%7B%25}`
 
@@ -242,7 +238,7 @@ Tags whose first character is `(` or `)` will cause an opening or closing curly 
 
 For instance:  `{(}` or `{)}`
 
-== {b64id} - Function tags ==
+== {b64id} - Function tokens ==
 
 Tokens whose first character is alphanumeric will be treated as the name of a function chosen from a limited subset. At present, the only function other than `html` and `url` (which escape their input) is `{b64id}` which generates a unique random ID using only URL-safe characters, for instance "`H2eBRN-55bZsRzM6xCdU6Q`".
 
@@ -254,7 +250,7 @@ For instance: `{.foreach :array}` or `{.end}`
 
 == {.section} directive ==
 
-The `{.section}` directive lets you create a new context for the contained content based on a field in the surrounding context. This lets you "move into" nested objects in your context to access their fields. The field is specified in the token following the `.section` token, and is URL-decoded before being used to look up the value.
+The `{.section}` directive lets you create a new context for the contained content based on the value returned by the second token in the tag. This lets you "move into" nested objects in your context to access their fields, or open a new context from a value stored in memory or on the network. The field is specified in the token following the `.section` token, and is URL-decoded before being used to look up the value.
 
 For instance, the template:
 {{{
@@ -283,7 +279,7 @@ You can also specify a section to be included if the field to move into is missi
 
 For instance:
 {{{
-{.section address}
+{.section :address}
 (Address stuff)
 {.or}
 (No address given)
@@ -292,7 +288,7 @@ For instance:
 
 == {.if} directive ==
 
-The `{.if}` directive lets you test for the existence and "truth" of a field in the context and include different template portions depending on the result. The field is specified in the token following the `.if` token, and is URL-decoded before being used to look up the value. If no field is specified, the surrounding context itself is tested; this is useful, for instance, if you are iterating through a list of boolean values.
+The `{.if}` directive lets you test for the existence and "truth" of a value specified by the second token and include different template portions depending on the result. If no field is specified, the surrounding context itself is tested; this is useful, for instance, if you are iterating through a list of boolean values.
 
 The optional `{.else}` directive, if included before the `{.end}` directive, can be used to specify a section that is included if the value is false.
 
