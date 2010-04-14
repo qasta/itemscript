@@ -23,7 +23,7 @@ This is a comment: {# This is some comment text. }
 
 This is an encoded literal: {&b%3D%7B%25}
 
-These are some braces: {(} {)}
+These are some braces: {left} {right}
 
 This a value HTML-encoded: {containsHtmlChars html}
 
@@ -198,27 +198,25 @@ The text outside of any template tags can contain any characters except `{` and 
 
 == {tag} - Tags ==
 
-A tag is contained within curly brackets, like this: `{fieldName}`. It can contain any characters except carriage returns and curly brackets. Leading and trailing whitespace inside the tag is ignored. The contents are divided by spaces into a series of tokens.
+A tag is contained within curly brackets, like this: `{:fieldName}`. It can contain any characters except carriage returns and curly brackets. Leading and trailing whitespace inside the tag is ignored. The contents are divided by spaces into a series of tokens.
 
-Tags whose first token starts with a dot `.` are treated as directives and interpreted in a special way. Similarly, tags whose first token starts with a `#` are treated in a special way. Otherwise the contents of the tag are evaluated left-to-right; usually the first token causes a value to be retrieved (either from the surrounding context or from the system) and subsequent tokens cause that value to be changed in some way.
+Tags whose first token starts with a dot `.` are treated as directives and interpreted in a special way. Otherwise the contents of the tag are evaluated left-to-right as a series of tokens; usually the first token causes a value to be retrieved (either from the surrounding context or from the system) and subsequent tokens cause that value to be changed in some way, for instance, by being HTML-escaped.
 
-An empty tag refers to the present context as a whole. This is often useful inside a `{.foreach}` segment that is iterating over an array of strings, for instance.
+== {:field} - Field references ==
 
-== {:field} - Field tags ==
+A token whose first character is `:` is treated as a field reference. The portion after the `:` is treated as the field name in the surrounding context. If the portion after the `:` is empty, the entire context is returned.
 
-A token whose first character is `:` is treated as a field reference. The portion after the `:` is treated as the field name in the surrounding context.
-
-Field names are URL-decoded before being used, so you should URL-encode any special character you need to - in particular, `{`, `}`, and spaces need to be URL-encoded. `{` and `}` are not always encoded by URI-encoding routines, so `Template` provides static methods to additionally encode those characters for use in tags. There is currently no quoting mechanism, only an escaping mechanism.
+Field names are URL-decoded before being used, so you should URL-encode any special character you need to - in particular, `{`, `}`, and spaces need to be URL-encoded. `{` and `}` are not always encoded by URI-encoding routines, so `Template` provides static methods to additionally encode those characters for use in tags. There is currently no quoting syntax so encoding is the only way to include special characters in field names, string literals, and so on.
 
 For instance, `{:name}`
 
-== {# comment} - Comment tags ==
+== {# comment} - Comments ==
 
-A tag whose first character is a `#` sign is treated as a comment. The rest of the contents are discarded. Note that comments may not include carriage returns or curly braces.
+A token whose first character is a `#` sign ends the interpretation of the token sequence. Note that comments may not include carriage returns or curly braces.
 
 For instance, `{# This is a comment }`
 
-== {@url} - URL tokens ==
+== {@url} - URL references ==
 
 A token whose first character is an `@` sign is treated as a URL reference. The value referred to by the URL is returned. If the URL is relative, it is treated as relative to the system base URL or to the base URL supplied when interpreting the template.
 
@@ -232,11 +230,11 @@ A token whose first character is a `&` sign is treated as a string literal. The 
 
 For instance: `{&b%3D%7B%25}`
 
-== {(} - Braces tags ==
+== {left} & {right}- Braces tags ==
 
-Tags whose first character is `(` or `)` will cause an opening or closing curly brace to be included at that point in the template. This is useful when you need the output text to contain (a few) curly braces. (If you need it to contain a lot of curly braces, it's probably best to create them in some other way.)
+Tags whose contents are `left` or `right` will cause an opening or closing curly brace to be included at that point in the template. This is useful when you need the output text to contain (a few) curly braces. (If you need it to contain a lot of curly braces, it's probably best to create them in some other way.) (Technically, `left` and `right` are functions that return a single curly brace.)
 
-For instance:  `{(}` or `{)}`
+For instance:  `{left}` or `{right}`
 
 == {b64id} - Function tokens ==
 
