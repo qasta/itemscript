@@ -30,7 +30,7 @@ This a value HTML-encoded: {containsHtmlChars html}
 This is a value URL-encoded: {containsUrlChars url}
 
 Section:
-{.section object}
+{.section :object}
 A: {a}
 B: {b}
 C: {c}
@@ -38,14 +38,14 @@ Missing field: {d}
 {.end}
 
 Foreach:
-{.foreach array}Entry: {}{.join} - {.end}
+{.foreach :array}Entry: {}{.join} - {.end}
 
 {# Note the .join section.}
 {# Note also the empty field used when the values in the array are not themselves container objects.}
 
 If:
-{.if trueBoolean}Yes{.else}No{.end}
-{.if falseBoolean}Yes{.else}No{.end}
+{.if :trueBoolean}Yes{.else}No{.end}
+{.if :falseBoolean}Yes{.else}No{.end}
 
 Missing section:
 {.section :doesntExist}
