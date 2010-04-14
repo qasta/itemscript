@@ -9,9 +9,9 @@ The Itemscript system includes a simple template module for interpreting text te
 
 This template text:
 {{{
-This is a number: - {number} -
-This is a string: - {text} -
-This is a boolean: - {trueBoolean} -
+This is a number: - {:number} -
+This is a string: - {:text} -
+This is a boolean: - {:trueBoolean} -
 
 This is a field reference: {:text}
 
@@ -208,15 +208,11 @@ The second token in a tag, if present, can cause the value produced by the first
 
 An empty tag refers to the present context as a whole. This is often useful inside a `{.foreach}` segment that is iterating over an array of strings, for instance.
 
-== {field} or {:field} - Field tags ==
+== {:field} - Field tags ==
 
-A tag whose first character is a letter or digit is treated as a field in the surrounding context.
+A tag whose first character is `:` is treated as a field reference. The portion after the `:` is treated as the field name in the surrounding context.
 
-For instance, `{name}` or `{0}`
-
-Field names are URL-decoded before being used, so you should URL-encode any special character you need to - in particular, `{`, `}`, and spaces need to be URL-encoded. `{` and `}` are not always encoded by URI-encoding routines, so `Template` provides static methods to additionally encode those characters for use in tags.
-
-A tag whose first character is `:` is also treated as a field reference. The portion after the `:` is treated as the field name in the same way described above.
+Field names are URL-decoded before being used, so you should URL-encode any special character you need to - in particular, `{`, `}`, and spaces need to be URL-encoded. `{` and `}` are not always encoded by URI-encoding routines, so `Template` provides static methods to additionally encode those characters for use in tags. There is currently no quoting mechanism, only an escaping mechanism.
 
 For instance, `{:name}`
 
@@ -246,15 +242,15 @@ Tags whose first character is `(` or `)` will cause an opening or closing curly 
 
 For instance:  `{(}` or `{)}`
 
-== {!b64id} - Function tags ==
+== {b64id} - Function tags ==
 
-Tags whose first character is `!` will cause the first token to be treated as the name of a function chosen from a limited subset. At present, the only one is `{!b64id}` which generates a unique random ID using only URL-safe characters, for instance "`H2eBRN-55bZsRzM6xCdU6Q`".
+Tokens whose first character is alphanumeric will be treated as the name of a function chosen from a limited subset. At present, the only function other than `html` and `url` (which escape their input) is `{b64id}` which generates a unique random ID using only URL-safe characters, for instance "`H2eBRN-55bZsRzM6xCdU6Q`".
 
 == {.directive} - Directive tags ==
 
 Directives are tags whose first character is a period/dot (`.`). The template portion between an opening directive and its corresponding `{.end}` directive belongs to a segment attached to the opening directive. Different directives cause the enclosed template portion to be interpreted in different ways. The template portion may be divided into different sections by other directives.
 
-For instance: `{.foreach array}` or `{.end}`
+For instance: `{.foreach :array}` or `{.end}`
 
 == {.section} directive ==
 
@@ -262,9 +258,9 @@ The `{.section}` directive lets you create a new context for the contained conte
 
 For instance, the template:
 {{{
-Name: {name}
-{.section address}
-Street: {street}
+Name: {:name}
+{.section :address}
+Street: {:street}
 {.end}
 }}}
 interpreted with the context:
@@ -309,8 +305,8 @@ Otherwise they are false. Objects and arrays are false; if you want to test for 
 
 For instance, the template:
 {{{
-{.foreach people}
-{.if alive}Alive{.else}Dead{.end}
+{.foreach :people}
+{.if :alive}Alive{.else}Dead{.end}
 {.end}
 }}}
 interpreted with the context:
@@ -339,7 +335,7 @@ The `{.foreach}` directive can be used to include the contained template section
 
 For example:
 {{{
-{.foreach letters}"{}"{.join} {.end}
+{.foreach :letters}"{}"{.join} {.end}
 }}}
 interpreted with the context:
 {{{
