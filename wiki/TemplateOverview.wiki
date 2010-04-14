@@ -244,7 +244,9 @@ Tokens whose first character is alphanumeric will be treated as the name of a fu
 
 Directives are tags whose first character is a period/dot (`.`). The template portion between an opening directive and its corresponding `{.end}` directive belongs to a segment attached to the opening directive. Different directives cause the enclosed template portion to be interpreted in different ways. The template portion may be divided into different sections by other directives.
 
-For instance: `{.foreach :array}` or `{.end}`
+A directive that opens a section usually specifies a value to operate on. The value is given by the remaining tokens in the opening directive tag after the first; often this is a field in the context, but it can also be any other token or token sequence, including a URL reference.
+
+For instance: `{.foreach :array}` or `{.end}` or `{.section @http://itemscript.org/test.json#test-object}`
 
 == {.section} directive ==
 
