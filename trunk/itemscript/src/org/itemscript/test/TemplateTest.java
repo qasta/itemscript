@@ -157,6 +157,13 @@ public class TemplateTest extends ItemscriptTestBase {
         after = processTemplate(text);
         assertEquals("a y c", after);
     }
+    
+    @Test
+    public void testHttpReference() {
+        String text = "a {@http://itemscript.org/test.json#test-object/abc} c";
+        String after = processTemplate(text);
+        assertEquals("a def c", after);
+    }
 
     @Test
     public void testCoerceFail() {
