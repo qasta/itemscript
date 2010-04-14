@@ -68,7 +68,7 @@ public class TemplateTest extends ItemscriptTestBase {
     public void testEmptyField() {
         context.asObject()
                 .put("y", "x");
-        String text = "{.section y}a {} b{.end}";
+        String text = "{.section :y}a {:} b{.end}";
         String after = processTemplate(text);
         assertEquals("a x b", after);
     }
@@ -86,7 +86,7 @@ public class TemplateTest extends ItemscriptTestBase {
 
     @Test
     public void testStringContext() {
-        String text = "a {} c";
+        String text = "a {:} c";
         context = system().createString("b");
         String after = processTemplate(text);
         assertEquals("a b c", after);
@@ -185,7 +185,7 @@ public class TemplateTest extends ItemscriptTestBase {
 
     @Test
     public void testSection() {
-        String text = "a {.section address}{street}{.end} c";
+        String text = "a {.section :address}{:street}{.end} c";
         JsonObject address = context.asObject()
                 .createObject("address");
         address.put("street", "xyz");
@@ -195,7 +195,7 @@ public class TemplateTest extends ItemscriptTestBase {
 
     @Test
     public void testOrSection() {
-        String text = "a {.section address}{street}{.or}kittens{.end} c";
+        String text = "a {.section :address}{:street}{.or}kittens{.end} c";
         JsonObject address = context.asObject()
                 .createObject("address");
         address.put("street", "xyz");
@@ -209,7 +209,7 @@ public class TemplateTest extends ItemscriptTestBase {
 
     @Test
     public void testMissingEnd() {
-        String text = "a {.section address} c";
+        String text = "a {.section :address} c";
         try {
             processTemplate(text);
         } catch (ItemscriptError e) {
@@ -220,7 +220,7 @@ public class TemplateTest extends ItemscriptTestBase {
 
     @Test
     public void testForeach() {
-        String text = "a {.foreach items}{}{.end} c";
+        String text = "a {.foreach :items}{:}{.end} c";
         JsonArray array = context.asObject()
                 .createArray("items");
         array.add("x");
@@ -232,7 +232,7 @@ public class TemplateTest extends ItemscriptTestBase {
 
     @Test
     public void testJoin() {
-        String text = "a {.foreach items}{}{.join}{name}{.end} c";
+        String text = "a {.foreach :items}{:}{.join}{:name}{.end} c";
         JsonArray array = context.asObject()
                 .createArray("items");
         array.add("x");
@@ -244,7 +244,7 @@ public class TemplateTest extends ItemscriptTestBase {
 
     @Test
     public void testNestedForeach() {
-        String text = "a {.foreach items}{.foreach subItems}{}{.join} {.end}{.join} {.end} c";
+        String text = "a {.foreach :items}{.foreach :subItems}{:}{.join} {.end}{.join} {.end} c";
         JsonObject contents = system().createObject();
         contents.createArray("subItems")
                 .a("x")
@@ -261,7 +261,7 @@ public class TemplateTest extends ItemscriptTestBase {
 
     @Test
     public void testUrlEsc() {
-        String text = "a {gnarly url} c";
+        String text = "a {:gnarly url} c";
         context.asObject()
                 .put("gnarly", "x@%()y");
         String after = processTemplate(text);
@@ -308,7 +308,7 @@ public class TemplateTest extends ItemscriptTestBase {
 
     @Test
     public void testIf() {
-        String text = "a {.if flag}yes{.else}no{.end} c";
+        String text = "a {.if :flag}yes{.else}no{.end} c";
         context.asObject()
                 .put("flag", true);
         String after = processTemplate(text);
@@ -321,7 +321,7 @@ public class TemplateTest extends ItemscriptTestBase {
 
     @Test
     public void testB64id() {
-        String text = "a {!b64id} c";
+        String text = "a {b64id} c";
         String after = processTemplate(text);
         assertEquals("a H2eBRN-55bZsRzM6xCdU6Q c".length(), after.length());
     }

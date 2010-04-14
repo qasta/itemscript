@@ -38,10 +38,10 @@ import java.util.List;
 class If extends Segment {
     private final List<Element> trueContents = new ArrayList<Element>();
     private final List<Element> falseContents = new ArrayList<Element>();
-    private String field;
+    private List<String> fieldTokens;
 
-    public If(String field) {
-        this.field = field;
+    public If(List<String> fieldTokens) {
+        this.fieldTokens = fieldTokens;
     }
 
     @Override
@@ -53,8 +53,8 @@ class If extends Segment {
         return falseContents;
     }
 
-    public String field() {
-        return field;
+    public List<String> fieldTokens() {
+        return fieldTokens;
     }
 
     @Override

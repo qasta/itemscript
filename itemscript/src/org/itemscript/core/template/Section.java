@@ -36,13 +36,13 @@ import java.util.List;
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
 class Section extends Segment {
-    private final String field;
+    private final List<String> fieldTokens;
     private final List<Element> sectionContents = new ArrayList<Element>();
     private final List<Element> orContents = new ArrayList<Element>();
 
-    public Section(String field) {
+    public Section(List<String> fieldTokens) {
         super();
-        this.field = field;
+        this.fieldTokens = fieldTokens;
     }
 
     @Override
@@ -50,8 +50,8 @@ class Section extends Segment {
         return this;
     }
 
-    public String field() {
-        return field;
+    public List<String> fieldTokens() {
+        return fieldTokens;
     }
 
     @Override

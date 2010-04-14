@@ -36,13 +36,13 @@ import java.util.List;
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
 class Foreach extends Segment {
-    private final String field;
+    private final List<String> fieldTokens;
     private final List<Element> contents;
     private final List<Element> join;
 
-    public Foreach(String field) {
+    public Foreach(List<String> field) {
         super();
-        this.field = field;
+        this.fieldTokens = field;
         this.contents = new ArrayList<Element>();
         this.join = new ArrayList<Element>();
     }
@@ -56,8 +56,8 @@ class Foreach extends Segment {
         return contents;
     }
 
-    public String field() {
-        return field;
+    public List<String> fieldTokens() {
+        return fieldTokens;
     }
 
     @Override

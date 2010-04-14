@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.itemscript.core.exceptions.ItemscriptError;
-import org.itemscript.core.url.Url;
 
 /**
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
@@ -71,8 +70,7 @@ class Analyzer {
     }
 
     private Element analyzeForeach(Directive directive) {
-        String field = Url.decode(directive.get(1));
-        Foreach foreach = new Foreach(field);
+        Foreach foreach = new Foreach(extractFieldTokens(directive));
         // Start with the regular contents.
         List<Element> contents = foreach.contents();
         while (pos < end) {
@@ -100,9 +98,18 @@ class Analyzer {
         throw ItemscriptError.internalError(this, "analyzeForeach.missing.end.directive");
     }
 
+    private List<String> extractFieldTokens(Directive directive) {
+        List<String> fieldTokens = new ArrayList<String>();
+        for (int i = 1; i < directive.contents()
+                .size(); ++i) {
+            fieldTokens.add(directive.contents()
+                    .get(i));
+        }
+        return fieldTokens;
+    }
+
     private Element analyzeIf(Directive directive) {
-        String field = Url.decode(directive.get(1));
-        If ifSegment = new If(field);
+        If ifSegment = new If(extractFieldTokens(directive));
         // Start by adding to the true contents.
         List<Element> contents = ifSegment.trueContents();
         while (pos < end) {
@@ -132,8 +139,7 @@ class Analyzer {
     }
 
     private Element analyzeSection(Directive directive) {
-        String field = Url.decode(directive.get(1));
-        Section section = new Section(field);
+        Section section = new Section(extractFieldTokens(directive));
         // Start by adding to the regular section contents.
         List<Element> contents = section.regularContents();
         while (pos < end) {

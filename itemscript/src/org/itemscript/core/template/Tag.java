@@ -65,7 +65,7 @@ class Tag extends Token {
                 contents.add(trimmedContents.substring(pos));
                 break;
             } else {
-                // Add the piece before the next space.
+                // FIXME multiple spaces handling here.
                 contents.add(trimmedContents.substring(pos, firstSpace));
                 pos = firstSpace + 1;
             }
@@ -81,17 +81,9 @@ class Tag extends Token {
         return contents;
     }
 
-    public String get(int i) {
-        return contents.get(i);
-    }
-
     @Override
     public boolean isTag() {
         return true;
-    }
-
-    public int size() {
-        return contents.size();
     }
 
     @Override

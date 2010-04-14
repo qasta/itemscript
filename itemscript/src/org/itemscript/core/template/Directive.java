@@ -39,7 +39,8 @@ class Directive extends Tag {
 
     Directive(String contents, int beginIndex, int endIndex, int line, int column) {
         super(contents, beginIndex, endIndex, line, column);
-        directiveType = get(0).substring(1);
+        directiveType = contents().get(0)
+                .substring(1);
         if (directiveType.length() == 0) { throw ItemscriptError.internalError(this,
                 "constructor.directiveType.zero.length", contents); }
     }
