@@ -157,7 +157,7 @@ public class TemplateTest extends ItemscriptTestBase {
         after = processTemplate(text);
         assertEquals("a y c", after);
     }
-    
+
     @Test
     public void testHttpReference() {
         String text = "a {@http://itemscript.org/test.json#test-object/abc} c";
@@ -234,6 +234,14 @@ public class TemplateTest extends ItemscriptTestBase {
         array.add("y");
         array.add("z");
         String after = processTemplate(text);
+        assertEquals("a xyz c", after);
+    }
+
+    @Test
+    public void testHttpForeach() {
+        String text = "a {.foreach @http://itemscript.org/test.json#test-object/foo}{:}{.end} c";
+        String after = processTemplate(text);
+        System.err.println(after);
         assertEquals("a xyz c", after);
     }
 
