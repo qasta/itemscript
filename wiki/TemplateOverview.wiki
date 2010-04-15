@@ -238,7 +238,7 @@ For instance:  `{left}` or `{right}`
 
 == {b64id} - Function tokens ==
 
-Tokens whose first character is alphanumeric will be treated as the name of a function chosen from a limited subset. The functions implemented at present are:
+Tokens whose first character is a letter will be treated as the name of a function chosen from a limited subset. The functions implemented at present are:
 
   * `b64id`, which generates a unique random ID using only URL-safe characters, for instance "`H2eBRN-55bZsRzM6xCdU6Q`".
   * `uuid`, which generates a new UUID, for instance. `"3d9f9533-c32f-4183-b78c-f01f32609de4"`.
