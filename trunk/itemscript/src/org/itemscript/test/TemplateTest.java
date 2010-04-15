@@ -139,6 +139,20 @@ public class TemplateTest extends ItemscriptTestBase {
     }
 
     @Test
+    public void testBinaryInclude() {
+        String text = "{@http://itemscript.org/test.png dataUrl}";
+        String after = processTemplate(text);
+        assertTrue(after.startsWith("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAABDCAYAAACCyxXxAAAABmJ"));
+    }
+
+    @Test
+    public void testUuid() {
+        String text = "a {uuid} c";
+        String after = processTemplate(text);
+        assertEquals("a 3d9f9533-c32f-4183-b78c-f01f32609de4 c".length(), after.length());
+    }
+
+    @Test
     public void testReference() {
         system().put("mem:/TemplateTest/value", "b");
         String text = "a {@mem:/TemplateTest/value} c";
@@ -178,14 +192,14 @@ public class TemplateTest extends ItemscriptTestBase {
 
     @Test
     public void testBraces() {
-        String text = "a {(} {)} c";
+        String text = "a {left} {right} c";
         String after = processTemplate(text);
         assertEquals("a { } c", after);
     }
 
     @Test
     public void testContentsTrim() {
-        String text = "a { ( } c";
+        String text = "a { left } c";
         String after = processTemplate(text);
         assertEquals("a { c", after);
     }
@@ -241,7 +255,6 @@ public class TemplateTest extends ItemscriptTestBase {
     public void testHttpForeach() {
         String text = "a {.foreach @http://itemscript.org/test.json#test-object/foo}{:}{.end} c";
         String after = processTemplate(text);
-        System.err.println(after);
         assertEquals("a xyz c", after);
     }
 

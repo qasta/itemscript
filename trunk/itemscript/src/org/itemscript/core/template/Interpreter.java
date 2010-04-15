@@ -36,6 +36,7 @@ import org.itemscript.core.JsonSystem;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Url;
 import org.itemscript.core.values.JsonArray;
+import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonString;
 import org.itemscript.core.values.JsonValue;
 
@@ -46,13 +47,30 @@ class Interpreter implements HasSystem {
     private final String baseUrl;
     private final JsonSystem system;
     private StringBuffer out;
-    private UrlEncodeFunction urlEncodeFunction = new UrlEncodeFunction();
-    private HtmlEscapeFunction htmlEncodeFunction = new HtmlEscapeFunction();
-    private B64idFunction b64idFunction = new B64idFunction();
+    private final JsonObject functions;
 
     public Interpreter(JsonSystem system, String baseUrl) {
         this.system = system;
         this.baseUrl = baseUrl;
+        JsonObject functionsObject = system.getObject("mem:/itemscript/template/functions");
+        if (functionsObject == null) {
+            functionsObject = system.createObject("mem:/itemscript/template/functions")
+                    .value()
+                    .asObject();
+            initFunctions(functionsObject);
+        }
+        this.functions = functionsObject;
+    }
+
+    private static void initFunctions(JsonObject functions) {
+        functions.putNative("html", new HtmlEscapeFunction());
+        functions.putNative("url", new UrlEncodeFunction());
+        functions.putNative("uri", new UrlEncodeFunction());
+        functions.putNative("b64id", new B64idFunction());
+        functions.putNative("dataUrl", new DataUrlFunction());
+        functions.putNative("left", new LeftBraceFunction());
+        functions.putNative("right", new RightBraceFunction());
+        functions.putNative("uuid", new UuidFunction());
     }
 
     public static String coerceToString(JsonValue value) {
@@ -162,12 +180,9 @@ class Interpreter implements HasSystem {
     private JsonValue executeFunction(String token, JsonValue context, JsonValue input) {
         if (token.length() == 0) { throw ItemscriptError.internalError(this,
                 "interpretFunction.no.function.specified", token); }
-        if (token.equals("b64id")) {
-            return FunctionHelper.execute(context, b64idFunction, input, null);
-        } else if (token.equals("html")) {
-            return FunctionHelper.execute(context, htmlEncodeFunction, input, null);
-        } else if (token.equals("uri") || token.equals("url")) {
-            return FunctionHelper.execute(context, urlEncodeFunction, input, null);
+        Function function = (Function) functions.getNative(token);
+        if (function != null) {
+            return FunctionHelper.execute(context, function, input, null);
         } else {
             throw ItemscriptError.internalError(this, "interpretFunction.unknown.function", token);
         }
@@ -218,10 +233,6 @@ class Interpreter implements HasSystem {
         char c = token.charAt(0);
         if (c == Template.COMMENT_CHAR) {
             throw ItemscriptError.internalError(this, "interpretToken.unexpected.comment.token", token);
-        } else if (c == Template.OPEN_PARAN_CHAR) {
-            return system().createString(Template.OPEN_TAG_CHAR + "");
-        } else if (c == Template.CLOSE_PARAN_CHAR) {
-            return system().createString(Template.CLOSE_TAG_CHAR + "");
         } else if (c == Template.FIELD_CHAR) {
             return interpretFieldToken(token, context);
         } else if (c == Template.LOAD_CHAR) {

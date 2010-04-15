@@ -53,8 +53,6 @@ public class Template implements HasSystem {
     public static final char LOAD_CHAR = '@';
     public static final char FIELD_CHAR = ':';
     public static final char LITERAL_CHAR = '&';
-    public static final char OPEN_PARAN_CHAR = '(';
-    public static final char CLOSE_PARAN_CHAR = ')';
     public static final char FUNCTION_CHAR = '!';
     public static final char DIRECTIVE_CHAR = '.';
     public static final String END_DIRECTIVE = "end";
