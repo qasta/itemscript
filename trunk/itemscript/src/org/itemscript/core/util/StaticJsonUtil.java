@@ -225,6 +225,9 @@ public final class StaticJsonUtil {
         } else if (value.isBoolean()) {
             sb.append("<span style='color:" + colorMap.getString(BOOLEAN) + ";'>"
                     + GeneralUtil.htmlEncode(value.toJsonString()) + "</span>");
+        } else if (value.isNative()) {
+            sb.append("<span style='color:" + colorMap.getString(STRING) + ";'>"
+                    + GeneralUtil.htmlEncode(value.toJsonString()) + "</span>");
         } else if (value.isArray()) {
             JsonArray array = value.asArray();
             if (array.size() == 0) {

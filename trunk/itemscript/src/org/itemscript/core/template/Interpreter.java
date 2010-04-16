@@ -62,15 +62,15 @@ class Interpreter implements HasSystem {
         this.functions = functionsObject;
     }
 
-    private static void initFunctions(JsonObject functions) {
-        functions.putNative("html", new HtmlEscapeFunction());
-        functions.putNative("url", new UrlEncodeFunction());
-        functions.putNative("uri", new UrlEncodeFunction());
-        functions.putNative("b64id", new B64idFunction());
-        functions.putNative("dataUrl", new DataUrlFunction());
-        functions.putNative("left", new LeftBraceFunction());
-        functions.putNative("right", new RightBraceFunction());
-        functions.putNative("uuid", new UuidFunction());
+    private void initFunctions(JsonObject functions) {
+        functions.putNative("html", new HtmlEscapeFunction(system()));
+        functions.putNative("url", new UrlEncodeFunction(system()));
+        functions.putNative("uri", new UrlEncodeFunction(system()));
+        functions.putNative("b64id", new B64idFunction(system()));
+        functions.putNative("dataUrl", new DataUrlFunction(system()));
+        functions.putNative("left", new LeftBraceFunction(system()));
+        functions.putNative("right", new RightBraceFunction(system()));
+        functions.putNative("uuid", new UuidFunction(system()));
     }
 
     public static String coerceToString(JsonValue value) {
@@ -182,7 +182,7 @@ class Interpreter implements HasSystem {
                 "interpretFunction.no.function.specified", token); }
         Function function = (Function) functions.getNative(token);
         if (function != null) {
-            return FunctionHelper.execute(context, function, input, null);
+            return function.execute(context, input, null);
         } else {
             throw ItemscriptError.internalError(this, "interpretFunction.unknown.function", token);
         }

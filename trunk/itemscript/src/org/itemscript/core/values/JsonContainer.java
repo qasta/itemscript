@@ -161,6 +161,14 @@ public interface JsonContainer extends JsonValue, JsonGetAccess {
     public String getRequiredString(String key);
 
     /**
+     * Get a value from this container. If the value does not exist, throws an exception.
+     * 
+     * @param key The key to get from.
+     * @return The value under that key.
+     */
+    public JsonValue getRequiredValue(String key);
+
+    /**
      * Get a value by key.
      * 
      * @param key The key to get from.

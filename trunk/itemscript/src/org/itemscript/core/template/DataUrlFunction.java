@@ -3,10 +3,15 @@ package org.itemscript.core.template;
 
 import java.util.List;
 
+import org.itemscript.core.JsonSystem;
 import org.itemscript.core.url.Url;
 import org.itemscript.core.values.JsonValue;
 
-public class DataUrlFunction implements Function {
+public class DataUrlFunction extends FunctionBase {
+    public DataUrlFunction(JsonSystem system) {
+        super(system);
+    }
+
     @Override
     public JsonValue execute(JsonValue context, JsonValue value, List<JsonValue> args) {
         if (value.isString()) {
@@ -16,15 +21,12 @@ public class DataUrlFunction implements Function {
             // Make sure that any spaces between the content-type and charset are removed...
             contentType = contentType.replaceAll(" ", "");
             if (contentType.startsWith("text")) {
-                return value.system()
-                        .createString("data:" + contentType + "," + Url.encode(value.stringValue()));
+                return system().createString("data:" + contentType + "," + Url.encode(value.stringValue()));
             } else {
-                return value.system()
-                        .createString("data:" + contentType + ";base64," + value.stringValue());
+                return system().createString("data:" + contentType + ";base64," + value.stringValue());
             }
         } else {
-            return value.system()
-                    .createNull();
+            return system().createNull();
         }
     }
 }

@@ -275,6 +275,11 @@ public class OverlayObject implements JsonObject {
     }
 
     @Override
+    public final JsonValue getRequiredValue(String key) {
+        return JsonAccessHelper.getRequiredValue(this, key, getValue(key));
+    }
+
+    @Override
     public final Boolean getRequiredBoolean(String key) {
         return JsonAccessHelper.getRequiredBoolean(this, key, getValue(key));
     }
