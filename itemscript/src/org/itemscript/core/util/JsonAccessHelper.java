@@ -177,4 +177,10 @@ public final class JsonAccessHelper {
         return new Params().p("key", key + "")
                 .p("value", value.toCompactJsonString());
     }
+
+    public static JsonValue getRequiredValue(JsonContainer container, String key, JsonValue value) {
+        if (value == null) { throw ItemscriptError.internalError(container, "getRequiredValue.not.present", key
+                + ""); }
+        return value;
+    }
 }

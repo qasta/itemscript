@@ -222,6 +222,11 @@ public abstract class ItemscriptContainer extends ItemscriptValue implements Jso
     }
 
     @Override
+    public final JsonValue getRequiredValue(String key) {
+        return JsonAccessHelper.getRequiredValue(this, key, getValue(key));
+    }
+
+    @Override
     public final String getString(String key) {
         return JsonAccessHelper.asString(getValue(key));
     }

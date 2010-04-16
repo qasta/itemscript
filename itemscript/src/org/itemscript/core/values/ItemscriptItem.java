@@ -30,7 +30,9 @@
 package org.itemscript.core.values;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.itemscript.core.ItemscriptSystem;
 import org.itemscript.core.JsonSystem;
@@ -232,13 +234,19 @@ public final class ItemscriptItem implements JsonItem {
      * @param fragment The fragment of the value that has been put; "#" if we put a new value for this item.
      */
     public void notifyPut(String fragment) {
-        if (handlers != null) {
+        if (handlers != null && handlers.size() > 0) {
             dispatchEvent(new Event(EventType.PUT, fragment, value()));
         }
     }
 
     private void dispatchEvent(Event event) {
+        // Must copy this first to prevent concurrent modification problems if an event handler adds a new event handler to this
+        // item.
+        Set<Handler> handlersSet = new HashSet<Handler>();
         for (Handler handler : handlers.values()) {
+            handlersSet.add(handler);
+        }
+        for (Handler handler : handlersSet) {
             handler.handle(event);
         }
     }
@@ -249,7 +257,7 @@ public final class ItemscriptItem implements JsonItem {
      * @param fragment The fragment of the value that has been removed; "#" if we are removing this item.
      */
     public void notifyRemove(String fragment) {
-        if (handlers != null) {
+        if (handlers != null && handlers.size() > 0) {
             dispatchEvent(new Event(EventType.REMOVE, fragment, value()));
         }
     }

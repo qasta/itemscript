@@ -305,16 +305,24 @@ public interface JsonArray extends JsonContainer, List<JsonValue> {
      * Get a JsonArray from this JsonArray. If the value does not exist, or is not a JsonArray, throws an exception.
      * 
      * @param index The index of the value.
-     * @return The JsonArray under that key.
+     * @return The JsonArray under that index.
      */
     public JsonArray getRequiredArray(int index);
+
+    /**
+     * Get a value from this JsonArray. If the value does not exist, throws an exception.
+     * 
+     * @param index The index of the value.
+     * @return The value under that index.
+     */
+    public JsonValue getRequiredValue(int index);
 
     /**
      * Get a binary value from this JsonArray as a byte[]. If the value does not exist, or is not a JsonString,
      * or is a JsonString but cannot be parsed as a base64 value, throws an exception.
      * 
      * @param index The index of the value.
-     * @return The binary value of the JsonString under that key.
+     * @return The binary value of the JsonString under that index.
      */
     public byte[] getRequiredBinary(int index);
 
@@ -322,7 +330,7 @@ public interface JsonArray extends JsonContainer, List<JsonValue> {
      * Get a Boolean from this JsonArray. If the value does not exist, or is not a JsonBoolean, throws an exception.
      * 
      * @param index The index of the value.
-     * @return The Boolean value of the JsonBoolean under that key. 
+     * @return The Boolean value of the JsonBoolean under that index. 
      */
     public Boolean getRequiredBoolean(int index);
 
@@ -330,7 +338,7 @@ public interface JsonArray extends JsonContainer, List<JsonValue> {
      * Get a Double from this JsonArray. If the value does not exist, or is not a JsonNumber, throws an exception.
      * 
      * @param index The index of the value.
-     * @return The Double value of the JsonNumber under that key.
+     * @return The Double value of the JsonNumber under that index.
      */
     public Double getRequiredDouble(int index);
 
@@ -338,7 +346,7 @@ public interface JsonArray extends JsonContainer, List<JsonValue> {
      * Get a Float from this JsonArray. If the value does not exist, or is not a JsonNumber, throws an exception.
      * 
      * @param index The index of the value.
-     * @return The Float value of the JsonNumber under that key.
+     * @return The Float value of the JsonNumber under that index.
      */
     public Float getRequiredFloat(int index);
 
@@ -346,7 +354,7 @@ public interface JsonArray extends JsonContainer, List<JsonValue> {
      * Get an Integer from this JsonArray. If the value does not exist, or is not a JsonNumber, throws an exception.
      * 
      * @param index The index of the value.
-     * @return The Integer value of the JsonNumber under that key.
+     * @return The Integer value of the JsonNumber under that index.
      */
     public Integer getRequiredInt(int index);
 
@@ -355,7 +363,7 @@ public interface JsonArray extends JsonContainer, List<JsonValue> {
      * If the value is a JsonString, but it cannot be converted to a Long value, throws an exception.
      * 
      * @param index The index of the value.
-     * @return The Long value of the JsonString under that key.
+     * @return The Long value of the JsonString under that index.
      */
     public Long getRequiredLong(int index);
 
@@ -363,7 +371,7 @@ public interface JsonArray extends JsonContainer, List<JsonValue> {
      * Get a JsonObject from this JsonArray. If the value does not exist, or is not a JsonObject, throws an exception.
      * 
      * @param index The index of the value.
-     * @return The JsonObject value under that key.
+     * @return The JsonObject value under that index.
      */
     public JsonObject getRequiredObject(int index);
 
@@ -371,7 +379,7 @@ public interface JsonArray extends JsonContainer, List<JsonValue> {
      * Get a string from this JsonArray. If the value does not exist, or is not a JsonString, throws an exception.
      * 
      * @param index The index of the value..
-     * @return The String value of the JsonString under that key.
+     * @return The String value of the JsonString under that index.
      */
     public String getRequiredString(int index);
 

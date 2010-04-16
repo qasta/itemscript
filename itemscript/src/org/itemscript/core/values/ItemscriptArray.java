@@ -84,6 +84,11 @@ final class ItemscriptArray extends ItemscriptContainer implements JsonArray {
     }
 
     @Override
+    public final JsonValue getRequiredValue(int index) {
+        return JsonAccessHelper.getRequiredValue(this, index + "", get(index));
+    }
+
+    @Override
     public JsonArray a(Boolean value) {
         add(value);
         return this;
