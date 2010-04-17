@@ -38,7 +38,7 @@ Missing field: {d}
 {.end}
 
 Foreach:
-{.foreach :array}Entry: {}{.join} - {.end}
+{.foreach :array}Entry: {:}{.join} - {.end}
 
 {# Note the .join section.}
 {# Note also the empty field used when the values in the array are not themselves container objects.}
