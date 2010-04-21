@@ -51,6 +51,11 @@ final class GwtJsonParser {
         return func ? func(system,v) : @org.itemscript.core.gwt.GwtJsonParser::throwUnknownTypeException(Ljava/lang/String;)(typeof v);
     }-*/;
 
+    static native JsonValue convertObject(JsonSystem system, JavaScriptObject v) /*-{
+        var func = @org.itemscript.core.gwt.GwtJsonParser::typeMap[typeof v];
+        return func ? func(system,v) : @org.itemscript.core.gwt.GwtJsonParser::throwUnknownTypeException(Ljava/lang/String;)(typeof v);
+    }-*/;
+    
     private static JsonValue createArray(JsonSystem system) {
         return system.createArray();
     }

@@ -71,6 +71,7 @@ class Interpreter implements HasSystem {
         functions.putNative("left", new LeftBraceFunction(system()));
         functions.putNative("right", new RightBraceFunction(system()));
         functions.putNative("uuid", new UuidFunction(system()));
+        functions.putNative("prettyHtml", new PrettyHtmlFunction(system()));
     }
 
     public static String coerceToString(JsonValue value) {

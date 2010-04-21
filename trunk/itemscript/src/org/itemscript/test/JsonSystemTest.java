@@ -337,13 +337,13 @@ public class JsonSystemTest extends ItemscriptTestBase {
         JsonArray array = system().get("/?pagedItems")
                 .asArray();
         assertEquals(4, array.size());
-        assertEquals("x", array.getArray(0)
-                .getString(1));
-        assertEquals("y", array.getArray(1)
-                .getString(1));
-        assertEquals("z", array.getArray(3)
-                .getString(1));
-        JsonString key = system().get("/?pagedItems#0/0")
+        assertEquals("x", array.getObject(0)
+                .getString("value"));
+        assertEquals("y", array.getObject(1)
+                .getString("value"));
+        assertEquals("z", array.getObject(3)
+                .getString("value"));
+        JsonString key = system().get("/?pagedItems#0/key")
                 .asString();
         assertEquals("mem:/?pagedItems", key.item()
                 .source() + "");
@@ -351,13 +351,13 @@ public class JsonSystemTest extends ItemscriptTestBase {
         JsonArray array2 = system().get("?pagedItems&numRows=1")
                 .asArray();
         assertEquals(1, array2.size());
-        assertEquals("x", array2.getArray(0)
-                .getString(1));
+        assertEquals("x", array2.getObject(0)
+                .getString("value"));
         JsonArray array3 = system().get("?pagedItems&numRows=1&startRow=1")
                 .asArray();
         assertEquals(1, array3.size());
-        assertEquals("y", array3.getArray(0)
-                .getString(1));
+        assertEquals("y", array3.getObject(0)
+                .getString("value"));
     }
 
     @Test
@@ -525,25 +525,25 @@ public class JsonSystemTest extends ItemscriptTestBase {
         system().put("/Sort/?b64id", o3);
         JsonArray array = system().getArray("/Sort/?pagedItems&numRows=3&orderBy=x");
         assertEquals(3, array.size());
-        assertEquals("a", array.getArray(0)
-                .getObject(1)
+        assertEquals("a", array.getObject(0)
+                .getObject("value")
                 .getString("x"));
-        assertEquals("b", array.getArray(1)
-                .getObject(1)
+        assertEquals("b", array.getObject(1)
+                .getObject("value")
                 .getString("x"));
-        assertEquals("c", array.getArray(2)
-                .getObject(1)
+        assertEquals("c", array.getObject(2)
+                .getObject("value")
                 .getString("x"));
         JsonArray array2 = system().getArray("/Sort/?pagedItems&numRows=3&orderBy=x&ascending=false");
         assertEquals(3, array2.size());
-        assertEquals("c", array2.getArray(0)
-                .getObject(1)
+        assertEquals("c", array2.getObject(0)
+                .getObject("value")
                 .getString("x"));
-        assertEquals("b", array2.getArray(1)
-                .getObject(1)
+        assertEquals("b", array2.getObject(1)
+                .getObject("value")
                 .getString("x"));
-        assertEquals("a", array2.getArray(2)
-                .getObject(1)
+        assertEquals("a", array2.getObject(2)
+                .getObject("value")
                 .getString("x"));
     }
 

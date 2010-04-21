@@ -108,26 +108,27 @@ public interface SyncBrowseConnector extends Connector {
     /**
      * Called when the query contains the "pagedItems" key.
      * 
-     * It must return a JsonArray in which each element is a JsonArray with two entries: the first
-     * entry must be a JsonString giving the key of the sub-item, and the second entry must be the
-     * actual value associated with that sub-item.
+     * It must return a JsonArray in which each element is a JsonObject with two entries: under "key"
+     * will be the key of the sub-item; under "value" is the actual JsonValue of the sub-item.
+     * 
+     * It may also return a JsonObject under "meta" containing metadata about each sub-item.
      * 
      * For instance:
      * 
      * <pre>
      * [
-     *     [
-     *         "one",
-     *         {
+     *     {
+     *         "key" : "one",
+     *         "value" : {
      *             "actual":"value"
      *         }
-     *     ],
-     *     [
-     *         "two",
-     *         {
+     *     },
+     *     {
+     *         "key" : "two",
+     *         "value" : {
      *             "another":"value"
      *         }
-     *     ]
+     *     }
      * ]
      * </pre>
      * 

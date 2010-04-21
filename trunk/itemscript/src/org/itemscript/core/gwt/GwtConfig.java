@@ -50,5 +50,6 @@ public class GwtConfig extends MinimalGwtConfig implements JsonConfig {
         system.putNative(ITEMSCRIPT_CONNECTORS_PREFIX + "file", jsonHttpConnector);
         system.putNative(ITEMSCRIPT_CONNECTORS_PREFIX + "cookie", new GwtCookieConnector(system));
         system.putNative(ITEMSCRIPT_CONNECTORS_PREFIX + "javascript", new GwtJavaScriptConnector(system));
+        system.putNative(ITEMSCRIPT_CONNECTORS_PREFIX + "jsonp", new JsonpConnector(system));
     }
 }
