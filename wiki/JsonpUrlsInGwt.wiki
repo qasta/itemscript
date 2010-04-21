@@ -9,7 +9,7 @@ JSONP ("JSON with padding") refers to the use of HTML `<SCRIPT>` tags to get aro
 
 JSONP is inherently only able to make GET requests, and is asychronous, so the JsonpConnector is an AsyncGetConnector.
 
-JSONP implementations vary somewhat; generally they require you to supply a callback name in a query-string parameter supplied in the URL; they may also allow you to supply a second callback name to be called in the event of an error. For multiple requests to be made at the same time, the callback name should be a uniquely-generated name, and to avoid memory leaks the <SCRIPT> tag needs to be cleaned up after the response has completed. GWT's JSONP module manages those things for us. All we need to do is supply the callback name.
+JSONP implementations vary somewhat; generally they require you to supply a callback name in a query-string parameter supplied in the URL; they may also allow you to supply a second callback name to be called in the event of an error. For multiple requests to be made at the same time, the callback name should be a uniquely-generated name, and to avoid memory leaks the `<SCRIPT>` tag needs to be cleaned up after the response has completed. GWT's JSONP module manages those things for us. All we need to do is supply the callback name.
 
 We define a URL scheme for JSONP URLs so that they can be separately dispatched by the Itemscript library.
 
