@@ -1,5 +1,6 @@
 <module>
 	<source path="core" />
 	<inherits name="com.google.gwt.user.User" />
+	<inherits name="com.google.gwt.jsonp.Jsonp" />
 	<entry-point class="org.itemscript.core.gwt.GwtSystem" />
 </module>

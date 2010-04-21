@@ -250,9 +250,9 @@ public final class MemConnector extends ConnectorBase
         JsonArray pagedItems = system().createArray();
         for (int i = beginIndex; i <= endIndex; ++i) {
             String key = keyArray[i];
-            pagedItems.add(system().createArray()
-                    .a(key)
-                    .a(node.get(key)
+            pagedItems.add(system().createObject()
+                    .p("key", key)
+                    .p("value", node.get(key)
                             .item()
                             .value()
                             .copy()));
