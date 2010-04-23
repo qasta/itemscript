@@ -206,7 +206,7 @@ Tags whose first token starts with a dot `.` are treated as directives and inter
 
 A token whose first character is `:` is treated as a field reference. The portion after the `:` is treated as the field name in the surrounding context. If the portion after the `:` is empty, the entire context is returned.
 
-Field names are URL-decoded before being used, so you should URL-encode any special character you need to - in particular, `{`, `}`, and spaces need to be URL-encoded. `{` and `}` are not always encoded by URI-encoding routines, so `Template` provides static methods to additionally encode those characters for use in tags. There is currently no quoting syntax so encoding is the only way to include special characters in field names, string literals, and so on.
+Field names are URL-decoded before being used, so you should URL-encode any special character you need to. There is currently no quoting syntax so encoding is the only way to include special characters in field names, string literals, and so on.
 
 For instance, `{:name}`
 
