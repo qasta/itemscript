@@ -31,9 +31,9 @@ This is a value URL-encoded: {containsUrlChars url}
 
 Section:
 {.section :object}
-A: {a}
-B: {b}
-C: {c}
+A: {:a}
+B: {:b}
+C: {:c}
 Missing field: {d}
 {.end}
 
