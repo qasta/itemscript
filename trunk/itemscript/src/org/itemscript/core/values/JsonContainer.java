@@ -65,6 +65,17 @@ public interface JsonContainer extends JsonValue, JsonGetAccess {
     public JsonObject createObject(String key);
 
     /**
+     * Get a value from this container using a path consisting of a series of URL-encoded keys separated by
+     * slashes. If the path is empty, return this container.
+     * 
+     * @param path The path to the value.
+     * @return The value under that path, or null if the value cannot be found.
+     * @throws ItemscriptError If a value that needed to be a container to interpret the path was a scalar value, or
+     * if a string key needs to be applied to an array container.
+     */
+    public JsonValue getByPath(String path);
+
+    /**
      * Get a JsonArray from this container, creating it if the value did not exist.
      * 
      * If the value already existed but

@@ -63,7 +63,7 @@ function testGetAfterCopy() {
     window.alert("get url: mem:/cat value: " + JSON.stringify(itemscript.get("mem:/cat")));
 }
 function testTemplate() {
-    var text = "a {test-string} c";
+    var text = "a {:test-string} c";
     var context = {
         "test-string" : "value",
         "test-int" : 1,
@@ -80,7 +80,7 @@ function testTemplate() {
         ]
     };
     itemscript.put("mem:/GwtExample/context", context);
-    window.alert("template result: " + itemscript.template.interpret(text, "mem:/GwtExample/context"));
+    window.alert("template result: " + itemscript.template.interpret(text, itemscript.get("mem:/GwtExample/context")));
 }
 function testLoadAndInterpret() {
     itemscript.template.getAndInterpret("template.txt", "templateContext.json", {

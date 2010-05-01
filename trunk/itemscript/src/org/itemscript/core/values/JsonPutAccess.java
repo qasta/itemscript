@@ -45,20 +45,20 @@ import org.itemscript.core.JsonSystem;
  */
 public interface JsonPutAccess {
     /**
-     * Create a new JsonObject at the given URL.
-     * 
-     * @param url The URL to create at.
-     * @return The PutResponse returned by the put operation.
-     */
-    public PutResponse createObject(String url);
-
-    /**
      * Create a new JsonArray at the given URL.
      * 
      * @param url The URL to create at.
      * @return The PutResponse returned by the put operation.
      */
     public PutResponse createArray(String url);
+
+    /**
+     * Create a new JsonObject at the given URL.
+     * 
+     * @param url The URL to create at.
+     * @return The PutResponse returned by the put operation.
+     */
+    public PutResponse createObject(String url);
 
     /**
      * Put a boolean value as a JsonBoolean.

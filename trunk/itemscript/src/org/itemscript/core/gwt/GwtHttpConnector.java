@@ -103,7 +103,8 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
                 if (contentType == null) {
                     contentType = "text/html";
                 }
-                if ((url.scheme().equals("file") && statusCode.equals("0")) || statusCode.startsWith("2")) {
+                if ((url.scheme()
+                        .equals("file") && statusCode.equals("0")) || statusCode.startsWith("2")) {
                     // If it looks like JSON, parse it as JSON.
                     JsonValue value;
                     if (StaticJsonUtil.looksLikeJson(url, contentType)) {

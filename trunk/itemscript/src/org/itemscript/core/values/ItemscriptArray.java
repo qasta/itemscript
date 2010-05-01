@@ -70,25 +70,6 @@ final class ItemscriptArray extends ItemscriptContainer implements JsonArray {
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (other instanceof JsonArray) {
-            JsonArray otherArray = (JsonArray) other;
-            if (otherArray.size() == size()) {
-                for (int i = 0; i < size(); ++i) {
-                    if (!get(i).equals(otherArray.get(i))) { return false; }
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public final JsonValue getRequiredValue(int index) {
-        return JsonAccessHelper.getRequiredValue(this, index + "", get(index));
-    }
-
-    @Override
     public JsonArray a(Boolean value) {
         add(value);
         return this;
@@ -293,6 +274,20 @@ final class ItemscriptArray extends ItemscriptContainer implements JsonArray {
     }
 
     @Override
+    public boolean equals(Object other) {
+        if (other instanceof JsonArray) {
+            JsonArray otherArray = (JsonArray) other;
+            if (otherArray.size() == size()) {
+                for (int i = 0; i < size(); ++i) {
+                    if (!get(i).equals(otherArray.get(i))) { return false; }
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public JsonValue get(int index) {
         return values.get(index);
     }
@@ -342,8 +337,8 @@ final class ItemscriptArray extends ItemscriptContainer implements JsonArray {
         if (index < size()) {
             JsonArray array = getArray(index);
             if (array == null) { throw ItemscriptError.internalError(this,
-                    "getOrCreateArray.value.existed.but.was.not.an.array", JsonAccessHelper.keyValueParams(index
-                            + "", get(index))); }
+                    "getOrCreateArray.value.existed.but.was.not.an.array", JsonAccessHelper.keyValueParams(this,
+                            index + "", get(index))); }
             return array;
         } else {
             return createArray(index);
@@ -355,8 +350,8 @@ final class ItemscriptArray extends ItemscriptContainer implements JsonArray {
         if (index < size()) {
             JsonObject object = getObject(index);
             if (object == null) { throw ItemscriptError.internalError(this,
-                    "getOrCreateObject.value.existed.but.was.not.an.object", JsonAccessHelper.keyValueParams(index
-                            + "", get(index))); }
+                    "getOrCreateObject.value.existed.but.was.not.an.object", JsonAccessHelper.keyValueParams(this,
+                            index + "", get(index))); }
             return object;
         } else {
             return createObject(index);
@@ -406,6 +401,11 @@ final class ItemscriptArray extends ItemscriptContainer implements JsonArray {
     @Override
     public final String getRequiredString(int index) {
         return JsonAccessHelper.getRequiredString(this, index, get(index));
+    }
+
+    @Override
+    public final JsonValue getRequiredValue(int index) {
+        return JsonAccessHelper.getRequiredValue(this, index + "", get(index));
     }
 
     @Override

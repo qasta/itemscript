@@ -225,6 +225,11 @@ public class OverlayObject implements JsonObject {
     }
 
     @Override
+    public JsonValue getByPath(String path) {
+        return JsonAccessHelper.getByPath(this, path);
+    }
+
+    @Override
     public final Double getDouble(String key) {
         return JsonAccessHelper.asDouble(getValue(key));
     }
@@ -275,11 +280,6 @@ public class OverlayObject implements JsonObject {
     }
 
     @Override
-    public final JsonValue getRequiredValue(String key) {
-        return JsonAccessHelper.getRequiredValue(this, key, getValue(key));
-    }
-
-    @Override
     public final Boolean getRequiredBoolean(String key) {
         return JsonAccessHelper.getRequiredBoolean(this, key, getValue(key));
     }
@@ -312,6 +312,11 @@ public class OverlayObject implements JsonObject {
     @Override
     public final String getRequiredString(String key) {
         return JsonAccessHelper.getRequiredString(this, key, getValue(key));
+    }
+
+    @Override
+    public final JsonValue getRequiredValue(String key) {
+        return JsonAccessHelper.getRequiredValue(this, key, getValue(key));
     }
 
     @Override

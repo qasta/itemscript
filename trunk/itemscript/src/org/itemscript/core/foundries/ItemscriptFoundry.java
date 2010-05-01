@@ -73,9 +73,12 @@ public class ItemscriptFoundry<T> implements HasSystem, JsonFoundry<T> {
     private void checkName(String name) {
         if (name == null || name.length() == 0) { throw ItemscriptError.internalError(this,
                 "checkName.empty.name.in.put"); }
-        if (factories.containsKey(name)) {
-            throw ItemscriptError.internalError(this, "checkName.name.already.in.use", name);
-        }
+        if (factories.containsKey(name)) { throw ItemscriptError.internalError(this,
+                "checkName.name.already.in.use", name); }
+    }
+
+    private T create(JsonObject paramsObject) {
+        return create(getName(paramsObject), paramsObject);
     }
 
     @Override
@@ -94,8 +97,14 @@ public class ItemscriptFoundry<T> implements HasSystem, JsonFoundry<T> {
                 params.toCompactJsonString());
     }
 
-    private T create(JsonObject paramsObject) {
-        return create(getName(paramsObject), paramsObject);
+    @Override
+    public final T create(String name) {
+        return create(name, system().createObject());
+    }
+
+    @Override
+    public final T create(String name, JsonObject params) {
+        return createFromFactories(factories, name, params);
     }
 
     /**
@@ -106,24 +115,6 @@ public class ItemscriptFoundry<T> implements HasSystem, JsonFoundry<T> {
      */
     public JsonObject createFromArray(JsonArray array) {
         return null;
-    }
-
-    private String getName(JsonObject p) {
-        String name = p.getString(nameKey);
-        if (name == null) {
-            name = findMissingName(p);
-        }
-        return name;
-    }
-
-    @Override
-    public final T create(String name) {
-        return create(name, system().createObject());
-    }
-
-    @Override
-    public final T create(String name, JsonObject params) {
-        return createFromFactories(factories, name, params);
     }
 
     public final T createFromFactories(JsonObject factories, JsonObject params) {
@@ -162,6 +153,14 @@ public class ItemscriptFoundry<T> implements HasSystem, JsonFoundry<T> {
 
     public String findMissingName(JsonObject params) {
         return null;
+    }
+
+    private String getName(JsonObject p) {
+        String name = p.getString(nameKey);
+        if (name == null) {
+            name = findMissingName(p);
+        }
+        return name;
     }
 
     @Override

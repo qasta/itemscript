@@ -10,6 +10,7 @@ final class BinaryType extends TypeBase {
         super(schema, extendsType, def);
     }
 
+    @Override
     public boolean isBinary() {
         return true;
     }

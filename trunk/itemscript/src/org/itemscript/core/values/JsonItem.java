@@ -58,14 +58,6 @@ public interface JsonItem extends HasSystem, JsonGetAccess, JsonPutAccess {
     public HandlerReg addHandler(Handler handler);
 
     /**
-     * Remove an event handler from this item. Use this to clean up event handlers when the object they point
-     * to needs to be garbage-collected; otherwise, they will leak memory.
-     * 
-     * @param reg The original HandlerReg that was returned from addHandler.
-     */
-    public void removeHandler(HandlerReg reg);
-
-    /**
      * Get a value from (or relative to) this item by URL.
      * 
      * If the URL is a fragment only (starting with "#"), the fragment will be used to retrieve a value from
@@ -147,6 +139,14 @@ public interface JsonItem extends HasSystem, JsonGetAccess, JsonPutAccess {
      * @param callback The callback to call when the remove operation completes.
      */
     public void remove(String url, RemoveCallback callback);
+
+    /**
+     * Remove an event handler from this item. Use this to clean up event handlers when the object they point
+     * to needs to be garbage-collected; otherwise, they will leak memory.
+     * 
+     * @param reg The original HandlerReg that was returned from addHandler.
+     */
+    public void removeHandler(HandlerReg reg);
 
     /**
      * Get the source URL of this item.

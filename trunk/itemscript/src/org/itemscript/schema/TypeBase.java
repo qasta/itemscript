@@ -53,23 +53,6 @@ abstract class TypeBase implements Type, HasSystem {
     }
 
     @Override
-    public void validate(String path, JsonValue value) {
-        if (!isBaseAnyType) {
-            extendsType.validate(path, value);
-        }
-    }
-
-    @Override
-    public Schema schema() {
-        return schema;
-    }
-
-    @Override
-    public JsonSystem system() {
-        return system;
-    }
-
-    @Override
     public boolean isArray() {
         return false;
     }
@@ -107,5 +90,22 @@ abstract class TypeBase implements Type, HasSystem {
     @Override
     public boolean isString() {
         return false;
+    }
+
+    @Override
+    public Schema schema() {
+        return schema;
+    }
+
+    @Override
+    public JsonSystem system() {
+        return system;
+    }
+
+    @Override
+    public void validate(String path, JsonValue value) {
+        if (!isBaseAnyType) {
+            extendsType.validate(path, value);
+        }
     }
 }

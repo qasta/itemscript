@@ -75,13 +75,6 @@ public final class ItemscriptItem implements JsonItem {
     }
 
     @Override
-    public void removeHandler(HandlerReg reg) {
-        if (handlers != null) {
-            handlers.remove(reg.id());
-        }
-    }
-
-    @Override
     public HandlerReg addHandler(Handler handler) {
         if (handlers == null) {
             handlers = new HashMap<String, Handler>();
@@ -90,6 +83,16 @@ public final class ItemscriptItem implements JsonItem {
                 .generateB64id();
         handlers.put(id, handler);
         return new HandlerReg(this, id);
+    }
+
+    @Override
+    public PutResponse createArray(String url) {
+        return put(url, system().createArray());
+    }
+
+    @Override
+    public PutResponse createObject(String url) {
+        return put(url, system().createObject());
     }
 
     @Override
@@ -110,6 +113,18 @@ public final class ItemscriptItem implements JsonItem {
         this.handlers = null;
     }
 
+    private void dispatchEvent(Event event) {
+        // Must copy this first to prevent concurrent modification problems if an event handler adds a new event handler to this
+        // item.
+        Set<Handler> handlersSet = new HashSet<Handler>();
+        for (Handler handler : handlers.values()) {
+            handlersSet.add(handler);
+        }
+        for (Handler handler : handlersSet) {
+            handler.handle(event);
+        }
+    }
+
     @Override
     public JsonValue get(String url) {
         return get(system().util()
@@ -124,9 +139,9 @@ public final class ItemscriptItem implements JsonItem {
 
     JsonValue get(Url url) {
         if (isFragmentOnly(url)) {
-            Fragment fragment = url.fragment();
-            if (fragment.size() == 0) { return value; }
-            return ((ItemscriptContainer) value).getByFragment(fragment);
+            if (url.fragmentString()
+                    .length() == 0) { return value; }
+            return ((ItemscriptContainer) value).getByPath(url.fragmentString());
         } else {
             return ((ItemscriptSystem) system).get(system().util()
                     .createRelativeUrl(source, url));
@@ -236,18 +251,6 @@ public final class ItemscriptItem implements JsonItem {
     public void notifyPut(String fragment) {
         if (handlers != null && handlers.size() > 0) {
             dispatchEvent(new Event(EventType.PUT, fragment, value()));
-        }
-    }
-
-    private void dispatchEvent(Event event) {
-        // Must copy this first to prevent concurrent modification problems if an event handler adds a new event handler to this
-        // item.
-        Set<Handler> handlersSet = new HashSet<Handler>();
-        for (Handler handler : handlers.values()) {
-            handlersSet.add(handler);
-        }
-        for (Handler handler : handlersSet) {
-            handler.handle(event);
         }
     }
 
@@ -434,6 +437,13 @@ public final class ItemscriptItem implements JsonItem {
     }
 
     @Override
+    public void removeHandler(HandlerReg reg) {
+        if (handlers != null) {
+            handlers.remove(reg.id());
+        }
+    }
+
+    @Override
     public RemoveResponse removeValue(String url) {
         remove(url);
         return new ItemscriptRemoveResponse(null);
@@ -457,15 +467,5 @@ public final class ItemscriptItem implements JsonItem {
     @Override
     public JsonValue value() {
         return value;
-    }
-
-    @Override
-    public PutResponse createArray(String url) {
-        return put(url, system().createArray());
-    }
-
-    @Override
-    public PutResponse createObject(String url) {
-        return put(url, system().createObject());
     }
 }

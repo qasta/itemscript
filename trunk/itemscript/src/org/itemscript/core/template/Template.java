@@ -29,162 +29,130 @@
 
 package org.itemscript.core.template;
 
-import java.util.List;
-
 import org.itemscript.core.HasSystem;
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.exceptions.ItemscriptError;
-import org.itemscript.core.url.Url;
-import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonValue;
 
 /**
- * A template that can be used to produce text output from a JSON value.
+ * A compiled template that can produce either text or a JSON value.
+ * <p>
+ * NOTE: At present all Template interfaces are still experimental and subject to change.
  * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
-public class Template implements HasSystem {
-    private final JsonSystem system;
-    private final List<Token> tokens;
-    private final List<Element> elements;
+public class Template implements HasSystem, Element {
+    public static final char COMMA_CHAR = ',';
     public static final char OPEN_TAG_CHAR = '{';
     public static final char CLOSE_TAG_CHAR = '}';
+    public static final char OPEN_ARG_CHAR = '(';
+    public static final char CLOSE_ARG_CHAR = ')';
+    public static final char QUOTE_CHAR = '\'';
     public static final char COMMENT_CHAR = '#';
     public static final char LOAD_CHAR = '@';
     public static final char FIELD_CHAR = ':';
     public static final char LITERAL_CHAR = '&';
     public static final char FUNCTION_CHAR = '!';
     public static final char DIRECTIVE_CHAR = '.';
-    public static final String END_DIRECTIVE = "end";
-    public static final String IF_DIRECTIVE = "if";
-    public static final String ELSE_DIRECTIVE = "else";
-    public static final String FOREACH_DIRECTIVE = "foreach";
-    public static final String JOIN_DIRECTIVE = "join";
-    public static final String SECTION_DIRECTIVE = "section";
-    public static final String OR_DIRECTIVE = "or";
-    public static final String URL_PARAM = "url";
-    public static final String HTML_PARAM = "html";
-    public static final Object URI_PARAM = "uri";
 
-    /**
-     * Take a string and percent-encode the characters <code>{</code>
-     * and <code>}</code> so it can safely be included in a template tag. You should only use this if
-     * you know that the string is already URL-encoded or otherwise safe for use in a tag. 
-     *<p>
-     * If what you need to encode is a raw String, use {@link #escapeForTag}
-     * 
-     * @param uri The string to encode.
-     * @return The string with braces encoded.
-     */
-    public static String encodeBraces(String uri) {
-        return uri.replaceAll(OPEN_TAG_CHAR + "", "%7B")
-                .replaceAll(CLOSE_TAG_CHAR + "", "%7D");
-    }
-
-    /**
-     * Take a raw string and encode it for use in a template tag.
-     * 
-     * @param string The string to encode.
-     * @return The encoded string.
-     */
-    public static String encodeForTag(String string) {
-        return encodeBraces(Url.encode(string));
-    }
-
-    /**F
-     * Create a new Template from the value at the given URL. The value must resolve to a JsonString or JsonArray of JsonStrings.
-     * 
-     * @param system The associated JsonSystem.
-     * @param textUrl The URL to load the template text from.
-     * @return A new Template.
-     */
-    public static Template getTemplate(JsonSystem system, String textUrl) {
-        return new Template(system, system.getString(textUrl));
-    }
-
-    /**
-     * Interpret the given text as a template with the given context and return the result.
-     * <p>
-     * If you're going to use the same template more than once, it's better to create a Template
-     * object and save it, to avoid having to re-parse the template text.
-     * 
-     * @param system The associated JsonSystem.
-     * @param text The template text.
-     * @param context The context to interpret the text in.
-     * @return The result of interpreting the template.
-     */
-    public static String interpret(JsonSystem system, String text, JsonValue context) {
-        return new Template(system, text).interpret(context);
-    }
-
-    private static String textFromJsonValue(JsonValue value) {
-        if (value.isString()) {
+    public static String coerceToString(JsonValue value) {
+        if (value == null || value.isNull()) {
+            return "";
+        } else if (value.isString()) {
             return value.stringValue();
-        } else if (value.isArray()) {
-            StringBuffer sb = new StringBuffer();
-            JsonArray array = value.asArray();
-            for (int i = 0; i < array.size(); ++i) {
-                JsonValue entry = array.get(i);
-                if (!entry.isString()) { throw new ItemscriptError(
-                        "error.itemscript.Template.textFromJsonValue.entry.was.not.string",
-                        entry.toCompactJsonString()); }
-                sb.append(entry.stringValue());
-                sb.append("\n");
-            }
-            return sb.toString();
+        } else if (value.isNumber()) {
+            return value.toJsonString();
+        } else if (value.isBoolean()) {
+            return value.toJsonString();
+        } else {
+            throw new ItemscriptError(
+                    "error.itemscript.Template.coerceToString.value.could.not.be.converted.to.a.string",
+                    value.toCompactJsonString());
         }
-        throw new ItemscriptError("error.itemscript.Template.textFromJsonValue.value.was.not.string.or.array",
-                value.toCompactJsonString());
     }
 
     /**
      * Create a new Template from the given JsonValue. If the value is a JsonString the string value will be used
-     * as the template. If the value is a JsonArray whose values are all JsonStrings, each will be treated as a line
-     * in the template. If the value is any other type, an error will be thrown.
+     * as a text template. If the value is a JsonArray whose values are all JsonStrings, each will be treated as a line
+     * in the template. If the value is a JsonObject, it will be treated as an object template. If it is a JsonNumber,
+     * JsonBoolean, or JsonNull, it will be treated as a literal value that the resulting template will return.
      * 
      * @param system The associated JsonSystem.
      * @param value The template value.
+     * @return The new Template
      */
-    public Template(JsonSystem system, JsonValue value) {
-        this(system, textFromJsonValue(value));
+    public static Template create(JsonSystem system, JsonValue value) {
+        return new Template(system, value);
     }
 
     /**
-     * Create a new Template from the given text. A compiled Template can be used repeatedly. 
+     * Create a new text Template from the given string.
      * 
      * @param system The associated JsonSystem.
      * @param text The template text.
+     * @return The new Template.
      */
-    public Template(JsonSystem system, String text) {
+    public static Template create(JsonSystem system, String text) {
+        return new Template(system, system.createString(text));
+    }
+
+    private final JsonSystem system;
+    private final Element element;
+
+    private Template(JsonSystem system, JsonValue value) {
         this.system = system;
-        this.tokens = new Scanner().scan(text);
-        this.elements = new Analyzer().analyze(tokens);
+        this.element = new Analyzer(system).analyze(value);
+    }
+
+    @Override
+    public JsonValue interpret(TemplateExec templateExec, JsonValue context) {
+        return element.interpret(templateExec, context);
     }
 
     /**
-     * Interpret this template using the given context.
+     * Interpret this template using the given context, returning the result as a TemplateResult. Use this when the
+     * value of a template may not be a string or when access is required to the side-effects of the template execution.
+     * <p>
+     * If all you need is a string result, use {@link #interpretToString(JsonValue)}. If all you need is the JsonValue
+     * result, use {@link #interpretToValue(JsonValue)}.
+     * 
+     * @param context The context to execute the template in.
+     * @return The result of executing the template.
+     */
+    public TemplateResult interpretToResult(JsonValue context) {
+        TemplateExec templateExec = new TemplateExec(system(), new Accumulator(system));
+        JsonValue value = interpret(templateExec, context);
+        return new TemplateResult(value, templateExec.accumulator()
+                .lists());
+    }
+
+    /**
+     * Interpret this template using the given context, returning the result as a string.
+     * 
+     * @param context The context to interpret the template in.
+     * @return The result of interpreting the template, as a string.
+     */
+    public String interpretToString(JsonValue context) {
+        return coerceToString(interpretToValue(context));
+    }
+
+    /**
+     * Interpret this template using the given context, returning the result as a JsonValue.
      * 
      * @param context The context to interpret the template in.
      * @return The result of interpreting the template.
      */
-    public String interpret(JsonValue context) {
-        return interpret(context, null);
-    }
-
-    /**
-     * Interpret this template using the given context and base URL.
-     * 
-     * @param context The context to interpret the template in.
-     * @param baseUrl The base URL to use while interpreting.
-     * @return The result of interpreting the template.
-     */
-    public String interpret(JsonValue context, String baseUrl) {
-        if (context == null) { throw ItemscriptError.internalError(this, "interpret.context.was.null"); }
-        return new Interpreter(system, baseUrl).interpret(elements, context);
+    public JsonValue interpretToValue(JsonValue context) {
+        return interpretToResult(context).value();
     }
 
     @Override
     public JsonSystem system() {
         return system;
+    }
+
+    @Override
+    public String toString() {
+        return "[Template element=" + element + "]";
     }
 }

@@ -94,6 +94,9 @@ public final class ItemscriptSystem implements JsonSystem {
         this.connectors = MemConnector.create(this);
         put(UrlFactory.SCHEME_PARSER_FACTORIES_PATH, util.urlFactory()
                 .schemeParserFactories());
+        // These are blank objects available for copying.
+        createObject("mem:/itemscript/object");
+        createArray("mem:/itemscript/array");
         config.seedSystem(this);
     }
 
@@ -108,13 +111,13 @@ public final class ItemscriptSystem implements JsonSystem {
     }
 
     @Override
-    public PutResponse copy(String fromUrl, String toUrl) {
-        return put(toUrl, get(fromUrl).copy());
+    public PutResponse copy(JsonValue value, String toUrl) {
+        return put(toUrl, parse(value.toCompactJsonString()));
     }
 
     @Override
-    public PutResponse copy(JsonValue value, String toUrl) {
-        return put(toUrl, parse(value.toCompactJsonString()));
+    public PutResponse copy(String fromUrl, String toUrl) {
+        return put(toUrl, get(fromUrl).copy());
     }
 
     @Override
@@ -137,6 +140,11 @@ public final class ItemscriptSystem implements JsonSystem {
     @Override
     public JsonArray createArray() {
         return factory.createArray();
+    }
+
+    @Override
+    public PutResponse createArray(String url) {
+        return put(url, system().createArray());
     }
 
     @Override
@@ -182,6 +190,11 @@ public final class ItemscriptSystem implements JsonSystem {
     @Override
     public JsonObject createObject() {
         return factory().createObject();
+    }
+
+    @Override
+    public PutResponse createObject(String url) {
+        return put(url, system().createObject());
     }
 
     private Url createRootRelativeUrl(Url url) {
@@ -563,16 +576,6 @@ public final class ItemscriptSystem implements JsonSystem {
     @Override
     public RemoveResponse removeValue(String url) {
         return remove(url);
-    }
-
-    @Override
-    public PutResponse createArray(String url) {
-        return put(url, system().createArray());
-    }
-
-    @Override
-    public PutResponse createObject(String url) {
-        return put(url, system().createObject());
     }
 
     @Override

@@ -29,23 +29,22 @@
 
 package org.itemscript.core.template;
 
+import org.itemscript.core.values.JsonValue;
+
 /**
+ * An element of a template that can be interpreted in a context, returning a JsonValue.
+ * All elements should be immutable - that is, containing only "final" fields and having no internal
+ * state that changes when {@link #interpret(TemplateExec, JsonValue)} is called.
+ * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
-abstract class Element {
-    public Segment asSegment() {
-        return null;
-    }
-
-    public Token asToken() {
-        return null;
-    }
-
-    public boolean isSegment() {
-        return false;
-    }
-
-    public boolean isToken() {
-        return false;
-    }
+public interface Element {
+    /**
+     * Interpret the element in the given context and return a value.
+     * 
+     * @param templateExec The template execution environment.
+     * @param context The context.
+     * @return A JsonValue. 
+     */
+    public JsonValue interpret(TemplateExec templateExec, JsonValue context);
 }

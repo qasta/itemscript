@@ -78,6 +78,10 @@ public class JsonSystemTest extends ItemscriptTestBase {
         }
     }
 
+    private static boolean nestedRemoveHandlerCalled1 = false;
+
+    private static boolean nestedRemoveHandlerCalled2 = false;
+
     private JsonArray createRandomArray(int maxDepth, int depth) {
         JsonArray array = system().createArray();
         if (depth < maxDepth) {
@@ -330,6 +334,77 @@ public class JsonSystemTest extends ItemscriptTestBase {
     }
 
     @Test
+    public void testNestedRemoveHandler() {
+        system().put("/a/b/c", "x");
+        JsonItem item = system().get("/a/b/c")
+                .item();
+        item.addHandler(new Handler() {
+            @Override
+            public void handle(Event event) {
+                if (event.eventType()
+                        .equals(EventType.REMOVE)) {
+                    if (event.fragment()
+                            .equals("#")) {
+                        nestedRemoveHandlerCalled1 = true;
+                    }
+                }
+            }
+        });
+        JsonItem item2 = system().get("/a/b")
+                .item();
+        item2.addHandler(new Handler() {
+            @Override
+            public void handle(Event event) {
+                if (event.eventType()
+                        .equals(EventType.REMOVE)) {
+                    if (event.fragment()
+                            .equals("#")) {
+                        nestedRemoveHandlerCalled2 = true;
+                    }
+                }
+            }
+        });
+        system().remove("/a");
+        assertTrue(nestedRemoveHandlerCalled1);
+        assertTrue(nestedRemoveHandlerCalled2);
+    }
+
+    @Test
+    public void testOrderBy() {
+        JsonObject o1 = system().createObject()
+                .p("x", "a");
+        JsonObject o2 = system().createObject()
+                .p("x", "b");
+        JsonObject o3 = system().createObject()
+                .p("x", "c");
+        system().put("/Sort/?b64id", o1);
+        system().put("/Sort/?b64id", o2);
+        system().put("/Sort/?b64id", o3);
+        JsonArray array = system().getArray("/Sort/?pagedItems&numRows=3&orderBy=x");
+        assertEquals(3, array.size());
+        assertEquals("a", array.getObject(0)
+                .getObject("value")
+                .getString("x"));
+        assertEquals("b", array.getObject(1)
+                .getObject("value")
+                .getString("x"));
+        assertEquals("c", array.getObject(2)
+                .getObject("value")
+                .getString("x"));
+        JsonArray array2 = system().getArray("/Sort/?pagedItems&numRows=3&orderBy=x&ascending=false");
+        assertEquals(3, array2.size());
+        assertEquals("c", array2.getObject(0)
+                .getObject("value")
+                .getString("x"));
+        assertEquals("b", array2.getObject(1)
+                .getObject("value")
+                .getString("x"));
+        assertEquals("a", array2.getObject(2)
+                .getObject("value")
+                .getString("x"));
+    }
+
+    @Test
     public void testPagedItems() {
         system().put("1", "x");
         system().put("2", "y");
@@ -486,7 +561,6 @@ public class JsonSystemTest extends ItemscriptTestBase {
     public void testRootItem() {
         assertTrue(system().get("mem:/") instanceof JsonNull);
     }
-
     @Test
     public void testUuidPut() {
         JsonValue value = system().put("/foo?uuid", "foo")
@@ -510,79 +584,5 @@ public class JsonSystemTest extends ItemscriptTestBase {
     @Test
     public void testValidate() {
         system().get("classpath:org/itemscript/test/validate.json");
-    }
-
-    @Test
-    public void testOrderBy() {
-        JsonObject o1 = system().createObject()
-                .p("x", "a");
-        JsonObject o2 = system().createObject()
-                .p("x", "b");
-        JsonObject o3 = system().createObject()
-                .p("x", "c");
-        system().put("/Sort/?b64id", o1);
-        system().put("/Sort/?b64id", o2);
-        system().put("/Sort/?b64id", o3);
-        JsonArray array = system().getArray("/Sort/?pagedItems&numRows=3&orderBy=x");
-        assertEquals(3, array.size());
-        assertEquals("a", array.getObject(0)
-                .getObject("value")
-                .getString("x"));
-        assertEquals("b", array.getObject(1)
-                .getObject("value")
-                .getString("x"));
-        assertEquals("c", array.getObject(2)
-                .getObject("value")
-                .getString("x"));
-        JsonArray array2 = system().getArray("/Sort/?pagedItems&numRows=3&orderBy=x&ascending=false");
-        assertEquals(3, array2.size());
-        assertEquals("c", array2.getObject(0)
-                .getObject("value")
-                .getString("x"));
-        assertEquals("b", array2.getObject(1)
-                .getObject("value")
-                .getString("x"));
-        assertEquals("a", array2.getObject(2)
-                .getObject("value")
-                .getString("x"));
-    }
-
-    private static boolean nestedRemoveHandlerCalled1 = false;
-    private static boolean nestedRemoveHandlerCalled2 = false;
-
-    @Test
-    public void testNestedRemoveHandler() {
-        system().put("/a/b/c", "x");
-        JsonItem item = system().get("/a/b/c")
-                .item();
-        item.addHandler(new Handler() {
-            @Override
-            public void handle(Event event) {
-                if (event.eventType()
-                        .equals(EventType.REMOVE)) {
-                    if (event.fragment()
-                            .equals("#")) {
-                        nestedRemoveHandlerCalled1 = true;
-                    }
-                }
-            }
-        });
-        JsonItem item2 = system().get("/a/b")
-                .item();
-        item2.addHandler(new Handler() {
-            @Override
-            public void handle(Event event) {
-                if (event.eventType()
-                        .equals(EventType.REMOVE)) {
-                    if (event.fragment()
-                            .equals("#")) {
-                        nestedRemoveHandlerCalled2 = true;
-                    }
-                }
-            }
-        });
-        system().remove("/a");
-        assertTrue(nestedRemoveHandlerCalled1);
-        assertTrue(nestedRemoveHandlerCalled2);
     }
 }

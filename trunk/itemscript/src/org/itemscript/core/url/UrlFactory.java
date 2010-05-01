@@ -92,6 +92,7 @@ public class UrlFactory implements HasSystem {
         }
         return finalUrl;
     }
+
     private static List<String> combinePaths(Url baseUrlObj, Url relativeUrlObj) {
         List<String> unreducedPath = new ArrayList<String>();
         if (relativeUrlObj.path()
@@ -124,6 +125,7 @@ public class UrlFactory implements HasSystem {
         }
         return unreducedPath;
     }
+
     private static String getSchemeHostnameAndPort(Url url) {
         if (url.scheme()
                 .equals("mem")) {
@@ -135,19 +137,17 @@ public class UrlFactory implements HasSystem {
                     + (url.hostname() != null ? url.hostname() + (url.port() != null ? ":" + url.port() : "") : "");
         }
     }
+
     private static boolean isSchemeChar(char c) {
         if (c == '+' || c == '.' || c == '-') { return true; }
         if (Character.isLetterOrDigit(c)) { return true; }
         return false;
     }
+
     private final JsonSystem system;
-
     private final static String UNKNOWN_SCHEME = "UNKNOWN SCHEME";
-
     private final static String NO_SCHEME = "NO SCHEME";
-
     public static final String SCHEME_PARSER_FACTORIES_PATH = "mem:/itemscript/schemeParserFactories";
-
     private final JsonObject schemeParserFactories;
 
     /**

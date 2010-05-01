@@ -26,6 +26,7 @@
  * 
  * Author: Jacob Davies
  */
+
 package org.itemscript.core.gwt;
 
 import java.util.Map;
@@ -42,13 +43,15 @@ import org.itemscript.core.values.JsonValue;
  */
 public abstract class MultipleGetCallback {
     /**
-     * Called when an individual response is successfully received. The default implementation does nothing.
+     * Called when all responsese have been received if any of them generated errors. The default implementation throws a new exception.
      * 
-     * @param responses The map of responses received so far.
-     * @param key The key for the response that just returned.
-     * @param value The value returned for this individual response.
+     * @param responses A map of the successful responses with the original keys from the request as keys and the responses as values. Responses that generated
+     * an error will be present with a Java null value.
+     * @param errors A map of the errors generated with the original keys from the request as keys and the errors as values.
      */
-    public void onIntermediateSuccess(Map<String, JsonValue> responses, String key, JsonValue value) {}
+    public void onError(Map<String, JsonValue> responses, Map<String, Throwable> errors) {
+        throw ItemscriptError.internalError(this, "onError", errors + "");
+    }
 
     /**
      * Called when an individual response generates an error. The default implementation does nothing.
@@ -62,20 +65,18 @@ public abstract class MultipleGetCallback {
             Throwable e) {}
 
     /**
+     * Called when an individual response is successfully received. The default implementation does nothing.
+     * 
+     * @param responses The map of responses received so far.
+     * @param key The key for the response that just returned.
+     * @param value The value returned for this individual response.
+     */
+    public void onIntermediateSuccess(Map<String, JsonValue> responses, String key, JsonValue value) {}
+
+    /**
      * Called when all responses have been received and all were successful.
      * 
      * @param responses A map with the original keys from the request as keys and the responses as values.
      */
     public abstract void onSuccess(Map<String, JsonValue> responses);
-
-    /**
-     * Called when all responsese have been received if any of them generated errors. The default implementation throws a new exception.
-     * 
-     * @param responses A map of the successful responses with the original keys from the request as keys and the responses as values. Responses that generated
-     * an error will be present with a Java null value.
-     * @param errors A map of the errors generated with the original keys from the request as keys and the errors as values.
-     */
-    public void onError(Map<String, JsonValue> responses, Map<String, Throwable> errors) {
-        throw ItemscriptError.internalError(this, "onError", errors + "");
-    }
 }

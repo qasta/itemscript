@@ -87,23 +87,6 @@ public final class GeneralUtil {
     }
 
     /**
-     * Take a String array and return a Map with an entry for each string in the original array,
-     * whose value will be an Object.
-     *  
-     * @param array The String array.
-     * @return A new Map.
-     */
-    public static Map<String, Object> stringArrayToMap(String[] array) {
-        if (array == null) { return null; }
-        Map<String, Object> map = new HashMap<String, Object>();
-        Object o = new Object();
-        for (int i = 0; i < array.length; ++i) {
-            map.put(array[i], o);
-        }
-        return map;
-    }
-
-    /**
      * Take a Map with String keys and return a String array containing the keys from the original map.
      *  
      * @param map The Map with String keys.
@@ -118,5 +101,22 @@ public final class GeneralUtil {
             ++i;
         }
         return keyList;
+    }
+
+    /**
+     * Take a String array and return a Map with an entry for each string in the original array,
+     * whose value will be an Object.
+     *  
+     * @param array The String array.
+     * @return A new Map.
+     */
+    public static Map<String, Object> stringArrayToMap(String[] array) {
+        if (array == null) { return null; }
+        Map<String, Object> map = new HashMap<String, Object>();
+        Object o = new Object();
+        for (int i = 0; i < array.length; ++i) {
+            map.put(array[i], o);
+        }
+        return map;
     }
 }
