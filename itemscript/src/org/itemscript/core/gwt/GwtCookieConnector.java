@@ -26,6 +26,7 @@
  * 
  * Author: Jacob Davies
  */
+
 package org.itemscript.core.gwt;
 
 import java.util.Date;

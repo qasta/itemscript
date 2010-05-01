@@ -51,26 +51,6 @@ public class JsonObjectTest extends ItemscriptTestBase {
     }
 
     @Test
-    public void testConstruction() {
-        JsonObject object = system().createObject();
-        assertNotNull(object);
-    }
-
-    @Test
-    public void testCycles() {
-        JsonObject a = system().createObject();
-        JsonObject b = system().createObject();
-        a.put("foo", b);
-        boolean errorThrown = false;
-        try {
-            b.put("bar", a);
-        } catch (ItemscriptError e) {
-            errorThrown = true;
-        }
-        assertTrue(errorThrown);
-    }
-
-    @Test
     public void testChangedKeys() {
         JsonObject a = system().createObject()
                 .p("a", "x")
@@ -103,6 +83,26 @@ public class JsonObjectTest extends ItemscriptTestBase {
         assertFalse(changedKeys.containsKey("f"));
         assertFalse(changedKeys.containsKey("g"));
         assertTrue(changedKeys.containsKey("h"));
+    }
+
+    @Test
+    public void testConstruction() {
+        JsonObject object = system().createObject();
+        assertNotNull(object);
+    }
+
+    @Test
+    public void testCycles() {
+        JsonObject a = system().createObject();
+        JsonObject b = system().createObject();
+        a.put("foo", b);
+        boolean errorThrown = false;
+        try {
+            b.put("bar", a);
+        } catch (ItemscriptError e) {
+            errorThrown = true;
+        }
+        assertTrue(errorThrown);
     }
 
     @Test

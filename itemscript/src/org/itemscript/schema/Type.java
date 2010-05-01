@@ -4,25 +4,25 @@ package org.itemscript.schema;
 import org.itemscript.core.values.JsonValue;
 
 public interface Type {
-    public void validate(String path, JsonValue value);
-
-    public Schema schema();
+    public String description();
 
     public boolean isArray();
 
-    public boolean isBoolean();
-
     public boolean isBinary();
+
+    public boolean isBoolean();
 
     public boolean isInteger();
 
-    public boolean isNumber();
+    public boolean isNull();
 
-    public boolean isString();
+    public boolean isNumber();
 
     public boolean isObject();
 
-    public String description();
+    public boolean isString();
 
-    public boolean isNull();
+    public Schema schema();
+
+    public void validate(String path, JsonValue value);
 }

@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.itemscript.core.JsonSystem;
+import org.itemscript.core.Params;
+import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.mappings.Mapper;
 import org.itemscript.core.mappings.Mapping;
 import org.itemscript.core.url.Url;
@@ -93,10 +95,64 @@ public final class StaticJsonUtil {
         });
     }
 
+    /**
+     * Compare two JsonObjects; returns a new JsonObject containing a key for each key in the original JsonObject that was
+     * not present in the updated JsonObject, or that was changed, and a key for each key in the updated JsonObject that was not
+     * present in the original JsonObject. The values in the new JsonObject are undefined; only the presence or absence of a key is
+     * significant.
+     * 
+     * @param original The original JsonObject.
+     * @param updated The updated JsonObject.
+     * @return A new JsonObject containing the changed keys between the original and updated objects.
+     */
+    public static JsonObject changedKeys(JsonObject original, JsonObject updated) {
+        JsonObject changedKeys = original.system()
+                .createObject();
+        for (String key : original.keySet()) {
+            if (!updated.containsKey(key)) {
+                changedKeys.put(key, true);
+            } else {
+                JsonValue origValue = original.get(key);
+                JsonValue updatedValue = updated.get(key);
+                if (!origValue.equals(updatedValue)) {
+                    changedKeys.put(key, true);
+                }
+            }
+        }
+        for (String key : updated.keySet()) {
+            if (!original.containsKey(key)) {
+                changedKeys.put(key, true);
+            }
+        }
+        return changedKeys;
+    }
+
     private static void indent(int indent, StringBuffer sb) {
         for (int i = 0; i < indent; ++i) {
             sb.append("    ");
         }
+    }
+
+    /**
+     * Join a JsonArray containing only JsonString values into one JsonString.
+     * 
+     * @param value The JsonArray.
+     * @return A new JsonString.
+     */
+    public static JsonString joinArrayOfStrings(JsonArray value) {
+        if (value == null) { return null; }
+        StringBuffer sb = new StringBuffer();
+        JsonArray array = value.asArray();
+        for (int i = 0; i < array.size(); ++i) {
+            JsonValue entry = array.get(i);
+            if (!entry.isString()) { throw new ItemscriptError(
+                    "error.itemscript.joinArrayOfStrings.entry.was.not.string", new Params().p("array", array)
+                            .p("entry", entry.toCompactJsonString())); }
+            sb.append(entry.stringValue());
+            sb.append("\n");
+        }
+        return value.system()
+                .createString(sb.toString());
     }
 
     /**
@@ -131,38 +187,6 @@ public final class StaticJsonUtil {
             object.put(key, map.get(key));
         }
         return object;
-    }
-
-    /**
-     * Compare two JsonObjects; returns a new JsonObject containing a key for each key in the original JsonObject that was
-     * not present in the updated JsonObject, or that was changed, and a key for each key in the updated JsonObject that was not
-     * present in the original JsonObject. The values in the new JsonObject are undefined; only the presence or absence of a key is
-     * significant.
-     * 
-     * @param original The original JsonObject.
-     * @param updated The updated JsonObject.
-     * @return A new JsonObject containing the changed keys between the original and updated objects.
-     */
-    public static JsonObject changedKeys(JsonObject original, JsonObject updated) {
-        JsonObject changedKeys = original.system()
-                .createObject();
-        for (String key : original.keySet()) {
-            if (!updated.containsKey(key)) {
-                changedKeys.put(key, true);
-            } else {
-                JsonValue origValue = original.get(key);
-                JsonValue updatedValue = updated.get(key);
-                if (!origValue.equals(updatedValue)) {
-                    changedKeys.put(key, true);
-                }
-            }
-        }
-        for (String key : updated.keySet()) {
-            if (!original.containsKey(key)) {
-                changedKeys.put(key, true);
-            }
-        }
-        return changedKeys;
     }
 
     /**

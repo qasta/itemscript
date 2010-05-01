@@ -10,6 +10,7 @@ final class ArrayType extends TypeBase {
         super(schema, extendsType, def);
     }
 
+    @Override
     public boolean isArray() {
         return true;
     }

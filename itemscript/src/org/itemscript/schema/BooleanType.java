@@ -10,6 +10,7 @@ final class BooleanType extends TypeBase {
         super(schema, extendsType, def);
     }
 
+    @Override
     public boolean isBoolean() {
         return true;
     }

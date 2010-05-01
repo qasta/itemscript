@@ -73,6 +73,7 @@ public final class MemConnector extends ConnectorBase
             this.field = field;
         }
 
+        @Override
         public String toString() {
             return "[KeyAndField key=" + key + " field=" + field + "]";
         }
@@ -124,6 +125,19 @@ public final class MemConnector extends ConnectorBase
                 .put("connectors", new ItemNode(system.createItem("mem:/itemscript/connectors", connectorsObject)));
         connectorsObject.putNative("mem", connector);
         return connectorsObject;
+    }
+
+    /**
+     * Notify the given ItemNode and all of its sub-nodes that they have been removed.
+     * 
+     * @param removedNode
+     */
+    private static void notifyAllOfRemove(ItemNode removedNode) {
+        for (String key : removedNode.keySet()) {
+            ItemNode next = removedNode.get(key);
+            notifyAllOfRemove(next);
+        }
+        ((ItemscriptItem) removedNode.item()).notifyRemove("#");
     }
 
     private final ItemNode root;
@@ -362,19 +376,6 @@ public final class MemConnector extends ConnectorBase
             }
         }
         return new ItemscriptRemoveResponse(null);
-    }
-
-    /**
-     * Notify the given ItemNode and all of its sub-nodes that they have been removed.
-     * 
-     * @param removedNode
-     */
-    private static void notifyAllOfRemove(ItemNode removedNode) {
-        for (String key : removedNode.keySet()) {
-            ItemNode next = removedNode.get(key);
-            notifyAllOfRemove(next);
-        }
-        ((ItemscriptItem) removedNode.item()).notifyRemove("#");
     }
 
     /**

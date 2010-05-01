@@ -310,14 +310,6 @@ public interface JsonArray extends JsonContainer, List<JsonValue> {
     public JsonArray getRequiredArray(int index);
 
     /**
-     * Get a value from this JsonArray. If the value does not exist, throws an exception.
-     * 
-     * @param index The index of the value.
-     * @return The value under that index.
-     */
-    public JsonValue getRequiredValue(int index);
-
-    /**
      * Get a binary value from this JsonArray as a byte[]. If the value does not exist, or is not a JsonString,
      * or is a JsonString but cannot be parsed as a base64 value, throws an exception.
      * 
@@ -382,6 +374,14 @@ public interface JsonArray extends JsonContainer, List<JsonValue> {
      * @return The String value of the JsonString under that index.
      */
     public String getRequiredString(int index);
+
+    /**
+     * Get a value from this JsonArray. If the value does not exist, throws an exception.
+     * 
+     * @param index The index of the value.
+     * @return The value under that index.
+     */
+    public JsonValue getRequiredValue(int index);
 
     /**
      * Get a string value from this array.

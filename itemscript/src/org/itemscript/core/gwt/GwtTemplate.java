@@ -36,7 +36,6 @@ import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.template.Template;
 import org.itemscript.core.values.JsonValue;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 
 /**
@@ -44,44 +43,43 @@ import com.google.gwt.core.client.JavaScriptObject;
  */
 public class GwtTemplate {
     static native void exportCalls() /*-{
-        $wnd.itemscript.template = {};
-        $wnd.itemscript.template.interpretGwt = $entry(@org.itemscript.core.gwt.GwtTemplate::interpretGwt(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;));
-        $wnd.itemscript.template.interpret = function(text, context) {
-        return $wnd.itemscript.template.interpretGwt(text, {"value" : context});
-        };
-        $wnd.itemscript.template.getAndInterpretGwt = $entry(@org.itemscript.core.gwt.GwtTemplate::getAndInterpretGwt(Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;));
-        $wnd.itemscript.template.getAndInterpret = function(textUrl, contextUrl, callback) {
-            $wnd.itemscript.template.getAndInterpretGwt(textUrl, contextUrl, {
-                "onSuccess" : function(value) {
-                    callback["onSuccess"](value["value"]);
-                },
-                "onError" : function(message) {
-                    callback["onError"](message);
-                }
-            });
-        };
-    }-*/;
-
-    public static String interpretGwt(String text, JavaScriptObject context) {
-        return new Template(GwtSystem.SYSTEM, text).interpret(GwtJsonParser.convert(GwtSystem.SYSTEM, context),
-                GWT.getHostPageBaseURL());
-    }
+                                     $wnd.itemscript.template = {};
+                                     $wnd.itemscript.template.interpretGwt = $entry(@org.itemscript.core.gwt.GwtTemplate::interpretGwt(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;));
+                                     $wnd.itemscript.template.interpret = function(text, context) {
+                                     return $wnd.itemscript.template.interpretGwt(text, {"value" : context});
+                                     };
+                                     $wnd.itemscript.template.getAndInterpretGwt = $entry(@org.itemscript.core.gwt.GwtTemplate::getAndInterpretGwt(Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;));
+                                     $wnd.itemscript.template.getAndInterpret = function(textUrl, contextUrl, callback) {
+                                     $wnd.itemscript.template.getAndInterpretGwt(textUrl, contextUrl, {
+                                     "onSuccess" : function(value) {
+                                     callback["onSuccess"](value["value"]);
+                                     },
+                                     "onError" : function(message) {
+                                     callback["onError"](message);
+                                     }
+                                     });
+                                     };
+                                     }-*/;
 
     public static void getAndInterpretGwt(String textUrl, String contextUrl, final JavaScriptObject callback) {
         MultipleGet.get(GwtSystem.SYSTEM, new Params().p("text", GwtSystem.hostPageRelative(textUrl))
                 .p("context", GwtSystem.hostPageRelative(contextUrl)), new MultipleGetCallback() {
             @Override
-            public void onSuccess(Map<String, JsonValue> responses) {
-                GwtSystem.callOnSuccess(callback,
-                        GwtSystem.convertAndWrapValue(GwtSystem.SYSTEM.createString(Template.interpret(
-                                GwtSystem.SYSTEM, responses.get("text")
-                                        .stringValue(), responses.get("context")))));
-            }
-
-            @Override
             public void onError(Map<String, JsonValue> responses, Map<String, Throwable> errors) {
                 GwtSystem.callOnError(callback, ItemscriptError.internalError(this, "onError", errors + ""));
             }
+
+            @Override
+            public void onSuccess(Map<String, JsonValue> responses) {
+                GwtSystem.callOnSuccess(callback, GwtSystem.convertAndWrapValue(Template.create(GwtSystem.SYSTEM,
+                        responses.get("text"))
+                        .interpretToValue(responses.get("context"))));
+            }
         });
+    }
+
+    public static String interpretGwt(String text, JavaScriptObject context) {
+        return Template.create(GwtSystem.SYSTEM, text)
+                .interpretToString(GwtJsonParser.convert(GwtSystem.SYSTEM, context));
     }
 }

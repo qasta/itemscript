@@ -10,6 +10,7 @@ final class NumberType extends TypeBase {
         super(schema, extendsType, def);
     }
 
+    @Override
     public boolean isNumber() {
         return true;
     }

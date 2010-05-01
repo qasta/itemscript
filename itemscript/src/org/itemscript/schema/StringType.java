@@ -59,6 +59,16 @@ class StringType extends TypeBase {
     }
 
     @Override
+    public boolean isString() {
+        return true;
+    }
+
+    private Params pathValueParams(String path, String string) {
+        return schema().pathParams(path)
+                .p("value", string);
+    }
+
+    @Override
     public void validate(String path, JsonValue value) {
         super.validate(path, value);
         if (!value.isString()) { throw ItemscriptError.internalError(this, "validate.value.was.not.string",
@@ -67,10 +77,6 @@ class StringType extends TypeBase {
         if (hasDef) {
             validateString(path, value.stringValue());
         }
-    }
-
-    public boolean isString() {
-        return true;
     }
 
     private void validateString(String path, String string) {
@@ -104,10 +110,5 @@ class StringType extends TypeBase {
             if (!matched) { throw ItemscriptError.internalError(this,
                     "validateString.value.did.not.match.any.pattern", pathValueParams(path, string)); }
         }
-    }
-
-    private Params pathValueParams(String path, String string) {
-        return schema().pathParams(path)
-                .p("value", string);
     }
 }

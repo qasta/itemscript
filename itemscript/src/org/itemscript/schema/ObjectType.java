@@ -20,8 +20,6 @@ class ObjectType extends TypeBase {
     private final boolean hasDef;
     private boolean resolved;
 
-    public boolean isNumber() { return true; }
-    
     ObjectType(Schema schema, Type extendsType, JsonObject def) {
         super(schema, extendsType, def);
         if (def != null) {
@@ -56,6 +54,11 @@ class ObjectType extends TypeBase {
         } else {
             hasDef = false;
         }
+    }
+
+    @Override
+    public boolean isNumber() {
+        return true;
     }
 
     private void resolveTypes() {

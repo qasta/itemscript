@@ -45,7 +45,8 @@ public class TemplateTest extends ItemscriptTestBase {
     }
 
     private String processTemplate(String text) {
-        return new Template(system(), text).interpret(context);
+        return Template.create(system(), text)
+                .interpretToString(context);
     }
 
     @Override
@@ -58,10 +59,66 @@ public class TemplateTest extends ItemscriptTestBase {
     }
 
     @Test
-    public void testLiteral() {
-        String text = "a {&b%3D%7B%25} c";
-        String after = new Template(system(), text).interpret(context());
-        assertEquals("a b={% c", after);
+    public void testArgs() {
+        String text = "a {:name substring(1)} c";
+        String after = processTemplate(text);
+        assertEquals("a acob c", after);
+        text = "a {:name substring(1,3)} c";
+        after = processTemplate(text);
+        assertEquals("a ac c", after);
+    }
+
+    @Test
+    public void testB64id() {
+        String text = "a {b64id} c";
+        String after = processTemplate(text);
+        assertEquals("a H2eBRN-55bZsRzM6xCdU6Q c".length(), after.length());
+    }
+
+    @Test
+    public void testBinaryInclude() {
+        String text = "{@http://itemscript.org/test.png dataUrl}";
+        String after = processTemplate(text);
+        assertTrue(after.startsWith("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAABDCAYAAACCyxXxAAAABmJ"));
+    }
+
+    @Test
+    public void testBraces() {
+        String text = "a {left} {right} c";
+        String after = processTemplate(text);
+        assertEquals("a { } c", after);
+    }
+
+    @Test
+    public void testCoerceFail() {
+        String text = "a {@mem:/TemplateTest/context} c";
+        try {
+            processTemplate(text);
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+
+    @Test
+    public void testColonField() {
+        String text = "a {:name} c";
+        String after = processTemplate(text);
+        assertEquals("a Jacob c", after);
+    }
+
+    @Test
+    public void testComment() {
+        String text = "a {#comment some junk here more junk } c";
+        String after = processTemplate(text);
+        assertEquals("a  c", after);
+    }
+
+    @Test
+    public void testContentsTrim() {
+        String text = "a { left } c";
+        String after = processTemplate(text);
+        assertEquals("a { c", after);
     }
 
     @Test
@@ -74,14 +131,237 @@ public class TemplateTest extends ItemscriptTestBase {
     }
 
     @Test
-    public void testCarriageReturnError() {
-        String text = "a {xyz\nabc} c";
+    public void testExtraParamsError() {
+        String text = "a {name html foo} c";
         try {
             processTemplate(text);
         } catch (ItemscriptError e) {
             threwException = true;
         }
         assertTrue(threwException);
+    }
+
+    @Test
+    public void testForeach() {
+        String text = "a {.foreach :items}{:}{.end} c";
+        JsonArray array = context.asObject()
+                .createArray("items");
+        array.add("x");
+        array.add("y");
+        array.add("z");
+        String after = processTemplate(text);
+        assertEquals("a xyz c", after);
+    }
+
+    @Test
+    public void testFragmentOnlyNoBaseUrlNoItemError() {
+        String text = "a {@#field} c";
+        context = system().createObject();
+        try {
+            processTemplate(text);
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+
+    @Test
+    public void testHtmlEsc() {
+        String text = "a {:gnarly html} c";
+        context.asObject()
+                .put("gnarly", "<>\"&");
+        String after = processTemplate(text);
+        assertEquals("a &lt;&gt;&quot;&amp; c", after);
+    }
+
+    @Test
+    public void testHttpForeach() {
+        String text = "a {.foreach @http://itemscript.org/test.json#test-object/foo}{:}{.end} c";
+        String after = processTemplate(text);
+        assertEquals("a xyz c", after);
+    }
+
+    @Test
+    public void testHttpReference() {
+        String text = "a {@http://itemscript.org/test.json#test-object/abc} c";
+        String after = processTemplate(text);
+        assertEquals("a def c", after);
+    }
+
+    @Test
+    public void testIf() {
+        String text = "a {.if :flag}yes{.else}no{.end} c";
+        context.asObject()
+                .put("flag", true);
+        String after = processTemplate(text);
+        assertEquals("a yes c", after);
+        context.asObject()
+                .put("flag", false);
+        after = processTemplate(text);
+        assertEquals("a no c", after);
+    }
+
+    @Test
+    public void testJoin() {
+        String text = "a {.foreach :items}{:}{.join}{:name}{.end} c";
+        JsonArray array = context.asObject()
+                .createArray("items");
+        array.add("x");
+        array.add("y");
+        array.add("z");
+        String after = processTemplate(text);
+        assertEquals("a xJacobyJacobz c", after);
+    }
+
+    @Test
+    public void testLiteral() {
+        String text = "a {&b%3D%7B%25} c";
+        String after = Template.create(system(), text)
+                .interpretToString(context());
+        assertEquals("a b={% c", after);
+    }
+
+    public void testLiteralInObjectTemplate() {
+        JsonArray literalArray = system().createArray()
+                .a("foo")
+                .a("bar");
+        JsonObject templateObject = system().createObject();
+        templateObject.put("&array", literalArray);
+        Template t = Template.create(system(), templateObject);
+        JsonValue val = t.interpretToValue(context);
+        assertEquals("bar", val.asObject()
+                .getArray("array")
+                .getString(1));
+    }
+
+    @Test
+    public void testLiteralTemplates() {
+        Template t = Template.create(system(), system().createBoolean(true));
+        JsonValue val = t.interpretToValue(context);
+        assertTrue(val.isBoolean());
+        assertEquals(true, (boolean) val.booleanValue());
+        t = Template.create(system(), system().createNumber(1.5));
+        val = t.interpretToValue(context);
+        assertTrue(val.isNumber());
+        assertEquals(1.5, (double) val.doubleValue());
+        t = Template.create(system(), system().createNull());
+        val = t.interpretToValue(context);
+        assertTrue(val.isNull());
+    }
+
+    @Test
+    public void testMissingEnd() {
+        String text = "a {.section :address} c";
+        try {
+            processTemplate(text);
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+
+    @Test
+    public void testNestedForeach() {
+        String text = "a {.foreach :items}{.foreach :subItems}{:}{.join} {.end}{.join} {.end} c";
+        JsonObject contents = system().createObject();
+        contents.createArray("subItems")
+                .a("x")
+                .a("y")
+                .a("z");
+        JsonArray array = context.asObject()
+                .createArray("items")
+                .a(contents.copy())
+                .a(contents.copy())
+                .a(contents.copy());
+        String after = processTemplate(text);
+        assertEquals("a x y z x y z x y z c", after);
+    }
+
+    @Test
+    public void testNumericLiteral() {
+        String text = "a {1} c";
+        String after = processTemplate(text);
+        assertEquals("a 1 c", after);
+    }
+
+    @Test
+    public void testObjectTemplate() {
+        context.asObject()
+                .put("foo", "bar");
+        context.asObject()
+                .put("number", 1);
+        context.asObject()
+                .createArray("array")
+                .a("foo")
+                .a("bar");
+        JsonObject templateObj = system().createObject()
+                .p("a", "{:foo}")
+                .p("b", "{:number}")
+                .p("c", "{:array}");
+        Template t = Template.create(system(), templateObj);
+        JsonValue val = t.interpretToValue(context);
+        assertTrue(val.isObject());
+        assertEquals("bar", val.asObject()
+                .getString("a"));
+        assertEquals((double) 1, (double) val.asObject()
+                .getDouble("b"));
+        assertEquals("foo", val.asObject()
+                .getArray("c")
+                .getString(0));
+    }
+
+    @Test
+    public void testOrSection() {
+        String text = "a {.section :address}{:street}{.or}kittens{.end} c";
+        JsonObject address = context.asObject()
+                .createObject("address");
+        address.put("street", "xyz");
+        String after = processTemplate(text);
+        assertEquals("a xyz c", after);
+        context.asObject()
+                .remove("address");
+        after = processTemplate(text);
+        assertEquals("a kittens c", after);
+    }
+
+    @Test
+    public void testOverlappingBraceError() {
+        String text = "a { 'f'{a }bc";
+        try {
+            processTemplate(text);
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+
+    @Test
+    public void testQuotedString() {
+        String text = "a {'b'} c";
+        String after = processTemplate(text);
+        assertEquals("a b c", after);
+    }
+
+    @Test
+    public void testReturnObject() {
+        system().put("mem:/test/foo", system().createObject()
+                .p("foo", "bar"));
+        String text = "{@mem:/test/foo}";
+        Template t = Template.create(system(), text);
+        JsonValue val = t.interpretToValue(context);
+        assertTrue(val.isObject());
+        assertEquals("bar", val.asObject()
+                .getString("foo"));
+    }
+
+    @Test
+    public void testSection() {
+        String text = "a {.section :address}{:street}{.end} c";
+        JsonObject address = context.asObject()
+                .createObject("address");
+        address.put("street", "xyz");
+        String after = processTemplate(text);
+        assertEquals("a xyz c", after);
     }
 
     @Test
@@ -104,187 +384,14 @@ public class TemplateTest extends ItemscriptTestBase {
     }
 
     @Test
-    public void testOverlappingBraceError() {
-        String text = "a { f{a }bc";
+    public void testUnknownParamsError() {
+        String text = "a {name foo} c";
         try {
             processTemplate(text);
         } catch (ItemscriptError e) {
             threwException = true;
         }
         assertTrue(threwException);
-    }
-
-    @Test
-    public void testNullContextError() {
-        String text = "a";
-        context = null;
-        try {
-            processTemplate(text);
-        } catch (ItemscriptError e) {
-            threwException = true;
-        }
-        assertTrue(threwException);
-    }
-
-    @Test
-    public void testFragmentOnlyNoBaseUrlNoItemError() {
-        String text = "a {@#field} c";
-        context = system().createObject();
-        try {
-            processTemplate(text);
-        } catch (ItemscriptError e) {
-            threwException = true;
-        }
-        assertTrue(threwException);
-    }
-
-    @Test
-    public void testBinaryInclude() {
-        String text = "{@http://itemscript.org/test.png dataUrl}";
-        String after = processTemplate(text);
-        assertTrue(after.startsWith("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAABDCAYAAACCyxXxAAAABmJ"));
-    }
-
-    @Test
-    public void testUuid() {
-        String text = "a {uuid} c";
-        String after = processTemplate(text);
-        assertEquals("a 3d9f9533-c32f-4183-b78c-f01f32609de4 c".length(), after.length());
-    }
-
-    @Test
-    public void testReference() {
-        system().put("mem:/TemplateTest/value", "b");
-        String text = "a {@mem:/TemplateTest/value} c";
-        String after = processTemplate(text);
-        assertEquals("a b c", after);
-        context.asObject()
-                .put("x", "y");
-        text = "a {@#x} c";
-        after = processTemplate(text);
-        assertEquals("a y c", after);
-        system().put("mem:/TemplateTest/value2", "q");
-        text = "a {@value2} c";
-        after = processTemplate(text);
-        assertEquals("a q c", after);
-        text = "a {@mem:/TemplateTest/context#x} c";
-        after = processTemplate(text);
-        assertEquals("a y c", after);
-    }
-
-    @Test
-    public void testHttpReference() {
-        String text = "a {@http://itemscript.org/test.json#test-object/abc} c";
-        String after = processTemplate(text);
-        assertEquals("a def c", after);
-    }
-
-    @Test
-    public void testCoerceFail() {
-        String text = "a {@mem:/TemplateTest/context} c";
-        try {
-            processTemplate(text);
-        } catch (ItemscriptError e) {
-            threwException = true;
-        }
-        assertTrue(threwException);
-    }
-
-    @Test
-    public void testBraces() {
-        String text = "a {left} {right} c";
-        String after = processTemplate(text);
-        assertEquals("a { } c", after);
-    }
-
-    @Test
-    public void testContentsTrim() {
-        String text = "a { left } c";
-        String after = processTemplate(text);
-        assertEquals("a { c", after);
-    }
-
-    @Test
-    public void testSection() {
-        String text = "a {.section :address}{:street}{.end} c";
-        JsonObject address = context.asObject()
-                .createObject("address");
-        address.put("street", "xyz");
-        String after = processTemplate(text);
-        assertEquals("a xyz c", after);
-    }
-
-    @Test
-    public void testOrSection() {
-        String text = "a {.section :address}{:street}{.or}kittens{.end} c";
-        JsonObject address = context.asObject()
-                .createObject("address");
-        address.put("street", "xyz");
-        String after = processTemplate(text);
-        assertEquals("a xyz c", after);
-        context.asObject()
-                .remove("address");
-        after = processTemplate(text);
-        assertEquals("a kittens c", after);
-    }
-
-    @Test
-    public void testMissingEnd() {
-        String text = "a {.section :address} c";
-        try {
-            processTemplate(text);
-        } catch (ItemscriptError e) {
-            threwException = true;
-        }
-        assertTrue(threwException);
-    }
-
-    @Test
-    public void testForeach() {
-        String text = "a {.foreach :items}{:}{.end} c";
-        JsonArray array = context.asObject()
-                .createArray("items");
-        array.add("x");
-        array.add("y");
-        array.add("z");
-        String after = processTemplate(text);
-        assertEquals("a xyz c", after);
-    }
-
-    @Test
-    public void testHttpForeach() {
-        String text = "a {.foreach @http://itemscript.org/test.json#test-object/foo}{:}{.end} c";
-        String after = processTemplate(text);
-        assertEquals("a xyz c", after);
-    }
-
-    @Test
-    public void testJoin() {
-        String text = "a {.foreach :items}{:}{.join}{:name}{.end} c";
-        JsonArray array = context.asObject()
-                .createArray("items");
-        array.add("x");
-        array.add("y");
-        array.add("z");
-        String after = processTemplate(text);
-        assertEquals("a xJacobyJacobz c", after);
-    }
-
-    @Test
-    public void testNestedForeach() {
-        String text = "a {.foreach :items}{.foreach :subItems}{:}{.join} {.end}{.join} {.end} c";
-        JsonObject contents = system().createObject();
-        contents.createArray("subItems")
-                .a("x")
-                .a("y")
-                .a("z");
-        JsonArray array = context.asObject()
-                .createArray("items")
-                .a(contents.copy())
-                .a(contents.copy())
-                .a(contents.copy());
-        String after = processTemplate(text);
-        assertEquals("a x y z x y z x y z c", after);
     }
 
     @Test
@@ -297,60 +404,9 @@ public class TemplateTest extends ItemscriptTestBase {
     }
 
     @Test
-    public void testHtmlEsc() {
-        String text = "a {:gnarly html} c";
-        context.asObject()
-                .put("gnarly", "<>\"&");
+    public void testUuid() {
+        String text = "a {uuid} c";
         String after = processTemplate(text);
-        assertEquals("a &lt;&gt;&quot;&amp; c", after);
-    }
-
-    @Test
-    public void testColonField() {
-        String text = "a {:name} c";
-        String after = processTemplate(text);
-        assertEquals("a Jacob c", after);
-    }
-
-    @Test
-    public void testUnknownParamsError() {
-        String text = "a {name foo} c";
-        try {
-            processTemplate(text);
-        } catch (ItemscriptError e) {
-            threwException = true;
-        }
-        assertTrue(threwException);
-    }
-
-    @Test
-    public void testExtraParamsError() {
-        String text = "a {name html foo} c";
-        try {
-            processTemplate(text);
-        } catch (ItemscriptError e) {
-            threwException = true;
-        }
-        assertTrue(threwException);
-    }
-
-    @Test
-    public void testIf() {
-        String text = "a {.if :flag}yes{.else}no{.end} c";
-        context.asObject()
-                .put("flag", true);
-        String after = processTemplate(text);
-        assertEquals("a yes c", after);
-        context.asObject()
-                .put("flag", false);
-        after = processTemplate(text);
-        assertEquals("a no c", after);
-    }
-
-    @Test
-    public void testB64id() {
-        String text = "a {b64id} c";
-        String after = processTemplate(text);
-        assertEquals("a H2eBRN-55bZsRzM6xCdU6Q c".length(), after.length());
+        assertEquals("a 3d9f9533-c32f-4183-b78c-f01f32609de4 c".length(), after.length());
     }
 }

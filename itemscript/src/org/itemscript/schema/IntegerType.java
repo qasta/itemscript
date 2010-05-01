@@ -10,6 +10,7 @@ final class IntegerType extends TypeBase {
         super(schema, extendsType, def);
     }
 
+    @Override
     public boolean isInteger() {
         return true;
     }
@@ -17,7 +18,7 @@ final class IntegerType extends TypeBase {
     @Override
     public void validate(String path, JsonValue value) {
         super.validate(path, value);
-        if (value.doubleValue() != (double) Math.round(value.doubleValue())) { throw ItemscriptError.internalError(
+        if (value.doubleValue() != Math.round(value.doubleValue())) { throw ItemscriptError.internalError(
                 this, "validate.had.fractional.digits", schema().pathParams(path)
                         .p("value", value.toCompactJsonString())); }
     }

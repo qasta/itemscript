@@ -10,6 +10,7 @@ final class NullType extends TypeBase {
         super(schema, extendsType, def);
     }
 
+    @Override
     public boolean isNull() {
         return true;
     }

@@ -56,39 +56,38 @@ public class GwtJsonCreator extends ItemscriptCreator {
         return GwtJsonParser.parse(system(), json);
     }
 
-// This code converts GWT JSON values into Itemscript JSON values. It's commented because I only use it during debugging.
-//    private JsonValue convert(JSONValue value) {
-//        if (value.isString() != null) {
-//            return system().createString(value.isString()
-//                    .stringValue());
-//        } else if (value.isBoolean() != null) {
-//            return system().createBoolean(value.isBoolean()
-//                    .booleanValue());
-//        } else if (value.isNull() != null) {
-//            return system().createNull();
-//        } else if (value.isNumber() != null) {
-//            return system().createNumber(value.isNumber()
-//                    .doubleValue());
-//        } else if (value.isArray() != null) {
-//            JSONArray origArray = value.isArray();
-//            JsonArray array = system().createArray();
-//            for (int i = 0; i < origArray.size(); ++i) {
-//                array.add(convert(origArray.get(i)));
-//            }
-//            return array;
-//        } else if (value.isObject() != null) {
-//            JSONObject origObject = value.isObject();
-//            JsonObject object = system().createObject();
-//            for (String key : origObject.keySet()) {
-//                object.put(key, convert(origObject.get(key)));
-//            }
-//            return object;
-//        } else {
-//            // Should never happen
-//            throw new RuntimeException("Uknown value type: " + value);
-//        }
-//    }
-
+    // This code converts GWT JSON values into Itemscript JSON values. It's commented because I only use it during debugging.
+    //    private JsonValue convert(JSONValue value) {
+    //        if (value.isString() != null) {
+    //            return system().createString(value.isString()
+    //                    .stringValue());
+    //        } else if (value.isBoolean() != null) {
+    //            return system().createBoolean(value.isBoolean()
+    //                    .booleanValue());
+    //        } else if (value.isNull() != null) {
+    //            return system().createNull();
+    //        } else if (value.isNumber() != null) {
+    //            return system().createNumber(value.isNumber()
+    //                    .doubleValue());
+    //        } else if (value.isArray() != null) {
+    //            JSONArray origArray = value.isArray();
+    //            JsonArray array = system().createArray();
+    //            for (int i = 0; i < origArray.size(); ++i) {
+    //                array.add(convert(origArray.get(i)));
+    //            }
+    //            return array;
+    //        } else if (value.isObject() != null) {
+    //            JSONObject origObject = value.isObject();
+    //            JsonObject object = system().createObject();
+    //            for (String key : origObject.keySet()) {
+    //                object.put(key, convert(origObject.get(key)));
+    //            }
+    //            return object;
+    //        } else {
+    //            // Should never happen
+    //            throw new RuntimeException("Uknown value type: " + value);
+    //        }
+    //    }
     @Override
     public JsonValue parseReader(Object input) {
         throw new UnsupportedOperationException("error.itemscript.parseReader.not.supported");

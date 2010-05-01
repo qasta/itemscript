@@ -6,9 +6,15 @@ org.itemscript.core.exceptions
 org.itemscript.core.foundries
 org.itemscript.core.gwt
 org.itemscript.core.mappings
+org.itemscript.core.template
+org.itemscript.core.template.expression
+org.itemscript.core.template.object
+org.itemscript.core.template.scanner
+org.itemscript.core.template.text
 org.itemscript.core.url
 org.itemscript.core.util
 org.itemscript.core.values
+org.itemscript.schema
 org.itemscript.server
 org.itemscript.standard
 org.itemscript.standard.parser

@@ -108,6 +108,11 @@ public abstract class ItemscriptContainer extends ItemscriptValue implements Jso
     }
 
     @Override
+    public JsonValue getByPath(String path) {
+        return JsonAccessHelper.getByPath(this, path);
+    }
+
+    @Override
     public final Double getDouble(String key) {
         return JsonAccessHelper.asDouble(getValue(key));
     }
@@ -155,8 +160,8 @@ public abstract class ItemscriptContainer extends ItemscriptValue implements Jso
         if (containsKey(key)) {
             JsonArray array = getArray(key);
             if (array == null) { throw ItemscriptError.internalError(this,
-                    "getOrCreateArray.value.existed.but.was.not.an.array", JsonAccessHelper.keyValueParams(key,
-                            getValue(key))); }
+                    "getOrCreateArray.value.existed.but.was.not.an.array", JsonAccessHelper.keyValueParams(this,
+                            key, getValue(key))); }
             return array;
         } else {
             return createArray(key);
@@ -168,8 +173,8 @@ public abstract class ItemscriptContainer extends ItemscriptValue implements Jso
         if (containsKey(key)) {
             JsonObject object = getObject(key);
             if (object == null) { throw ItemscriptError.internalError(this,
-                    "getOrCreateObject.value.existed.but.was.not.an.object", JsonAccessHelper.keyValueParams(key,
-                            getValue(key))); }
+                    "getOrCreateObject.value.existed.but.was.not.an.object", JsonAccessHelper.keyValueParams(this,
+                            key, getValue(key))); }
             return object;
         } else {
             return createObject(key);

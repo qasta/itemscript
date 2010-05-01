@@ -26,6 +26,7 @@
  * 
  * Author: Jacob Davies
  */
+
 package org.itemscript.core.gwt;
 
 import java.util.HashMap;
@@ -47,17 +48,6 @@ import org.itemscript.core.values.JsonValue;
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
 public class MultipleGet implements HasSystem {
-    private final Map<String, String> urls;
-    private final Map<String, JsonValue> responses = new HashMap<String, JsonValue>();
-    private final Map<String, Throwable> errors = new HashMap<String, Throwable>();
-    private final JsonSystem system;
-    private final MultipleGetCallback callback;
-
-    @Override
-    public JsonSystem system() {
-        return system;
-    }
-
     /**
      * Get all of the supplied URLs, calling the relevant method on the callback when they have all been received.
      *  
@@ -71,7 +61,6 @@ public class MultipleGet implements HasSystem {
         multipleGet.start();
         return multipleGet;
     }
-
     /**
      * Load all of the supplied URLs into the system at the supplied location, calling the relevant method on the callback when they have
      * all been received. Values are loaded into the system immediately after being received, so even if some responses give errors, the ones
@@ -112,34 +101,18 @@ public class MultipleGet implements HasSystem {
         multipleGet.start();
         return multipleGet;
     }
+    private final Map<String, String> urls;
+    private final Map<String, JsonValue> responses = new HashMap<String, JsonValue>();
+    private final Map<String, Throwable> errors = new HashMap<String, Throwable>();
+
+    private final JsonSystem system;
+
+    private final MultipleGetCallback callback;
 
     private MultipleGet(JsonSystem system, Map<String, String> urls, final MultipleGetCallback callback) {
         this.system = system;
         this.urls = urls;
         this.callback = callback;
-    }
-
-    private void start() {
-        for (final String key : urls.keySet()) {
-            final String url = urls.get(key);
-            system.get(url, new GetCallback() {
-                @Override
-                public void onSuccess(JsonValue value) {
-                    responses.put(key, value);
-                    callback.onIntermediateSuccess(responses, key, value);
-                    testForComplete();
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    // Put a null value in responses to keep the count right.
-                    responses.put(key, null);
-                    errors.put(key, e);
-                    callback.onIntermediateError(responses, errors, key, e);
-                    testForComplete();
-                }
-            });
-        }
     }
 
     /**
@@ -151,13 +124,6 @@ public class MultipleGet implements HasSystem {
         return urls.size() == responses.size();
     }
 
-    private void testForComplete() {
-        // If there aren't as many responses as URLs, we aren't done yet, so don't call anything even if we had an error.
-        if (isComplete()) {
-            onComplete();
-        }
-    }
-
     private void onComplete() {
         // If any of the responses are null, there was an error.
         // If there were any errors, call onError; otherwise call onSuccess.
@@ -165,6 +131,41 @@ public class MultipleGet implements HasSystem {
             callback.onError(responses, errors);
         } else {
             callback.onSuccess(responses);
+        }
+    }
+
+    private void start() {
+        for (final String key : urls.keySet()) {
+            final String url = urls.get(key);
+            system.get(url, new GetCallback() {
+                @Override
+                public void onError(Throwable e) {
+                    // Put a null value in responses to keep the count right.
+                    responses.put(key, null);
+                    errors.put(key, e);
+                    callback.onIntermediateError(responses, errors, key, e);
+                    testForComplete();
+                }
+
+                @Override
+                public void onSuccess(JsonValue value) {
+                    responses.put(key, value);
+                    callback.onIntermediateSuccess(responses, key, value);
+                    testForComplete();
+                }
+            });
+        }
+    }
+
+    @Override
+    public JsonSystem system() {
+        return system;
+    }
+
+    private void testForComplete() {
+        // If there aren't as many responses as URLs, we aren't done yet, so don't call anything even if we had an error.
+        if (isComplete()) {
+            onComplete();
         }
     }
 }

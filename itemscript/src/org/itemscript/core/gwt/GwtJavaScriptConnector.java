@@ -26,6 +26,7 @@
  * 
  * Author: Jacob Davies
  */
+
 package org.itemscript.core.gwt;
 
 import org.itemscript.core.HasSystem;
@@ -61,8 +62,8 @@ public class GwtJavaScriptConnector implements SyncGetConnector, HasSystem {
     }
 
     private native JavaScriptObject get(String name) /*-{
-        return { "value" : $wnd[name] };
-    }-*/;
+                                                     return { "value" : $wnd[name] };
+                                                     }-*/;
 
     @Override
     public JsonValue get(Url url) {

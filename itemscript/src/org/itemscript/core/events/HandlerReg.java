@@ -53,21 +53,21 @@ public class HandlerReg {
     }
 
     /**
-     * Get the associated JsonItem.
-     * 
-     * @return The associated JsonItem.
-     */
-    public JsonItem item() {
-        return item;
-    }
-
-    /**
      * Get the id.
      * 
      * @return The id.
      */
     public String id() {
         return id;
+    }
+
+    /**
+     * Get the associated JsonItem.
+     * 
+     * @return The associated JsonItem.
+     */
+    public JsonItem item() {
+        return item;
     }
 
     /**

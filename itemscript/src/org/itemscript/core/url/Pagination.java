@@ -77,21 +77,21 @@ public final class Pagination {
     }
 
     /**
+     * Get whether this pagination is ascending or descending.
+     * 
+     * @return True if this pagination is ascending, false if it is descending.
+     */
+    public boolean ascending() {
+        return ascending;
+    }
+
+    /**
      * Get the number of rows specified by this pagination.
      * 
      * @return The number of rows to return.
      */
     public int numRows() {
         return numRows;
-    }
-
-    /**
-     * Get the starting row specified by this pagination.
-     * 
-     * @return The starting row.
-     */
-    public int startRow() {
-        return startRow;
     }
 
     /**
@@ -104,11 +104,11 @@ public final class Pagination {
     }
 
     /**
-     * Get whether this pagination is ascending or descending.
+     * Get the starting row specified by this pagination.
      * 
-     * @return True if this pagination is ascending, false if it is descending.
+     * @return The starting row.
      */
-    public boolean ascending() {
-        return ascending;
+    public int startRow() {
+        return startRow;
     }
 }

@@ -163,6 +163,11 @@ public final class HttpConnector extends ConnectorBase
     }
 
     @Override
+    public JsonValue query(Url url) {
+        return get(url);
+    }
+
+    @Override
     public RemoveResponse remove(Url url) {
         try {
             URL javaUrl = new URL(url + "");
@@ -175,10 +180,5 @@ public final class HttpConnector extends ConnectorBase
         } catch (IOException e) {
             throw ItemscriptError.internalError(this, "remove.IOException", e);
         }
-    }
-
-    @Override
-    public JsonValue query(Url url) {
-        return get(url);
     }
 }

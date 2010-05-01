@@ -33,60 +33,24 @@ public class Schema implements HasSystem {
         }
     }
 
-    Params pathParams(String path) {
-        return new Params().p("path", path);
-    }
-
-    private void initTypes(JsonObject typesObject) {
-        AnyType anyType = new AnyType(this);
-        typesObject.putNative("any", anyType);
-        typesObject.putNative("string", new StringType(this, anyType, null));
-        typesObject.putNative("number", new NumberType(this, anyType, null));
-        typesObject.putNative("boolean", new BooleanType(this, anyType, null));
-        typesObject.putNative("null", new NullType(this, anyType, null));
-        typesObject.putNative("integer", new IntegerType(this, anyType, null));
-        typesObject.putNative("binary", new BinaryType(this, anyType, null));
-        typesObject.putNative("array", new ArrayType(this, anyType, null));
-        typesObject.putNative("object", new ObjectType(this, anyType, null));
-    }
-
-    @Override
-    public JsonSystem system() {
-        return system;
-    }
-
-    public void validate(String type, JsonValue value) {
-        Type typeObj = get(type);
-        if (typeObj == null) { throw ItemscriptError.internalError(this, "validate.type.not.found", type); }
-        validate(typeObj, value);
-    }
-
-    public void validate(Type type, JsonValue value) {
-        validate("", type, value);
-    }
-
-    public void validate(String path, Type type, JsonValue value) {
-        if (type == null) { throw ItemscriptError.internalError(this, "validate.type.was.null", new Params().p(
-                "path", path)
-                .p("value", value.toCompactJsonString())); }
-        type.validate(path, value);
-    }
-
-    public Type get(String type) {
-        return (Type) types.getNative(type);
-    }
-
-    public Type resolve(JsonValue def) {
-        if (def.isString()) {
-            return get(def.stringValue());
-        } else if (def.isObject()) {
-            return createFromObject(def.asObject());
-        } else if (def.isArray()) {
-            return createFromArray(def.asArray());
+    public String addKey(String path, String key) {
+        if (path.length() == 0) {
+            return Url.encode(key);
         } else {
-            throw ItemscriptError.internalError(this, "create.typeDef.was.not.object.string.or.array",
-                    def.toCompactJsonString());
+            return path + "/" + Url.encode(key);
         }
+    }
+
+    private Type createArrayType(Type extendsType, JsonObject def) {
+        return new ArrayType(this, extendsType, def);
+    }
+
+    private Type createBinaryType(Type extendsType, JsonObject def) {
+        return new BinaryType(this, extendsType, def);
+    }
+
+    private Type createBooleanType(Type extendsType, JsonObject def) {
+        return new BooleanType(this, extendsType, def);
     }
 
     private Type createFromArray(JsonArray array) {
@@ -130,44 +94,41 @@ public class Schema implements HasSystem {
         }
     }
 
-    private Type createNullType(Type extendsType, JsonObject def) {
-        return new NullType(this, extendsType, def);
-    }
-
-    private Type createBooleanType(Type extendsType, JsonObject def) {
-        return new BooleanType(this, extendsType, def);
-    }
-
     private Type createIntegerType(Type extendsType, JsonObject def) {
         return new IntegerType(this, extendsType, def);
+    }
+
+    private Type createNullType(Type extendsType, JsonObject def) {
+        return new NullType(this, extendsType, def);
     }
 
     private Type createNumberType(Type extendsType, JsonObject def) {
         return new NumberType(this, extendsType, def);
     }
 
-    private Type createBinaryType(Type extendsType, JsonObject def) {
-        return new BinaryType(this, extendsType, def);
+    private ObjectType createObjectType(Type extendsType, JsonObject def) {
+        return new ObjectType(this, extendsType, def);
     }
 
     private Type createStringType(Type extendsType, JsonObject def) {
         return new StringType(this, extendsType, def);
     }
 
-    private Type createArrayType(Type extendsType, JsonObject def) {
-        return new ArrayType(this, extendsType, def);
+    public Type get(String type) {
+        return (Type) types.getNative(type);
     }
 
-    private ObjectType createObjectType(Type extendsType, JsonObject def) {
-        return new ObjectType(this, extendsType, def);
-    }
-
-    public String addKey(String path, String key) {
-        if (path.length() == 0) {
-            return Url.encode(key);
-        } else {
-            return path + "/" + Url.encode(key);
-        }
+    private void initTypes(JsonObject typesObject) {
+        AnyType anyType = new AnyType(this);
+        typesObject.putNative("any", anyType);
+        typesObject.putNative("string", new StringType(this, anyType, null));
+        typesObject.putNative("number", new NumberType(this, anyType, null));
+        typesObject.putNative("boolean", new BooleanType(this, anyType, null));
+        typesObject.putNative("null", new NullType(this, anyType, null));
+        typesObject.putNative("integer", new IntegerType(this, anyType, null));
+        typesObject.putNative("binary", new BinaryType(this, anyType, null));
+        typesObject.putNative("array", new ArrayType(this, anyType, null));
+        typesObject.putNative("object", new ObjectType(this, anyType, null));
     }
 
     public boolean match(String pattern, String string) {
@@ -178,5 +139,44 @@ public class Schema implements HasSystem {
         } else {
             throw ItemscriptError.internalError(this, "match.pattern.did.not.start.or.end.with.asterisk", pattern);
         }
+    }
+
+    Params pathParams(String path) {
+        return new Params().p("path", path);
+    }
+
+    public Type resolve(JsonValue def) {
+        if (def.isString()) {
+            return get(def.stringValue());
+        } else if (def.isObject()) {
+            return createFromObject(def.asObject());
+        } else if (def.isArray()) {
+            return createFromArray(def.asArray());
+        } else {
+            throw ItemscriptError.internalError(this, "create.typeDef.was.not.object.string.or.array",
+                    def.toCompactJsonString());
+        }
+    }
+
+    @Override
+    public JsonSystem system() {
+        return system;
+    }
+
+    public void validate(String type, JsonValue value) {
+        Type typeObj = get(type);
+        if (typeObj == null) { throw ItemscriptError.internalError(this, "validate.type.not.found", type); }
+        validate(typeObj, value);
+    }
+
+    public void validate(String path, Type type, JsonValue value) {
+        if (type == null) { throw ItemscriptError.internalError(this, "validate.type.was.null", new Params().p(
+                "path", path)
+                .p("value", value.toCompactJsonString())); }
+        type.validate(path, value);
+    }
+
+    public void validate(Type type, JsonValue value) {
+        validate("", type, value);
     }
 }

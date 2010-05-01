@@ -67,7 +67,6 @@ class ItemscriptNative extends ItemscriptValue implements JsonNative {
 
     @Override
     public String toJsonString() {
-        return ItemscriptCreator.quotedString("__NATIVE__ | "
-                + (value != null ? value.getClass() : "(null)"));
+        return ItemscriptCreator.quotedString("__NATIVE__ | " + (value != null ? value.getClass() : "(null)"));
     }
 }
