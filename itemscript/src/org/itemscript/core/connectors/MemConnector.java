@@ -445,6 +445,7 @@ public final class MemConnector extends ConnectorBase
      * @return
      */
     private String[] sortedKeys(ItemNode node, Pagination pagination) {
+        if (node.keySet().size() == 0) { return new String[0]; }
         String[] keyArray = new String[1];
         keyArray = node.keySet()
                 .toArray(keyArray);

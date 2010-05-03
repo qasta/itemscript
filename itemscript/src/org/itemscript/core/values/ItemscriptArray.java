@@ -58,6 +58,11 @@ final class ItemscriptArray extends ItemscriptContainer implements JsonArray {
         super(system);
     }
 
+    @Override
+    public void putByPath(String path, JsonValue value) {
+        JsonAccessHelper.putByPath(this, path, value);
+    }
+
     /**
      * Create a new ItemscriptArray with the given initial list of values.
      * 

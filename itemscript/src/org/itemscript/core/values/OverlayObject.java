@@ -73,6 +73,11 @@ public class OverlayObject implements JsonObject {
     }
 
     @Override
+    public void putByPath(String path, JsonValue value) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public JsonArray asArray() {
         return null;
     }

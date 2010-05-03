@@ -202,6 +202,7 @@ public interface JsonValue extends HasSystem {
      */
     public Float floatValue();
 
+    
     /**
      * Return the fragment identifier of this value.
      * 

@@ -91,7 +91,9 @@ public final class JsonAccessHelper {
         value.dereference(callback);
     }
 
-    public static JsonValue getByPath(JsonContainer container, String path) {
+    public static JsonValue getByPath(final JsonContainer container, String path) {
+        if (path == null || path.length() == 0) { throw ItemscriptError.internalError(container,
+                "getByPath.path.was.empty"); }
         String[] pathComponents = path.split("/");
         JsonValue next = container;
         for (int i = 0; i < pathComponents.length; ++i) {
@@ -108,6 +110,26 @@ public final class JsonAccessHelper {
             }
         }
         return next;
+    }
+
+    public static void putByPath(final JsonContainer container, String path, JsonValue value) {
+        String[] pathComponents = path.split("/");
+        JsonValue next = container;
+        for (int i = 0; i < (pathComponents.length - 1); ++i) {
+            String key = pathComponents[i];
+            if (!next.isContainer()) { throw ItemscriptError.internalError(next,
+                    "putByPath.next.was.not.a.container", new Params().p("next", next + "")
+                            .p("path", path)
+                            .p("key", key)); }
+            JsonContainer currentContainer = next.asContainer();
+            next = currentContainer.getValue(key);
+            if (next == null) {
+                next = currentContainer.createObject(key);
+            }
+        }
+        JsonContainer lastContainer = next.asContainer();
+        // Then put the value in that container.
+        lastContainer.putValue(pathComponents[pathComponents.length - 1], value);
     }
 
     public static JsonArray getRequiredArray(JsonContainer container, Object key, JsonValue value) {
