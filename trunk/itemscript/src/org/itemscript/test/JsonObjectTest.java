@@ -127,6 +127,16 @@ public class JsonObjectTest extends ItemscriptTestBase {
         }
     }
 
+    @Test
+    public void testPutByPath() {
+        JsonObject object = system().createObject();
+        object.putByPath("foo", system().createString("bar"));
+        assertEquals("bar", object.getString("foo"));
+        object.putByPath("x/y/z", system().createString("bar"));
+        assertEquals("bar", object.getByPath("x/y/z")
+                .stringValue());
+    }
+
     public void testFragment() {
         JsonObject object = system().createObject()
                 .p("foo", system().createArray()

@@ -36,6 +36,7 @@ import java.util.Set;
 
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.exceptions.ItemscriptError;
+import org.itemscript.core.util.JsonAccessHelper;
 
 final class ItemscriptObject extends ItemscriptContainer implements JsonObject {
     private final HashMap<String, JsonValue> values = new HashMap<String, JsonValue>();
@@ -47,6 +48,11 @@ final class ItemscriptObject extends ItemscriptContainer implements JsonObject {
     public ItemscriptObject(JsonSystem system, Map<String, JsonValue> value) {
         super(system);
         putAll(value);
+    }
+
+    @Override
+    public void putByPath(String path, JsonValue value) {
+        JsonAccessHelper.putByPath(this, path, value);
     }
 
     @Override

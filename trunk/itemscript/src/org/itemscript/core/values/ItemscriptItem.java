@@ -343,24 +343,13 @@ public final class ItemscriptItem implements JsonItem {
         // First, determine if the URL was just a fragment, or whether it was something to be interpreted as
         // relative to the source of this item.
         if (isFragmentOnly(url)) {
-            Fragment fragment = url.fragment();
-            if (fragment.size() > 0) {
+            if (url.fragmentString()
+                    .length() > 0) {
                 // Find (or create) the last container...
                 if (!value().isContainer()) { throw ItemscriptError.internalError(this,
                         "putValue.value.was.not.a.container", "#" + url.fragmentString()); }
                 JsonContainer container = value().asContainer();
-                for (int i = 0; i < (fragment.size() - 1); ++i) {
-                    String key = fragment.get(i);
-                    JsonValue next = getNext(url, container, key);
-                    if (next == null) {
-                        next = container.createObject(key);
-                    }
-                    if (!next.isContainer()) { throw ItemscriptError.internalError(this,
-                            "putValue.next.was.not.a.container", key); }
-                    container = next.asContainer();
-                }
-                // Then put the value in that container.
-                container.putValue(fragment.lastKey(), value);
+                container.putByPath(url.fragmentString(), value);
             } else {
                 // If the fragment was of zero length, replace the root value of this item with the supplied value.
                 JsonValue prevValue = value();
