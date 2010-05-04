@@ -42,7 +42,7 @@ import org.itemscript.core.util.JsonAccessHelper;
 
 /**
  * A pseudo-JsonObject that wraps a list of other JsonObjects. When a value is requested from this
- * ChainObject, it is looked for in each of the objects inside this one in turn; the first object that
+ * OverlayObject, it is looked for in each of the objects inside this one in turn; the first object that
  * has a value under that key causes that value to be returned. If none of the objects contains a value
  * under that key, {@link #getValue(String)} returns null.
  * <p>
@@ -57,7 +57,7 @@ public class OverlayObject implements JsonObject {
     private final List<JsonObject> objects;
 
     /**
-     * Create a new ChainObject from the given list of JsonObjects.
+     * Create a new OverlayObject from the given list of JsonObjects.
      * 
      * @param system The associated JsonSystem.
      * @param objects The list of objects to search.
@@ -587,7 +587,7 @@ public class OverlayObject implements JsonObject {
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("[ChainObject objects=");
+        sb.append("[OverlayObject objects=");
         for (int i = 0; i < objects.size(); ++i) {
             if (i > 0) {
                 sb.append(",");
