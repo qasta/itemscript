@@ -18,9 +18,14 @@ public class FunctionFoundry {
     static {
         // FIXME - these should be static instances for functions that do not take arguments.
         factories.put("html", new FunctionFactory() {
+            private Function function;
+
             @Override
             public Function create(JsonSystem system, List<Expression> args) {
-                return new HtmlEscapeFunction(system);
+                if (function == null) {
+                    function = new HtmlEscapeFunction(system);
+                }
+                return function;
             }
         });
         FunctionFactory urlEncodeFunctionFactory = new FunctionFactory() {
@@ -70,6 +75,18 @@ public class FunctionFoundry {
             @Override
             public Function create(JsonSystem system, List<Expression> args) {
                 return new PrettyHtmlFunction(system);
+            }
+        });
+        factories.put("equals", new FunctionFactory() {
+            @Override
+            public Function create(JsonSystem system, List<Expression> args) {
+                return new EqualsFunction(system, args);
+            }
+        });
+        factories.put("or", new FunctionFactory() {
+            @Override
+            public Function create(JsonSystem system, List<Expression> args) {
+                return new OrFunction(system, args);
             }
         });
     }

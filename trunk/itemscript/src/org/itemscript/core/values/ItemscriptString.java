@@ -30,7 +30,6 @@
 package org.itemscript.core.values;
 
 import org.itemscript.core.JsonSystem;
-import org.itemscript.core.connectors.GetCallback;
 import org.itemscript.core.util.Base64;
 
 final class ItemscriptString extends ItemscriptScalar implements JsonString {
@@ -69,24 +68,6 @@ final class ItemscriptString extends ItemscriptScalar implements JsonString {
     public JsonValue copy() {
         if (stringValue == null && binaryValue != null) { return system().createString(binaryValue); }
         return system().createString(stringValue);
-    }
-
-    @Override
-    public JsonValue dereference() {
-        if (item() != null) {
-            return item().get(stringValue());
-        } else {
-            return system().get(stringValue());
-        }
-    }
-
-    @Override
-    public void dereference(GetCallback callback) {
-        if (item() != null) {
-            item().get(stringValue(), callback);
-        } else {
-            system().get(stringValue(), callback);
-        }
     }
 
     @Override

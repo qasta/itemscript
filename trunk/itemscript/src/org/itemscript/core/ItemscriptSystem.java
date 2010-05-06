@@ -216,26 +216,6 @@ public final class ItemscriptSystem implements JsonSystem {
         return factory().createString(value);
     }
 
-    @Override
-    public final JsonValue dereference(String key) {
-        return JsonAccessHelper.dereference(getValue(key));
-    }
-
-    @Override
-    public final void dereference(String key, final GetCallback callback) {
-        get(key, new GetCallback() {
-            @Override
-            public void onError(Throwable e) {
-                callback.onError(e);
-            }
-
-            @Override
-            public void onSuccess(JsonValue value) {
-                value.dereference(callback);
-            }
-        });
-    }
-
     private JsonCreator factory() {
         return factory;
     }

@@ -30,19 +30,10 @@
 package org.itemscript.core.values;
 
 import org.itemscript.core.JsonSystem;
-import org.itemscript.core.connectors.GetCallback;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Url;
 
 abstract class ItemscriptValue implements JsonValue {
-    protected static String indent(int indent) {
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < indent; ++i) {
-            sb.append("    ");
-        }
-        return sb.toString();
-    }
-
     private final JsonSystem system;
     private String key = null;
     private JsonContainer parent;
@@ -100,31 +91,6 @@ abstract class ItemscriptValue implements JsonValue {
     @Override
     public Boolean booleanValue() {
         throw new UnsupportedOperationException("booleanValue() called on a value that was not a JsonBoolean");
-    }
-
-    @Override
-    public JsonValue dereference() {
-        throw ItemscriptError.internalError(this, "dereference.value.was.not.JsonString.or.JsonContainer");
-    }
-
-    @Override
-    public void dereference(GetCallback callback) {
-        callback.onError(ItemscriptError.internalError(this,
-                "dereference.value.was.not.JsonString.or.JsonContainer"));
-    }
-
-    @Override
-    public void detachFromItem() {
-        if (item() == null) { return; }
-        if (parent() != null) {
-            parent().detachFromItem();
-            return;
-        }
-        if (item().source()
-                .startsWith("mem:")) { throw new UnsupportedOperationException(
-                "detachFromItem is not supported on values loaded from the mem: database"); }
-        ((ItemscriptItem) item()).detachFromValue();
-        setItem(null);
     }
 
     @Override

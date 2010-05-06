@@ -96,13 +96,11 @@ public final class ItemscriptItem implements JsonItem {
     }
 
     @Override
-    public final JsonValue dereference(String key) {
-        return JsonAccessHelper.dereference(getValue(key));
-    }
-
-    @Override
-    public final void dereference(String key, GetCallback callback) {
-        JsonAccessHelper.dereference(getValue(key), callback);
+    public void detachValue() {
+        if (value() == null) { return; }
+        ((ItemscriptValue) value).setItem(null);
+        this.value = null;
+        this.handlers = null;
     }
 
     /**

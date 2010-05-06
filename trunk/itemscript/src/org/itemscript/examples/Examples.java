@@ -258,21 +258,6 @@ public class Examples {
                     .p("ghi", "xyz"));
             String stringValue = system.getString("mem:/def#ghi"); // xyz
         }
-        // Dereferencing of URLs contained inside JsonItems relative to the JsonItem's source.
-        {
-            system.put("mem:/abc", system.createObject()
-                    .p("internal", "#def")
-                    .p("def", "xyz")
-                    .p("absolute", "mem:/ghi")
-                    .p("relative", "ghi"));
-            system.put("mem:/ghi", 123);
-            String internalString = system.dereference("mem:/abc#internal")
-                    .stringValue(); // xyz
-            int absoluteInt = system.dereference("mem:/abc#absolute")
-                    .intValue(); // 123
-            int relativeInt = system.dereference("mem:/abc#relative")
-                    .intValue(); // 123
-        }
         // Connectors for HTTP & classpath.
         {
             // JsonObject object = system.getObject("http://itemscript.org/test.json");

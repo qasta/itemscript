@@ -233,7 +233,7 @@ public class StringAnalyzer implements HasSystem {
         Token peek = scanner.peek();
         Token start = peek;
         while (peek != null) {
-            if (peek.isExpressionToken()) {
+            if (peek.isExpressionToken() || peek.isQuotedStringToken()) {
                 // Add the entire following expression.
                 args.add(analyzeExpression());
             } else if (peek.isCommaToken()) {

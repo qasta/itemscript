@@ -35,19 +35,27 @@ import java.util.Map;
 import java.util.Set;
 
 import org.itemscript.core.JsonSystem;
-import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.util.JsonAccessHelper;
 
-final class ItemscriptObject extends ItemscriptContainer implements JsonObject {
-    private final HashMap<String, JsonValue> values = new HashMap<String, JsonValue>();
+/**
+ * A WeakObject implements a JsonObject that does not change the state of the values contained within it,
+ * and whose contents cannot be changed through any of the standard JsonObject <code>put</code> operations. It can be useful when you need
+ * a JsonObject whose contents are JsonValues found elsewhere, but do not want to copy all those values; it should be used with
+ * caution, and only when the recipient will not be modifying the object, since it is not a full substitute for JsonObject and
+ * since the values contained within it may be changed externally to it.
+ *  
+ * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
+ */
+public class WeakObject extends WeakContainer implements JsonObject, ToJsonStringWithIndent {
+    private final Map<String, JsonValue> values = new HashMap<String, JsonValue>();
 
-    public ItemscriptObject(JsonSystem system) {
+    /**
+     * Create a new WeakObject.
+     * 
+     * @param system The associated JsonSystem.
+     */
+    public WeakObject(JsonSystem system) {
         super(system);
-    }
-
-    public ItemscriptObject(JsonSystem system, Map<String, JsonValue> value) {
-        super(system);
-        putAll(value);
     }
 
     @Override
@@ -57,9 +65,7 @@ final class ItemscriptObject extends ItemscriptContainer implements JsonObject {
 
     @Override
     public void clear() {
-        for (String key : values.keySet()) {
-            remove(key);
-        }
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -73,8 +79,8 @@ final class ItemscriptObject extends ItemscriptContainer implements JsonObject {
     }
 
     @Override
-    public boolean containsValue(Object key) {
-        return values.containsValue(key);
+    public boolean containsValue(Object value) {
+        return values.containsValue(value);
     }
 
     @Override
@@ -88,27 +94,13 @@ final class ItemscriptObject extends ItemscriptContainer implements JsonObject {
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (other instanceof JsonObject) {
-            JsonObject otherObject = (JsonObject) other;
-            if (otherObject.size() == size()) {
-                for (String key : keySet()) {
-                    if (!get(key).equals(otherObject.get(key))) { return false; }
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
     public JsonValue get(Object key) {
         return values.get(key);
     }
 
     @Override
     public JsonValue getValue(String key) {
-        return get(key);
+        return values.get(key);
     }
 
     @Override
@@ -128,103 +120,52 @@ final class ItemscriptObject extends ItemscriptContainer implements JsonObject {
 
     @Override
     public JsonObject p(String key, Boolean value) {
-        put(key, value);
-        return this;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public JsonObject p(String key, Double value) {
-        put(key, value);
-        return this;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public JsonObject p(String key, Float value) {
-        put(key, value);
-        return this;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public JsonObject p(String key, Integer value) {
-        put(key, value);
-        return this;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public JsonObject p(String key, JsonValue value) {
-        put(key, value);
-        return this;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public JsonObject p(String key, Long value) {
-        put(key, value);
-        return this;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public JsonObject p(String key, String value) {
-        put(key, value);
-        return this;
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public JsonValue put(String key, JsonValue value) {
-        if (value == null) {
-            value = system().createNull();
-        }
-        if (value.system() != system()) { throw ItemscriptError.internalError(this, "put.system.mismatch", key); }
-        prepareValueForPut(key, value);
-        JsonValue previous = values.put(key, value);
-        updateRemovedValue(previous);
-        if (item() != null) {
-            if (((ItemscriptItem) item()).hasHandlers()) {
-                ((ItemscriptItem) item()).notifyPut(value.fragment());
-            }
-        }
-        return previous;
+    public JsonValue put(String arg0, JsonValue arg1) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void putAll(Map<? extends String, ? extends JsonValue> other) {
-        for (String key : other.keySet()) {
-            JsonValue value = other.get(key);
-            put(key, value);
-        }
+    public void putAll(Map<? extends String, ? extends JsonValue> arg0) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void putByPath(String path, JsonValue value) {
-        JsonAccessHelper.putByPath(this, path, value);
-    }
-
-    @Override
-    public void putValue(String key, JsonValue value) {
-        put(key, value);
-    }
-
-    @Override
-    public JsonValue remove(Object key) {
-        String fragment = null;
-        if (item() != null) {
-            JsonValue value = get(key);
-            if (value != null) {
-                fragment = value.fragment();
-            }
-        }
-        JsonValue ret = values.remove(key);
-        updateRemovedValue(ret);
-        if (item() != null) {
-            if (((ItemscriptItem) item()).hasHandlers()) {
-                ((ItemscriptItem) item()).notifyRemove(fragment);
-            }
-        }
-        return ret;
-    }
-
-    @Override
-    public void removeValue(String key) {
-        remove(key);
+    public JsonValue remove(Object arg0) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -248,7 +189,22 @@ final class ItemscriptObject extends ItemscriptContainer implements JsonObject {
     }
 
     @Override
+    public String toString() {
+        return toJsonString();
+    }
+
+    @Override
     public Collection<JsonValue> values() {
-        return values.values();
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Add the given value under the given key, without changing its state.
+     * 
+     * @param key The key to put under.
+     * @param value The value to put.
+     */
+    public void weakPut(String key, JsonValue value) {
+        values.put(key, value);
     }
 }

@@ -6,7 +6,6 @@ import org.itemscript.core.JsonSystem;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.template.object.ObjectAnalyzer;
 import org.itemscript.core.template.text.StringAnalyzer;
-import org.itemscript.core.util.StaticJsonUtil;
 import org.itemscript.core.values.JsonValue;
 
 /**
@@ -34,8 +33,6 @@ public class Analyzer implements HasSystem {
         if (value == null) { return null; }
         if (value.isString()) {
             return new StringAnalyzer(system(), this, value.stringValue()).analyze();
-        } else if (value.isArray()) {
-            return analyze(StaticJsonUtil.joinArrayOfStrings(value.asArray()));
         } else if (value.isObject()) {
             return new ObjectAnalyzer(system(), this, value.asObject()).analyze();
         } else if (value.isBoolean() || value.isNumber() || value.isNull()) {

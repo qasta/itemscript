@@ -149,6 +149,11 @@ public interface JsonItem extends HasSystem, JsonGetAccess, JsonPutAccess {
     public void removeHandler(HandlerReg reg);
 
     /**
+     * Detach the value from this item, allowing it to be attached to a different item.
+     */
+    public void detachValue();
+
+    /**
      * Get the source URL of this item.
      * 
      * @return The source URL of this item.
