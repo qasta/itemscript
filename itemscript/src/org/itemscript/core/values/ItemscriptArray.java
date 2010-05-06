@@ -58,11 +58,6 @@ final class ItemscriptArray extends ItemscriptContainer implements JsonArray {
         super(system);
     }
 
-    @Override
-    public void putByPath(String path, JsonValue value) {
-        JsonAccessHelper.putByPath(this, path, value);
-    }
-
     /**
      * Create a new ItemscriptArray with the given initial list of values.
      * 
@@ -253,13 +248,7 @@ final class ItemscriptArray extends ItemscriptContainer implements JsonArray {
 
     @Override
     public JsonArray copy() {
-        JsonArray newArray = system().createArray();
-        for (int i = 0; i < size(); ++i) {
-            JsonValue value = get(i);
-            JsonValue newValue = value.copy();
-            newArray.set(i, newValue);
-        }
-        return newArray;
+        return JsonAccessHelper.copyArray(system(), this);
     }
 
     @Override
@@ -478,6 +467,11 @@ final class ItemscriptArray extends ItemscriptContainer implements JsonArray {
     }
 
     @Override
+    public void putByPath(String path, JsonValue value) {
+        JsonAccessHelper.putByPath(this, path, value);
+    }
+
+    @Override
     public void putValue(String key, JsonValue value) {
         set(Integer.valueOf(key), value);
     }
@@ -608,22 +602,7 @@ final class ItemscriptArray extends ItemscriptContainer implements JsonArray {
 
     @Override
     public String toCompactJsonString() {
-        if (size() == 0) { return "[]"; }
-        StringBuffer sb = new StringBuffer("[");
-        for (int i = 0; i < values.size(); ++i) {
-            JsonValue value = values.get(i);
-            if (value.isContainer()) {
-                sb.append(value.asContainer()
-                        .toCompactJsonString());
-            } else {
-                sb.append(value.toCompactJsonString());
-            }
-            if (i + 1 != size()) {
-                sb.append(",");
-            }
-        }
-        sb.append("]");
-        return sb.toString();
+        return JsonAccessHelper.arrayToCompactJsonString(this);
     }
 
     @Override
@@ -633,23 +612,6 @@ final class ItemscriptArray extends ItemscriptContainer implements JsonArray {
 
     @Override
     public String toJsonString(int indent) {
-        if (size() == 0) { return "[]"; }
-        StringBuffer sb = new StringBuffer("[");
-        sb.append("\n");
-        for (int i = 0; i < values.size(); ++i) {
-            JsonValue value = values.get(i);
-            sb.append(indent(indent + 1));
-            if (value.isContainer()) {
-                sb.append(((ItemscriptContainer) value).toJsonString(indent + 1));
-            } else {
-                sb.append(value.toJsonString());
-            }
-            if (i + 1 != size()) {
-                sb.append(",");
-            }
-            sb.append("\n");
-        }
-        sb.append(indent(indent) + "]");
-        return sb.toString();
+        return JsonAccessHelper.arrayToJsonString(this, indent);
     }
 }

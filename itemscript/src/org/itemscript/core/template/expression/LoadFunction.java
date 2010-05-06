@@ -15,6 +15,6 @@ public class LoadFunction extends FunctionBase {
 
     @Override
     public JsonValue execute(TemplateExec template, JsonValue context, JsonValue value) {
-        return system().get(url);
+        return template.get(url);
     }
 }

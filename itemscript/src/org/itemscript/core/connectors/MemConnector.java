@@ -398,13 +398,13 @@ public final class MemConnector extends ConnectorBase
             if (object == null) {
                 field = "";
             } else {
-                JsonValue fieldValue = object.get(orderBy);
+                JsonValue fieldValue = object.getByPath(orderBy);
                 if (fieldValue == null) {
                     field = "";
                 } else if (fieldValue.isString()) {
                     field = fieldValue.stringValue();
                 } else if (fieldValue.isNumber()) {
-                    field = fieldValue.doubleValue() + "";
+                    field = fieldValue.toJsonString();
                 } else if (fieldValue.isBoolean()) {
                     field = fieldValue.booleanValue() + "";
                 } else {
@@ -445,7 +445,8 @@ public final class MemConnector extends ConnectorBase
      * @return
      */
     private String[] sortedKeys(ItemNode node, Pagination pagination) {
-        if (node.keySet().size() == 0) { return new String[0]; }
+        if (node.keySet()
+                .size() == 0) { return new String[0]; }
         String[] keyArray = new String[1];
         keyArray = node.keySet()
                 .toArray(keyArray);

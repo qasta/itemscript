@@ -30,7 +30,6 @@
 package org.itemscript.core.values;
 
 import org.itemscript.core.JsonSystem;
-import org.itemscript.core.connectors.GetCallback;
 
 /**
  * Provides access to contained {@link JsonValue} by string locators, which may be keys in the
@@ -43,34 +42,6 @@ import org.itemscript.core.connectors.GetCallback;
  *
  */
 public interface JsonGetAccess {
-    /**
-     * Dereference a value under the given key.
-     * <p>
-     * If the value is a JsonString, the string is treated as a URL and retrieved.
-     * <p>
-     * If the value is a JsonContainer, the value itself is returned.
-     * <p>
-     * If the value is of any other type, an exception will be thrown.
-     * 
-     * @param key The key used to find the value to dereference.
-     * @return The dereferenced value.
-     */
-    public JsonValue dereference(String key);
-
-    /**
-     * Dereference a value under the given key, asynchronously, calling the supplied callback when it returns.
-     * <p>
-     * If the value is a JsonString, the string is treated as a URL and retrieved.
-     * <p>
-     * If the value is a JsonContainer, the value itself is returned.
-     * <p>
-     * If the value is of any other type, an exception will be thrown.   
-     * 
-     * @param key The key used to find the value to dereference.
-     * @param callback The callback to call when the dereference operation completes.
-     */
-    public void dereference(String key, GetCallback callback);
-
     /**
      * Get a JsonArray value. If the element does not exist or is not an JsonArray, returns null.
      * 

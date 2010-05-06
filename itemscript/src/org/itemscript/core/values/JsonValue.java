@@ -31,7 +31,6 @@ package org.itemscript.core.values;
 
 import org.itemscript.core.HasSystem;
 import org.itemscript.core.JsonSystem;
-import org.itemscript.core.connectors.GetCallback;
 
 /**
  * Represents a JSON value.
@@ -143,48 +142,6 @@ public interface JsonValue extends HasSystem {
     public JsonValue copy();
 
     /**
-     * If this value is a JsonString, treat it as a URL, and get the value referenced by the URL.
-     * 
-     * If this value is a JsonContainer, return this value.
-     * 
-     * If this value is neither a JsonString nor a JsonContainer, throws an exception.
-     * 
-     * @return The dereferenced value if this was a JsonString, or this object if this was a JsonContainer.
-     */
-    public JsonValue dereference();
-
-    /**
-     * If this value is a JsonString, treat it as a URL, get the value referenced by the URL
-     * asynchronously, calling the supplied callback when it returns.
-     * 
-     * If it is a JsonContainer, return this value.
-     *
-     * If this value is neither a JsonString nor a JsonContainer, throws an exception.
-     * 
-     * @param callback The callback to be called when the dereference operation completes.
-     */
-    public void dereference(GetCallback callback);
-
-    /**
-     * Detach this value from its JsonItem, if any.
-     * <p>
-     * This method is largely an efficiency alternative to {@link #copy}; instead of copying a value loaded from
-     * an external source, you can just throw away the sourcing information and store it directly.
-     * <p>
-     * This is an experimental and kind of ugly method, so it might go away without much warning if a nicer way of
-     * accomplishing the same goal is found.
-     * <p>
-     * Note: At present, this operation is not supported on values that are attached to <code>mem:</code> JsonItems.
-     * Unlike values loaded from a remote source, values returned from the in-memory database are not copies, but are
-     * the actual database objects. So, allowing them to be detached from their JsonItems could cause problems. Instead,
-     * you should save a local reference to the value, then call {@link JsonSystem#remove} to remove the value, which then
-     * frees it to be put back in somewhere else.
-     * 
-     * @throws UnsupportedOperationException If this value is attached to a JsonItem with a <code>mem:</code> source. 
-     */
-    public void detachFromItem();
-
-    /**
      * If this value is a JsonNumber, return its double value.
      * 
      * If this value is not a JsonNumber an exception will be thrown.
@@ -202,7 +159,6 @@ public interface JsonValue extends HasSystem {
      */
     public Float floatValue();
 
-    
     /**
      * Return the fragment identifier of this value.
      * 

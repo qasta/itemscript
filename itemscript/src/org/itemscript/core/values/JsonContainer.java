@@ -51,28 +51,6 @@ public interface JsonContainer extends JsonValue, JsonGetAccess {
     public boolean containsKey(String key);
 
     /**
-     * Get a specific value from this container using a path consisting of a series of URL-encoded keys separated by
-     * slashes. If the path is empty, it is an error.
-     * 
-     * @param path The path to the value.
-     * @return The value under that path, or null if the value cannot be found.
-     * @throws ItemscriptError If a value that needed to be a container to interpret the path was a scalar value, or
-     * if a string key needs to be applied to an array container, or if the path was null or empty.
-     */
-    public JsonValue getByPath(String path);
-
-    /**
-     * Put a value in this container or one of its sub-elements using a path consisting of a series of URL-encoded keys
-     * separated by slashes. If the path is empty, it is an error.
-     * 
-     * @param path The path to the new value.
-     * @param value The value to put.
-     * @throws ItemscriptError If a value that needed to be a container to interpret the path was a scalar valur, or if
-     * a string key needs to be applied to an array container, or if the path was null or empty.
-     */
-    public void putByPath(String path, JsonValue value);
-
-    /**
      * Create a new JsonArray in this container.
      * 
      * @param key The key to create under.
@@ -87,6 +65,17 @@ public interface JsonContainer extends JsonValue, JsonGetAccess {
      * @return The new JsonObject.
      */
     public JsonObject createObject(String key);
+
+    /**
+     * Get a specific value from this container using a path consisting of a series of URL-encoded keys separated by
+     * slashes. If the path is empty, it is an error.
+     * 
+     * @param path The path to the value.
+     * @return The value under that path, or null if the value cannot be found.
+     * @throws ItemscriptError If a value that needed to be a container to interpret the path was a scalar value, or
+     * if a string key needs to be applied to an array container, or if the path was null or empty.
+     */
+    public JsonValue getByPath(String path);
 
     /**
      * Get a JsonArray from this container, creating it if the value did not exist.
@@ -315,6 +304,17 @@ public interface JsonContainer extends JsonValue, JsonGetAccess {
      * @return A new JsonString.
      */
     public JsonString put(String key, String value);
+
+    /**
+     * Put a value in this container or one of its sub-elements using a path consisting of a series of URL-encoded keys
+     * separated by slashes. If the path is empty, it is an error.
+     * 
+     * @param path The path to the new value.
+     * @param value The value to put.
+     * @throws ItemscriptError If a value that needed to be a container to interpret the path was a scalar valur, or if
+     * a string key needs to be applied to an array container, or if the path was null or empty.
+     */
+    public void putByPath(String path, JsonValue value);
 
     /**
      * Put a native object as a JsonNative.

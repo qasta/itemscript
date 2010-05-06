@@ -58,7 +58,7 @@ public class JsonItemTest extends ItemscriptTestBase {
         JsonValue value = system().get("http://itemscript.org/test.json");
         assertNotNull(value.item());
         JsonItem item = value.item();
-        value.detachFromItem();
+        item.detachValue();
         assertNull(value.item());
         assertNull(item.value());
         system().put("/foo", value);

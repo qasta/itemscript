@@ -45,7 +45,8 @@ public class TextTemplate implements Element, HasSystem {
     public JsonSystem system() {
         return system;
     }
-    
+
+    @Override
     public String toString() {
         return "[TextTemplate oneElement=" + oneElement + " contents=" + contents + "]";
     }

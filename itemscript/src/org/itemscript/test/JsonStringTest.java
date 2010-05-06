@@ -30,7 +30,6 @@
 package org.itemscript.test;
 
 import org.itemscript.core.values.JsonString;
-import org.itemscript.core.values.JsonValue;
 import org.junit.Test;
 
 public class JsonStringTest extends ItemscriptTestBase {
@@ -74,15 +73,6 @@ public class JsonStringTest extends ItemscriptTestBase {
         byte[] retrievedValue = string4.binaryValue();
         assertEquals(Byte.MIN_VALUE, retrievedValue[0]);
         assertEquals(string3.stringValue(), string4.stringValue());
-    }
-
-    @Test
-    public void testDereference() {
-        JsonString value = system().get("classpath:org/itemscript/test/test2.json#key")
-                .asString();
-        JsonValue test = value.dereference();
-        assertEquals("bar", test.asObject()
-                .getString("foo"));
     }
 
     @Test

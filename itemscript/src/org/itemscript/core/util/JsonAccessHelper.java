@@ -1,18 +1,20 @@
 
 package org.itemscript.core.util;
 
+import org.itemscript.core.JsonSystem;
 import org.itemscript.core.Params;
-import org.itemscript.core.connectors.GetCallback;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Url;
+import org.itemscript.core.values.ItemscriptCreator;
 import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonContainer;
 import org.itemscript.core.values.JsonGetAccess;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
+import org.itemscript.core.values.ToJsonStringWithIndent;
 
 /**
- * Contains methods for implementing the {@link JsonGetAccess} interface. 
+ * Contains methods for implementing the {@link JsonGetAccess} interface and other container interfaces. 
  * 
  * This class is not intended for general use, and the interface is not promised to be stable; it has to be public because it
  * is used by various other classes in different packages.
@@ -21,6 +23,68 @@ import org.itemscript.core.values.JsonValue;
  *
  */
 public final class JsonAccessHelper {
+    public static String arrayToCompactJsonString(JsonArray array) {
+        int size = array.size();
+        if (size == 0) { return "[]"; }
+        StringBuffer sb = new StringBuffer("[");
+        for (int i = 0; i < size; ++i) {
+            JsonValue value = array.get(i);
+            if (value.isContainer()) {
+                sb.append(value.asContainer()
+                        .toCompactJsonString());
+            } else {
+                sb.append(value.toCompactJsonString());
+            }
+            if (i + 1 != size) {
+                sb.append(",");
+            }
+        }
+        sb.append("]");
+        return sb.toString();
+    }
+
+    public static JsonObject copyObject(JsonSystem system, JsonObject object) {
+        JsonObject newObject = system.createObject();
+        for (String key : object.keySet()) {
+            JsonValue value = object.get(key);
+            JsonValue newValue = value.copy();
+            newObject.put(key, newValue);
+        }
+        return newObject;
+    }
+
+    public static JsonArray copyArray(JsonSystem system, JsonArray array) {
+        JsonArray newArray = system.createArray();
+        for (int i = 0, s = array.size(); i < s; ++i) {
+            JsonValue value = array.get(i);
+            JsonValue newValue = value.copy();
+            newArray.set(i, newValue);
+        }
+        return newArray;
+    }
+
+    public static String arrayToJsonString(JsonArray array, int indent) {
+        int size = array.size();
+        if (size == 0) { return "[]"; }
+        StringBuffer sb = new StringBuffer("[");
+        sb.append("\n");
+        for (int i = 0; i < size; ++i) {
+            JsonValue value = array.get(i);
+            sb.append(JsonAccessHelper.indent(indent + 1));
+            if (value.isContainer()) {
+                sb.append(((ToJsonStringWithIndent) value).toJsonString(indent + 1));
+            } else {
+                sb.append(value.toJsonString());
+            }
+            if (i + 1 != size) {
+                sb.append(",");
+            }
+            sb.append("\n");
+        }
+        sb.append(JsonAccessHelper.indent(indent) + "]");
+        return sb.toString();
+    }
+
     public static JsonArray asArray(JsonValue value) {
         if (value == null) { return null; }
         return value.asArray();
@@ -79,18 +143,6 @@ public final class JsonAccessHelper {
         return value.stringValue();
     }
 
-    public static JsonValue dereference(JsonValue value) {
-        if (value == null) { throw new ItemscriptError(
-                "error.itemscript.JsonAccessHelper.dereference.value.was.null"); }
-        return value.dereference();
-    }
-
-    public static void dereference(JsonValue value, GetCallback callback) {
-        if (value == null) { throw new ItemscriptError(
-                "error.itemscript.JsonAccessHelper.dereference.value.was.null"); }
-        value.dereference(callback);
-    }
-
     public static JsonValue getByPath(final JsonContainer container, String path) {
         if (path == null || path.length() == 0) { throw ItemscriptError.internalError(container,
                 "getByPath.path.was.empty"); }
@@ -110,26 +162,6 @@ public final class JsonAccessHelper {
             }
         }
         return next;
-    }
-
-    public static void putByPath(final JsonContainer container, String path, JsonValue value) {
-        String[] pathComponents = path.split("/");
-        JsonValue next = container;
-        for (int i = 0; i < (pathComponents.length - 1); ++i) {
-            String key = pathComponents[i];
-            if (!next.isContainer()) { throw ItemscriptError.internalError(next,
-                    "putByPath.next.was.not.a.container", new Params().p("next", next + "")
-                            .p("path", path)
-                            .p("key", key)); }
-            JsonContainer currentContainer = next.asContainer();
-            next = currentContainer.getValue(key);
-            if (next == null) {
-                next = currentContainer.createObject(key);
-            }
-        }
-        JsonContainer lastContainer = next.asContainer();
-        // Then put the value in that container.
-        lastContainer.putValue(pathComponents[pathComponents.length - 1], value);
     }
 
     public static JsonArray getRequiredArray(JsonContainer container, Object key, JsonValue value) {
@@ -225,9 +257,84 @@ public final class JsonAccessHelper {
         return value;
     }
 
+    public static String indent(int indent) {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < indent; ++i) {
+            sb.append("    ");
+        }
+        return sb.toString();
+    }
+
     public static Params keyValueParams(JsonContainer container, Object key, JsonValue value) {
         return new Params().p("container", container.toCompactJsonString())
                 .p("key", key + "")
                 .p("value", value != null ? value.toCompactJsonString() : "null");
+    }
+
+    public static String objectToCompactJsonString(JsonObject object) {
+        int size = object.size();
+        if (size == 0) { return "{}"; }
+        StringBuffer sb = new StringBuffer("{");
+        int i = 0;
+        for (String key : object.keySet()) {
+            JsonValue value = object.get(key);
+            sb.append(ItemscriptCreator.quotedString(key) + ":");
+            if (value.isContainer()) {
+                sb.append(value.asContainer()
+                        .toCompactJsonString());
+            } else {
+                sb.append(value.toCompactJsonString());
+            }
+            if (i + 1 != size) {
+                sb.append(",");
+            }
+            ++i;
+        }
+        sb.append("}");
+        return sb.toString();
+    }
+
+    public static String objectToJsonString(JsonObject object, int indent) {
+        int size = object.size();
+        if (size == 0) { return "{}"; }
+        StringBuffer sb = new StringBuffer("{");
+        sb.append("\n");
+        int i = 0;
+        for (String key : object.keySet()) {
+            JsonValue value = object.get(key);
+            sb.append(indent(indent + 1) + ItemscriptCreator.quotedString(key) + " : ");
+            if (value.isContainer()) {
+                sb.append(((ToJsonStringWithIndent) value).toJsonString(indent + 1));
+            } else {
+                sb.append(value.toJsonString());
+            }
+            if (i + 1 != size) {
+                sb.append(",");
+            }
+            sb.append("\n");
+            ++i;
+        }
+        sb.append(indent(indent) + "}");
+        return sb.toString();
+    }
+
+    public static void putByPath(final JsonContainer container, String path, JsonValue value) {
+        String[] pathComponents = path.split("/");
+        JsonValue next = container;
+        for (int i = 0; i < (pathComponents.length - 1); ++i) {
+            String key = pathComponents[i];
+            if (!next.isContainer()) { throw ItemscriptError.internalError(next,
+                    "putByPath.next.was.not.a.container", new Params().p("next", next + "")
+                            .p("path", path)
+                            .p("key", key)); }
+            JsonContainer currentContainer = next.asContainer();
+            next = currentContainer.getValue(key);
+            if (next == null) {
+                next = currentContainer.createObject(key);
+            }
+        }
+        JsonContainer lastContainer = next.asContainer();
+        // Then put the value in that container.
+        lastContainer.putValue(pathComponents[pathComponents.length - 1], value);
     }
 }

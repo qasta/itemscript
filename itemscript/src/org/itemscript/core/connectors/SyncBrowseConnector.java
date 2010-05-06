@@ -111,7 +111,7 @@ public interface SyncBrowseConnector extends Connector {
      * It must return a JsonArray in which each element is a JsonObject with two entries: under "key"
      * will be the key of the sub-item; under "value" is the actual JsonValue of the sub-item.
      * 
-     * It may also return a JsonObject under "meta" containing metadata about each sub-item.
+     * It may also return a JsonObject under "meta" containing metadata about the results.
      * 
      * For instance:
      * 
@@ -153,9 +153,9 @@ public interface SyncBrowseConnector extends Connector {
      * <ul>
      * <li>"startRow" - The row to begin the page of keys, where 0 would be the first row.</li>
      * <li>"numRows" - The number of rows to return in the page of keys.</li>
-     * <li>"orderBy" - The field in the value of the sub-items to order by. This must be a top-level field of the object values
-     * of the sub-items, and must have a scalar value, not a container value. The ordering of sub-items whose values are not objects
-     * or which are objects without the given field or where the field is a container value is undefined.</li>
+     * <li>"orderBy" - The path to the field in the value of the sub-items to order by. This must have a scalar value, not a
+     * container value. The ordering of sub-items whose values are not objects or which are objects without the given field or where the field
+     * is a container value is undefined. The path must consist of a key or a series of URL-encoded keys separated by slashes.</li>
      * <li>"ascending" - With a value of "true" or "false", whether to sort results in ascending or descending order.</li>
      * </ul>
      * 

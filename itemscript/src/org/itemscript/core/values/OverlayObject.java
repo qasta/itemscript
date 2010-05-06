@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.itemscript.core.JsonSystem;
-import org.itemscript.core.connectors.GetCallback;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.util.JsonAccessHelper;
 
@@ -52,8 +51,7 @@ import org.itemscript.core.util.JsonAccessHelper;
  * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
-public class OverlayObject implements JsonObject {
-    private final JsonSystem system;
+public class OverlayObject extends WeakContainer implements JsonObject, ToJsonStringWithIndent {
     private final List<JsonObject> objects;
 
     /**
@@ -63,7 +61,7 @@ public class OverlayObject implements JsonObject {
      * @param objects The list of objects to search.
      */
     public OverlayObject(JsonSystem system, List<JsonObject> objects) {
-        this.system = system;
+        super(system);
         this.objects = objects;
         for (int i = 0; i < objects.size(); ++i) {
             JsonObject object = objects.get(i);
@@ -73,58 +71,8 @@ public class OverlayObject implements JsonObject {
     }
 
     @Override
-    public void putByPath(String path, JsonValue value) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public JsonArray asArray() {
-        return null;
-    }
-
-    @Override
-    public JsonBoolean asBoolean() {
-        return null;
-    }
-
-    @Override
-    public JsonContainer asContainer() {
-        return this;
-    }
-
-    @Override
-    public JsonNative asNative() {
-        return null;
-    }
-
-    @Override
-    public JsonNull asNull() {
-        return null;
-    }
-
-    @Override
-    public JsonNumber asNumber() {
-        return null;
-    }
-
-    @Override
     public JsonObject asObject() {
         return this;
-    }
-
-    @Override
-    public JsonString asString() {
-        return null;
-    }
-
-    @Override
-    public byte[] binaryValue() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Boolean booleanValue() {
-        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -145,52 +93,13 @@ public class OverlayObject implements JsonObject {
 
     @Override
     public boolean containsValue(Object arg0) {
+        // This could be implemented, but has not been necessary so far.
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public JsonValue copy() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public JsonArray createArray(String key) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public JsonObject createObject(String key) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public JsonValue dereference() {
-        return this;
-    }
-
-    @Override
-    public void dereference(GetCallback callback) {
-        callback.onSuccess(this);
-    }
-
-    @Override
-    public final JsonValue dereference(String key) {
-        return JsonAccessHelper.dereference(getValue(key));
-    }
-
-    @Override
-    public final void dereference(String key, GetCallback callback) {
-        JsonAccessHelper.dereference(getValue(key), callback);
-    }
-
-    @Override
-    public void detachFromItem() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Double doubleValue() {
-        throw new UnsupportedOperationException();
+    public JsonObject copy() {
+        return JsonAccessHelper.copyObject(system(), this);
     }
 
     @Override
@@ -199,134 +108,9 @@ public class OverlayObject implements JsonObject {
     }
 
     @Override
-    public Float floatValue() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String fragment() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public JsonValue get(Object key) {
         if (!(key instanceof String)) { return null; }
         return getValue((String) key);
-    }
-
-    @Override
-    public final JsonArray getArray(String key) {
-        return JsonAccessHelper.asArray(getValue(key));
-    }
-
-    @Override
-    public final byte[] getBinary(String key) {
-        return JsonAccessHelper.asBinary(getValue(key));
-    }
-
-    @Override
-    public final Boolean getBoolean(String key) {
-        return JsonAccessHelper.asBoolean(getValue(key));
-    }
-
-    @Override
-    public JsonValue getByPath(String path) {
-        return JsonAccessHelper.getByPath(this, path);
-    }
-
-    @Override
-    public final Double getDouble(String key) {
-        return JsonAccessHelper.asDouble(getValue(key));
-    }
-
-    @Override
-    public final Float getFloat(String key) {
-        return JsonAccessHelper.asFloat(getValue(key));
-    }
-
-    @Override
-    public final Integer getInt(String key) {
-        return JsonAccessHelper.asInt(getValue(key));
-    }
-
-    @Override
-    public final Long getLong(String key) {
-        return JsonAccessHelper.asLong(getValue(key));
-    }
-
-    @Override
-    public final Object getNative(String key) {
-        return JsonAccessHelper.asNative(getValue(key));
-    }
-
-    @Override
-    public final JsonObject getObject(String key) {
-        return JsonAccessHelper.asObject(getValue(key));
-    }
-
-    @Override
-    public JsonArray getOrCreateArray(String key) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public JsonObject getOrCreateObject(String key) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public final JsonArray getRequiredArray(String key) {
-        return JsonAccessHelper.getRequiredArray(this, key, getValue(key));
-    }
-
-    @Override
-    public final byte[] getRequiredBinary(String key) {
-        return JsonAccessHelper.getRequiredBinary(this, key, getValue(key));
-    }
-
-    @Override
-    public final Boolean getRequiredBoolean(String key) {
-        return JsonAccessHelper.getRequiredBoolean(this, key, getValue(key));
-    }
-
-    @Override
-    public final Double getRequiredDouble(String key) {
-        return JsonAccessHelper.getRequiredDouble(this, key, getValue(key));
-    }
-
-    @Override
-    public final Float getRequiredFloat(String key) {
-        return JsonAccessHelper.getRequiredFloat(this, key, getValue(key));
-    }
-
-    @Override
-    public final Integer getRequiredInt(String key) {
-        return JsonAccessHelper.getRequiredInt(this, key, getValue(key));
-    }
-
-    @Override
-    public final Long getRequiredLong(String key) {
-        return JsonAccessHelper.getRequiredLong(this, key, getValue(key));
-    }
-
-    @Override
-    public final JsonObject getRequiredObject(String key) {
-        return JsonAccessHelper.getRequiredObject(this, key, getValue(key));
-    }
-
-    @Override
-    public final String getRequiredString(String key) {
-        return JsonAccessHelper.getRequiredString(this, key, getValue(key));
-    }
-
-    @Override
-    public final JsonValue getRequiredValue(String key) {
-        return JsonAccessHelper.getRequiredValue(this, key, getValue(key));
-    }
-
-    @Override
-    public final String getString(String key) {
-        return JsonAccessHelper.asString(getValue(key));
     }
 
     @Override
@@ -340,98 +124,14 @@ public class OverlayObject implements JsonObject {
     }
 
     @Override
-    public boolean hasArray(String key) {
-        JsonValue value = getValue(key);
-        if (value == null) { return false; }
-        return value.isArray();
-    }
-
-    @Override
-    public final boolean hasBoolean(String key) {
-        JsonValue value = getValue(key);
-        if (value == null) { return false; }
-        return value.isBoolean();
-    }
-
-    @Override
-    public final boolean hasNumber(String key) {
-        JsonValue value = getValue(key);
-        if (value == null) { return false; }
-        return value.isNumber();
-    }
-
-    @Override
-    public final boolean hasObject(String key) {
-        JsonValue value = getValue(key);
-        if (value == null) { return false; }
-        return value.isObject();
-    }
-
-    @Override
-    public final boolean hasString(String key) {
-        JsonValue value = getValue(key);
-        if (value == null) { return false; }
-        return value.isString();
-    }
-
-    @Override
-    public Integer intValue() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean isArray() {
-        return false;
-    }
-
-    @Override
-    public boolean isBoolean() {
-        return false;
-    }
-
-    @Override
-    public boolean isContainer() {
-        return true;
-    }
-
-    @Override
     public boolean isEmpty() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean isNative() {
-        return false;
-    }
-
-    @Override
-    public boolean isNull() {
-        return false;
-    }
-
-    @Override
-    public boolean isNumber() {
-        return false;
+        // This is expensive...
+        return keySet().size() == 0;
     }
 
     @Override
     public boolean isObject() {
         return true;
-    }
-
-    @Override
-    public boolean isString() {
-        return false;
-    }
-
-    @Override
-    public JsonItem item() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String key() {
-        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -442,16 +142,6 @@ public class OverlayObject implements JsonObject {
                     .keySet());
         }
         return keySet;
-    }
-
-    @Override
-    public Long longValue() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Object nativeValue() {
-        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -490,47 +180,7 @@ public class OverlayObject implements JsonObject {
     }
 
     @Override
-    public JsonContainer parent() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public JsonBoolean put(String key, Boolean value) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public JsonString put(String key, byte[] value) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public JsonNumber put(String key, Double value) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public JsonNumber put(String key, Float value) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public JsonNumber put(String key, Integer value) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public JsonValue put(String arg0, JsonValue arg1) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public JsonString put(String key, Long value) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public JsonString put(String key, String value) {
         throw new UnsupportedOperationException();
     }
 
@@ -540,67 +190,34 @@ public class OverlayObject implements JsonObject {
     }
 
     @Override
-    public JsonNative putNative(String key, Object value) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void putValue(String key, JsonValue value) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public JsonValue remove(Object arg0) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void removeValue(String key) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public int size() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String stringValue() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public JsonSystem system() {
-        return system;
+        // This is quite expensive...
+        return keySet().size();
     }
 
     @Override
     public String toCompactJsonString() {
-        return toString();
+        return JsonAccessHelper.objectToCompactJsonString(this);
     }
 
     @Override
     public String toJsonString() {
-        throw new UnsupportedOperationException();
+        return toJsonString(0) + "\n";
+    }
+
+    @Override
+    public String toJsonString(int indent) {
+        return JsonAccessHelper.objectToJsonString(this, indent);
     }
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append("[OverlayObject objects=");
-        for (int i = 0; i < objects.size(); ++i) {
-            if (i > 0) {
-                sb.append(",");
-            }
-            JsonObject jsonObject = objects.get(i);
-            if (jsonObject == null) {
-                sb.append("null");
-            } else {
-                sb.append(jsonObject.toCompactJsonString());
-            }
-        }
-        sb.append("]");
-        return sb.toString();
+        return toJsonString();
     }
 
     @Override

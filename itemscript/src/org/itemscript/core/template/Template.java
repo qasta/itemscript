@@ -32,6 +32,9 @@ package org.itemscript.core.template;
 import org.itemscript.core.HasSystem;
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.exceptions.ItemscriptError;
+import org.itemscript.core.util.StaticJsonUtil;
+import org.itemscript.core.values.JsonObject;
+import org.itemscript.core.values.JsonString;
 import org.itemscript.core.values.JsonValue;
 
 /**
@@ -42,6 +45,8 @@ import org.itemscript.core.values.JsonValue;
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
 public class Template implements HasSystem, Element {
+    public static final String TEMPLATE_URL = "mem:/itemscript/template";
+    public static final String TEMPLATE_CACHE_URL = TEMPLATE_URL + "/cache";
     public static final char COMMA_CHAR = ',';
     public static final char OPEN_TAG_CHAR = '{';
     public static final char CLOSE_TAG_CHAR = '}';
@@ -82,7 +87,22 @@ public class Template implements HasSystem, Element {
      * @return The new Template
      */
     public static Template create(JsonSystem system, JsonValue value) {
-        return new Template(system, value);
+        if (value.isArray()) {
+            value = StaticJsonUtil.joinArrayOfStrings(value.asArray());
+        }
+        if (value.isString()) {
+            JsonObject cache = getCache(system);
+            String text = value.stringValue();
+            if (cache.containsKey(text)) {
+                return (Template) cache.getNative(text);
+            } else {
+                Template template = new Template(system, value);
+                cache.putNative(text, template);
+                return template;
+            }
+        } else {
+            return new Template(system, value);
+        }
     }
 
     /**
@@ -93,20 +113,53 @@ public class Template implements HasSystem, Element {
      * @return The new Template.
      */
     public static Template create(JsonSystem system, String text) {
-        return new Template(system, system.createString(text));
+        JsonObject cache = getCache(system);
+        if (cache.containsKey(text)) {
+            return (Template) cache.getNative(text);
+        } else {
+            Template template = new Template(system, system.createString(text));
+            cache.putNative(text, template);
+            return template;
+        }
+    }
+
+    private static JsonObject getCache(JsonSystem system) {
+        JsonObject cache = system.getObject(Template.TEMPLATE_CACHE_URL);
+        if (cache == null) {
+            cache = system.createObject(Template.TEMPLATE_CACHE_URL)
+                    .value()
+                    .asObject();
+        }
+        return cache;
     }
 
     private final JsonSystem system;
     private final Element element;
+    private final String text;
+    private final JsonString textValue;
 
     private Template(JsonSystem system, JsonValue value) {
         this.system = system;
-        this.element = new Analyzer(system).analyze(value);
+        // If the value is a single string with no { characters in it, we know it's a static string.
+        if (value.isString() && value.stringValue()
+                .indexOf(Template.OPEN_TAG_CHAR) == -1) {
+            this.element = null;
+            this.text = value.stringValue();
+            this.textValue = system().createString(text);
+        } else {
+            this.element = new Analyzer(system).analyze(value);
+            this.text = null;
+            this.textValue = null;
+        }
     }
 
     @Override
     public JsonValue interpret(TemplateExec templateExec, JsonValue context) {
-        return element.interpret(templateExec, context);
+        if (element != null) {
+            return element.interpret(templateExec, context);
+        } else {
+            return textValue;
+        }
     }
 
     /**
@@ -133,7 +186,11 @@ public class Template implements HasSystem, Element {
      * @return The result of interpreting the template, as a string.
      */
     public String interpretToString(JsonValue context) {
-        return coerceToString(interpretToValue(context));
+        if (element != null) {
+            return coerceToString(interpretToValue(context));
+        } else {
+            return text;
+        }
     }
 
     /**
@@ -143,7 +200,11 @@ public class Template implements HasSystem, Element {
      * @return The result of interpreting the template.
      */
     public JsonValue interpretToValue(JsonValue context) {
-        return interpretToResult(context).value();
+        if (element != null) {
+            return interpretToResult(context).value();
+        } else {
+            return textValue;
+        }
     }
 
     @Override

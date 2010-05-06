@@ -31,7 +31,6 @@ package org.itemscript.core.values;
 
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.Params;
-import org.itemscript.core.connectors.GetCallback;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Fragment;
 import org.itemscript.core.util.JsonAccessHelper;
@@ -39,7 +38,7 @@ import org.itemscript.core.util.JsonAccessHelper;
 /**
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
-public abstract class ItemscriptContainer extends ItemscriptValue implements JsonContainer {
+public abstract class ItemscriptContainer extends ItemscriptValue implements JsonContainer, ToJsonStringWithIndent {
     protected ItemscriptContainer(JsonSystem system) {
         super(system);
     }
@@ -61,26 +60,6 @@ public abstract class ItemscriptContainer extends ItemscriptValue implements Jso
         JsonObject object = system().createObject();
         putValue(key, object);
         return object;
-    }
-
-    @Override
-    public JsonValue dereference() {
-        return this;
-    }
-
-    @Override
-    public void dereference(GetCallback callback) {
-        callback.onSuccess(this);
-    }
-
-    @Override
-    public final JsonValue dereference(String key) {
-        return JsonAccessHelper.dereference(getValue(key));
-    }
-
-    @Override
-    public final void dereference(String key, GetCallback callback) {
-        JsonAccessHelper.dereference(getValue(key), callback);
     }
 
     @Override
@@ -342,8 +321,6 @@ public abstract class ItemscriptContainer extends ItemscriptValue implements Jso
 
     @Override
     public abstract void putValue(String key, JsonValue value);
-
-    public abstract String toJsonString(int indent);
 
     protected final void updateRemovedValue(JsonValue value) {
         if (value == null) { return; }
