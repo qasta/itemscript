@@ -177,9 +177,9 @@ Nested directives:
 
 (See also `Template` JavaDoc.)
 {{{
-    Template template = new Template(system(), text);
+    Template template = Template.create(system(), text);
     JsonObject context = system().getObject(contextUrl);
-    String output = template.interpret(context);
+    String output = template.interpretToString(context);
 }}}
 
 == The JavaScript API ==
