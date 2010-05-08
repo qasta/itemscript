@@ -173,7 +173,7 @@ public class Template implements HasSystem, Element {
      * @return The result of executing the template.
      */
     public TemplateResult interpretToResult(JsonValue context) {
-        TemplateExec templateExec = new TemplateExec(system(), new Accumulator(system));
+        TemplateExec templateExec = new TemplateExec(system());
         JsonValue value = interpret(templateExec, context);
         return new TemplateResult(value, templateExec.accumulator()
                 .lists());

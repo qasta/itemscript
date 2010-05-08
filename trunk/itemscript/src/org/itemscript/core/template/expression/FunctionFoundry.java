@@ -54,17 +54,6 @@ public class FunctionFoundry {
                 return new DataUrlFunction(system);
             }
         });
-        factories.put("left", new FunctionFactory() {
-            public Function create(JsonSystem system, java.util.List<Expression> args) {
-                return new LeftBraceFunction(system);
-            }
-        });
-        factories.put("right", new FunctionFactory() {
-            @Override
-            public Function create(JsonSystem system, List<Expression> args) {
-                return new RightBraceFunction(system);
-            }
-        });
         factories.put("uuid", new FunctionFactory() {
             @Override
             public Function create(JsonSystem system, List<Expression> args) {
@@ -87,6 +76,12 @@ public class FunctionFoundry {
             @Override
             public Function create(JsonSystem system, List<Expression> args) {
                 return new OrFunction(system, args);
+            }
+        });
+        factories.put("and", new FunctionFactory() {
+            @Override
+            public Function create(JsonSystem system, List<Expression> args) {
+                return new AndFunction(system, args);
             }
         });
     }

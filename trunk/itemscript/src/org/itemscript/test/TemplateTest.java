@@ -49,6 +49,11 @@ public class TemplateTest extends ItemscriptTestBase {
                 .interpretToString(context);
     }
 
+    private JsonValue processTemplateToValue(String text) {
+        return Template.create(system(), text)
+                .interpretToValue(context);
+    }
+
     @Override
     protected void setUp() {
         super.setUp();
@@ -83,13 +88,6 @@ public class TemplateTest extends ItemscriptTestBase {
     }
 
     @Test
-    public void testBraces() {
-        String text = "a {left} {right} c";
-        String after = processTemplate(text);
-        assertEquals("a { } c", after);
-    }
-
-    @Test
     public void testCoerceFail() {
         String text = "a {@mem:/TemplateTest/context} c";
         try {
@@ -116,7 +114,7 @@ public class TemplateTest extends ItemscriptTestBase {
 
     @Test
     public void testContentsTrim() {
-        String text = "a { left } c";
+        String text = "a { '{' } c";
         String after = processTemplate(text);
         assertEquals("a { c", after);
     }
@@ -128,17 +126,6 @@ public class TemplateTest extends ItemscriptTestBase {
         String text = "{.section :y}a {:} b{.end}";
         String after = processTemplate(text);
         assertEquals("a x b", after);
-    }
-
-    @Test
-    public void testExtraParamsError() {
-        String text = "a {name html foo} c";
-        try {
-            processTemplate(text);
-        } catch (ItemscriptError e) {
-            threwException = true;
-        }
-        assertTrue(threwException);
     }
 
     @Test
@@ -408,5 +395,68 @@ public class TemplateTest extends ItemscriptTestBase {
         String text = "a {uuid} c";
         String after = processTemplate(text);
         assertEquals("a 3d9f9533-c32f-4183-b78c-f01f32609de4 c".length(), after.length());
+    }
+
+    @Test
+    public void testFunctionOr() {
+        String text = "{:x or(:y)}";
+        context.asObject()
+                .put("x", true);
+        context.asObject()
+                .put("y", false);
+        JsonValue val = processTemplateToValue(text);
+        assertTrue(val.booleanValue());
+        context.asObject()
+                .put("x", false);
+        val = processTemplateToValue(text);
+        assertFalse(val.booleanValue());
+    }
+
+    @Test
+    public void testFunctionAnd() {
+        String text = "{:x and(:y)}";
+        context.asObject()
+                .put("x", true);
+        context.asObject()
+                .put("y", false);
+        JsonValue val = processTemplateToValue(text);
+        assertFalse(val.booleanValue());
+        context.asObject()
+                .put("y", true);
+        val = processTemplateToValue(text);
+        assertTrue(val.booleanValue());
+    }
+
+    @Test
+    public void testFunctionEquals() {
+        String text = "{:x equals(:y)}";
+        context.asObject()
+                .put("x", "a string");
+        context.asObject()
+                .put("y", "a string");
+        JsonValue val = processTemplateToValue(text);
+        assertTrue(val.booleanValue());
+        context.asObject()
+                .put("y", "some other string");
+        val = processTemplateToValue(text);
+        assertFalse(val.booleanValue());
+    }
+
+    @Test
+    public void testFunctionSubstring() {
+        String text = "{'abcdef' substring(1)}";
+        String after = processTemplate(text);
+        assertEquals("bcdef", after);
+        text = "{'abcdef' substring(1, 5)}";
+        after = processTemplate(text);
+        assertEquals("bcde", after);
+    }
+
+    @Test
+    public void testQuotedBraces() {
+        String after = processTemplate("{'{'}");
+        assertEquals("{", after);
+        after = processTemplate("{'}'}");
+        assertEquals("}", after);
     }
 }
