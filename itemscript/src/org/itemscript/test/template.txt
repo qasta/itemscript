@@ -12,11 +12,11 @@ This is a comment: {# This is some comment text. }
 
 This is an encoded literal: {&b%3D%7B%25}
 
-These are some braces: {(} {)}
+These are some braces: {'{'} {'}'}
 
-This a value HTML-encoded: {containsHtmlChars html}
+This a value HTML-encoded: {:containsHtmlChars html}
 
-This is a value URL-encoded: {containsUrlChars url}
+This is a value URL-encoded: {:containsUrlChars url}
 
 Section:
 {.section object}

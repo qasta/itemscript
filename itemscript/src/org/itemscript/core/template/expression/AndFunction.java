@@ -8,8 +8,8 @@ import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.template.TemplateExec;
 import org.itemscript.core.values.JsonValue;
 
-public class OrFunction extends FunctionBase {
-    public OrFunction(JsonSystem system, List<Expression> args) {
+public class AndFunction extends FunctionBase {
+    public AndFunction(JsonSystem system, List<Expression> args) {
         super(system, args);
     }
 
@@ -29,14 +29,12 @@ public class OrFunction extends FunctionBase {
         } else {
             valueBoolean = value.booleanValue();
         }
-        // Short-circuit.
-        if (valueBoolean) { return system().createBoolean(true); }
-        boolean orValueBoolean;
+        boolean andValueBoolean;
         if (orValue == null) {
-            orValueBoolean = false;
+            andValueBoolean = false;
         } else {
-            orValueBoolean = orValue.booleanValue();
+            andValueBoolean = orValue.booleanValue();
         }
-        return system().createBoolean(valueBoolean || orValueBoolean);
+        return system().createBoolean(valueBoolean && andValueBoolean);
     }
 }

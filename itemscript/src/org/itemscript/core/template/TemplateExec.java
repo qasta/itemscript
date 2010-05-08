@@ -16,18 +16,16 @@ import org.itemscript.core.values.JsonValue;
  */
 public class TemplateExec implements HasSystem {
     private final JsonSystem system;
-    private final Accumulator accumulator;
+    private Accumulator accumulator;
     private Map<String, JsonValue> cache;
 
     /**
      * Create a new TemplateContext.
      * 
      * @param system The associated JsonSystem.
-     * @param accumulator The associated Accumulator.
      */
-    public TemplateExec(JsonSystem system, Accumulator accumulator) {
+    public TemplateExec(JsonSystem system) {
         this.system = system;
-        this.accumulator = accumulator;
     }
 
     /**
@@ -36,6 +34,9 @@ public class TemplateExec implements HasSystem {
      * @return The accumulator.
      */
     public Accumulator accumulator() {
+        if (accumulator == null) {
+            accumulator = new Accumulator(system());
+        }
         return accumulator;
     }
 
@@ -46,18 +47,15 @@ public class TemplateExec implements HasSystem {
      * @return The value at that URL.
      */
     public JsonValue get(String url) {
-        initCache();
+        if (cache == null) {
+            cache = new HashMap<String, JsonValue>();
+        }
         JsonValue cached = cache.get(url);
         if (cached == null) {
             cached = system().get(url);
             cache.put(url, cached);
         }
         return cached;
-    }
-
-    private void initCache() {
-        if (cache != null) { return; }
-        cache = new HashMap<String, JsonValue>();
     }
 
     @Override
