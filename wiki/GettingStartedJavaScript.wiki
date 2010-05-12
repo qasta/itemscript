@@ -1,7 +1,7 @@
 #summary Getting started with the Itemscript library using JavaScript.
 #labels Featured
 
-The Itemscript library exposes only a few methods to JavaScript; most of those used for manipulating JSON values aren't particularly useful in JavaScript, where native JavaScript objects and values are more useful.
+The Itemscript library exposes only a few methods to JavaScript allowing basic back-and-forth communication between JS and Itemscript.
 
 ==Include the Itemscript library==
 
