@@ -36,6 +36,8 @@ import org.itemscript.core.url.Fragment;
 import org.itemscript.core.util.JsonAccessHelper;
 
 /**
+ * The implementation class for {@link JsonContainer}. Base class of {@link ItemscriptObject} and {@link ItemscriptArray}.
+ * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
 public abstract class ItemscriptContainer extends ItemscriptValue implements JsonContainer, ToJsonStringWithIndent {

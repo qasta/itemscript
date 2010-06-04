@@ -175,9 +175,9 @@ public class ItemscriptFoundry<T> implements HasSystem, JsonFoundry<T> {
     }
 
     @Override
-    public final void put(String name, JsonValue params) {
+    public void put(String name, JsonValue params) {
         checkName(name);
-        factories.put(name, params.copy());
+        factories.put(name, params);
     }
 
     @Override

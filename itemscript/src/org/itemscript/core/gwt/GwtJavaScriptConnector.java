@@ -32,7 +32,6 @@ package org.itemscript.core.gwt;
 import org.itemscript.core.HasSystem;
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.connectors.SyncGetConnector;
-import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Url;
 import org.itemscript.core.values.JsonValue;
 
@@ -62,13 +61,13 @@ public class GwtJavaScriptConnector implements SyncGetConnector, HasSystem {
     }
 
     private native JavaScriptObject get(String name) /*-{
-                                                     return { "value" : $wnd[name] };
-                                                     }-*/;
+        return { "value" : $wnd[name] };
+    }-*/;
 
     @Override
     public JsonValue get(Url url) {
         JsonValue value = GwtJsonParser.convert(system(), get(url.remainder()));
-        if (value == null) { throw ItemscriptError.internalError(this, "get.value.was.null", url + ""); }
+        if (value == null) { return null; }
         return system().createItem(url + "", value)
                 .value();
     }
