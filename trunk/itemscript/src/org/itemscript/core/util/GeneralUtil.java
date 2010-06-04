@@ -119,4 +119,17 @@ public final class GeneralUtil {
         }
         return map;
     }
+
+    public static boolean isWhitespace(char c) {
+        // A poor substitute for Character.isWhitespace(char c) which is not implemented in GWT.
+        switch (c) {
+            case ' ' :
+            case '\n' :
+            case '\t' :
+            case '\r' :
+                return true;
+            default :
+                return false;
+        }
+    }
 }

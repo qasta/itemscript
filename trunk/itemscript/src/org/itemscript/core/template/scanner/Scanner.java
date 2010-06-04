@@ -4,6 +4,7 @@ package org.itemscript.core.template.scanner;
 import org.itemscript.core.Params;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.template.Template;
+import org.itemscript.core.util.GeneralUtil;
 
 public class Scanner {
     private final String string;
@@ -26,20 +27,6 @@ public class Scanner {
         if (token.beginIndex() == -1) { return token + ""; }
         return "beginIndex=" + token.beginIndex() + " endIndex=" + token.endIndex() + " text="
                 + string.substring(token.beginIndex(), token.endIndex());
-    }
-
-    private boolean isWhitespace(char c) {
-        // Not implemented in GWT:
-        //        return Character.isWhitespace(c);
-        switch (c) {
-            case ' ' :
-            case '\n' :
-            case '\t' :
-            case '\r' :
-                return true;
-            default :
-                return false;
-        }
     }
 
     /**
@@ -141,7 +128,7 @@ public class Scanner {
             } else {
                 int start = pos;
                 // Anything else, just look for the next whitespace, open or close paran, quote, comma, or close tag.
-                while (!isWhitespace(c) && c != Template.CLOSE_TAG_CHAR && c != Template.COMMA_CHAR
+                while (!GeneralUtil.isWhitespace(c) && c != Template.CLOSE_TAG_CHAR && c != Template.COMMA_CHAR
                         && c != Template.OPEN_ARG_CHAR && c != Template.CLOSE_ARG_CHAR
                         && c != Template.CLOSE_ARG_CHAR && c != Template.QUOTE_CHAR) {
                     ++pos;
@@ -160,7 +147,7 @@ public class Scanner {
     private void skipWhitespace() {
         // Skip any leading whitespace.
         char c = string.charAt(pos);
-        while (pos < (length) && isWhitespace(c)) {
+        while (pos < (length) && GeneralUtil.isWhitespace(c)) {
             ++pos;
             c = string.charAt(pos);
         }

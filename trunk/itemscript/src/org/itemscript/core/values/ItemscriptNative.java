@@ -31,6 +31,11 @@ package org.itemscript.core.values;
 
 import org.itemscript.core.JsonSystem;
 
+/**
+ * The implementation class for {@link JsonNative}.
+ * 
+ * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
+ */
 class ItemscriptNative extends ItemscriptValue implements JsonNative {
     private final Object value;
 

@@ -30,6 +30,11 @@
 package org.itemscript.core.values;
 
 /**
+ * Wraps a Java Object in a JsonValue. Such values cannot, of course, survive a round-trip through conversion to JSON text. They are useful
+ * when you need to "smuggle" a plain Object through an API that is requesting JsonValues. Since they required unchecked conversion,
+ * they're not particularly safe. They are often used internally to store implementation classes in the mem: database, for instance
+ * for {@link Connector} implementations.
+ * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
 public interface JsonNative extends JsonValue {}
