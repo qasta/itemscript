@@ -33,8 +33,8 @@ import java.util.Map;
 
 import org.itemscript.core.Params;
 import org.itemscript.core.exceptions.ItemscriptError;
-import org.itemscript.core.template.Template;
 import org.itemscript.core.values.JsonValue;
+import org.itemscript.template.Template;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
