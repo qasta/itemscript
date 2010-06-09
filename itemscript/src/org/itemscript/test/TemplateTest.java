@@ -30,10 +30,10 @@
 package org.itemscript.test;
 
 import org.itemscript.core.exceptions.ItemscriptError;
-import org.itemscript.core.template.Template;
 import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
+import org.itemscript.template.Template;
 import org.junit.Test;
 
 public class TemplateTest extends ItemscriptTestBase {

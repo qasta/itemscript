@@ -4,13 +4,13 @@ package org.itemscript.test;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.itemscript.core.template.scanner.CloseArgToken;
-import org.itemscript.core.template.scanner.CloseTagToken;
-import org.itemscript.core.template.scanner.CommaToken;
-import org.itemscript.core.template.scanner.OpenArgToken;
-import org.itemscript.core.template.scanner.OpenTagToken;
-import org.itemscript.core.template.scanner.Scanner;
-import org.itemscript.core.template.scanner.Token;
+import org.itemscript.template.scanner.CloseArgToken;
+import org.itemscript.template.scanner.CloseTagToken;
+import org.itemscript.template.scanner.CommaToken;
+import org.itemscript.template.scanner.OpenArgToken;
+import org.itemscript.template.scanner.OpenTagToken;
+import org.itemscript.template.scanner.Scanner;
+import org.itemscript.template.scanner.Token;
 import org.junit.Test;
 
 public class ScannerTest extends ItemscriptTestBase {
