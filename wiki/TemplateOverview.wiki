@@ -226,15 +226,13 @@ Note that in the last example, `#fragment` will be interpreted as relative to th
 
 == {&literal} - Literal token ==
 
-A token whose first character is a `&` sign is treated as a string literal. The remainder of the first token is URL-decoded and included in the template at that point.
+A token whose first character is a `&` sign is treated as a string literal. The remainder of the token is URL-decoded and included in the template at that point.
 
 For instance: `{&b%3D%7B%25}`
 
-== {left} & {right}- Braces tags ==
+== {*Itemscript.CONSTANT} - Constant token ==
 
-Tags whose contents are `left` or `right` will cause an opening or closing curly brace to be included at that point in the template. This is useful when you need the output text to contain (a few) curly braces. (If you need it to contain a lot of curly braces, it's probably best to create them in some other way.) (Technically, `left` and `right` are functions that return a single curly brace.)
-
-For instance:  `{left}` or `{right}`
+A token whose first character is a `*` sign is treated as a constant reference. The remainder of the token is URL-decoded and used to look up a constant from the JsonSystem.
 
 == {b64id} - Function tokens ==
 
