@@ -82,11 +82,11 @@ public final class GwtSystem implements EntryPoint {
                                                                                                   callback.onError(exception);
                                                                                                   }-*/;
 
-    static void callOnError(JavaScriptObject callback, Throwable e) {
+    public static void callOnError(JavaScriptObject callback, Throwable e) {
         callOnError(callback, convertException(e));
     }
 
-    static native void callOnSuccess(JavaScriptObject callback, JavaScriptObject value) /*-{
+    public static native void callOnSuccess(JavaScriptObject callback, JavaScriptObject value) /*-{
                                                                                         callback.onSuccess(value);
                                                                                         }-*/;
 
@@ -436,6 +436,5 @@ public final class GwtSystem implements EntryPoint {
     public void onModuleLoad() {
         SYSTEM = new ItemscriptSystem(new GwtConfig());
         exportCalls();
-        GwtTemplate.exportCalls();
     }
 }

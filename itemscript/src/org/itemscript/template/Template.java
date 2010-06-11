@@ -137,6 +137,7 @@ public class Template implements HasSystem, Element {
     private final Element element;
     private final String text;
     private final JsonString textValue;
+    public static final char CONSTANT_CHAR = '*';
 
     private Template(JsonSystem system, JsonValue value) {
         this.system = system;

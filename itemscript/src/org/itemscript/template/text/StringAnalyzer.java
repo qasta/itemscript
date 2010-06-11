@@ -39,6 +39,7 @@ import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Url;
 import org.itemscript.template.Analyzer;
 import org.itemscript.template.Template;
+import org.itemscript.template.expression.ConstantFunction;
 import org.itemscript.template.expression.Expression;
 import org.itemscript.template.expression.FieldFunction;
 import org.itemscript.template.expression.Function;
@@ -147,6 +148,10 @@ public class StringAnalyzer implements HasSystem {
             // If it starts with "&" the rest is a URL-encoded string literal.
             scanner.next();
             return new LiteralFunction(system(), Url.decode(content.substring(1)));
+        } else if (firstChar == Template.CONSTANT_CHAR) {
+            // If it starts with "*" it's a constant reference.
+            scanner.next();
+            return new ConstantFunction(system(), Url.decode(content.substring(1)));
         } else if (firstChar == Template.FIELD_CHAR) {
             // If it starts with ":" it's a field reference.
             scanner.next();

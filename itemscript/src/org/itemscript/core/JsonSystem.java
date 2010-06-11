@@ -176,4 +176,22 @@ public interface JsonSystem extends JsonGetAccess, JsonPutAccess, HasSystem, Jso
      * @return The associated JsonUtil.
      */
     public JsonUtil util();
+
+    /**
+     * Set a constant in this JsonSystem.
+     * 
+     * @param name The name of the constant.
+     * @param value The value of the constant.
+     * @throws ItemscriptError If a constant with this name has already been set.
+     */
+    public void setConstant(String name, String value);
+
+    /**
+     * Get a constant from this JsonSystem.
+     * 
+     * @param name The name of the constant.
+     * @return The value of the constant.
+     * @throws ItemscriptError If a constant with this name has not been set.
+     */
+    public String constant(String name);
 }

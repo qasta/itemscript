@@ -459,4 +459,12 @@ public class TemplateTest extends ItemscriptTestBase {
         after = processTemplate("{'}'}");
         assertEquals("}", after);
     }
+
+    @Test
+    public void testConstant() {
+        String text = "a {*Test.PI} c";
+        system().setConstant("Test.PI", 3 + "");
+        String after = processTemplate(text);
+        assertEquals("a 3 c", after);
+    }
 }
