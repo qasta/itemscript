@@ -36,7 +36,7 @@ import com.google.gwt.core.client.JavaScriptObject;
  * JsonValue-derived objects. Derived from the GWT JSON package's JSONParser, JSONObject,
  * and JSONArray classes.
  */
-final class GwtJsonParser {
+public final class GwtJsonParser {
     private static final JavaScriptObject typeMap = initTypeMap();
 
     private static void addToArray(JsonArray array, JsonValue value) {
@@ -49,7 +49,7 @@ final class GwtJsonParser {
         return func ? func(system, v) : @org.itemscript.core.gwt.GwtJsonParser::throwUnknownTypeException(Ljava/lang/String;)(typeof v);
     }-*/;
 
-    static native JsonValue convert(JsonSystem system, JavaScriptObject value) /*-{
+    public static native JsonValue convert(JsonSystem system, JavaScriptObject value) /*-{
         var v = value["value"];
         var func = @org.itemscript.core.gwt.GwtJsonParser::typeMap[typeof v];
         return func ? func(system,v) : @org.itemscript.core.gwt.GwtJsonParser::throwUnknownTypeException(Ljava/lang/String;)(typeof v);

@@ -29,6 +29,9 @@
 
 package org.itemscript.core;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.itemscript.core.config.JsonConfig;
 import org.itemscript.core.connectors.AsyncGetConnector;
 import org.itemscript.core.connectors.AsyncPostConnector;
@@ -77,6 +80,7 @@ public final class ItemscriptSystem implements JsonSystem {
     private final JsonObject connectors;
     private final Url rootUrl;
     private final JsonUtil util;
+    private final Map<String, String> constants = new HashMap<String, String>();
 
     /**
      * Create a new JsonSystem implementation using the supplied JsonConfig.
@@ -571,5 +575,19 @@ public final class ItemscriptSystem implements JsonSystem {
     @Override
     public JsonUtil util() {
         return util;
+    }
+
+    @Override
+    public void setConstant(String name, String value) {
+        if (constants.containsKey(name)) { throw ItemscriptError.internalError(this,
+                "setConstant.name.already.exists", name); }
+        constants.put(name, value);
+    }
+
+    @Override
+    public String constant(String name) {
+        String value = constants.get(name);
+        if (value == null) { throw ItemscriptError.internalError(this, "getConstant.name.was.not.found", name); }
+        return value;
     }
 }

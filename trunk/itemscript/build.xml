@@ -23,7 +23,6 @@
 			</classpath>
 			<packageset dir="src">
 				<include name="org/itemscript/**" />
-				<exclude name="org/itemscript/test/**" />
 				<exclude name="org/itemscript/examples/**" />
 			</packageset>
 		</javadoc>
@@ -44,5 +43,6 @@
 	</target>
 	<target name="gwt-compile">
 		<gwtCompile module="org.itemscript.Itemscript" />
+		<gwtCompile module="org.itemscript.Template" />
 	</target>
 </project>

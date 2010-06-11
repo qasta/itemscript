@@ -27,39 +27,44 @@
  * Author: Jacob Davies
  */
 
-package org.itemscript.core.gwt;
+package org.itemscript.template.gwt;
 
 import java.util.Map;
 
 import org.itemscript.core.Params;
 import org.itemscript.core.exceptions.ItemscriptError;
+import org.itemscript.core.gwt.GwtJsonParser;
+import org.itemscript.core.gwt.GwtSystem;
+import org.itemscript.core.gwt.MultipleGet;
+import org.itemscript.core.gwt.MultipleGetCallback;
 import org.itemscript.core.values.JsonValue;
 import org.itemscript.template.Template;
 
+import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.JavaScriptObject;
 
 /**
  * A class to assist in the use of the Template class from GWT and JavaScript.
  */
-public class GwtTemplate {
+public class GwtTemplate implements EntryPoint {
     static native void exportCalls() /*-{
-                                     $wnd.itemscript.template = {};
-                                     $wnd.itemscript.template.interpretGwt = $entry(@org.itemscript.core.gwt.GwtTemplate::interpretGwt(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;));
-                                     $wnd.itemscript.template.interpret = function(text, context) {
-                                     return $wnd.itemscript.template.interpretGwt(text, {"value" : context});
-                                     };
-                                     $wnd.itemscript.template.getAndInterpretGwt = $entry(@org.itemscript.core.gwt.GwtTemplate::getAndInterpretGwt(Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;));
-                                     $wnd.itemscript.template.getAndInterpret = function(textUrl, contextUrl, callback) {
-                                     $wnd.itemscript.template.getAndInterpretGwt(textUrl, contextUrl, {
-                                     "onSuccess" : function(value) {
-                                     callback["onSuccess"](value["value"]);
-                                     },
-                                     "onError" : function(message) {
-                                     callback["onError"](message);
-                                     }
-                                     });
-                                     };
-                                     }-*/;
+        $wnd.itemscript.template = {};
+        $wnd.itemscript.template.interpretGwt = $entry(@org.itemscript.template.gwt.GwtTemplate::interpretGwt(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;));
+        $wnd.itemscript.template.interpret = function(text, context) {
+        return $wnd.itemscript.template.interpretGwt(text, {"value" : context});
+        };
+        $wnd.itemscript.template.getAndInterpretGwt = $entry(@org.itemscript.template.gwt.GwtTemplate::getAndInterpretGwt(Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;));
+        $wnd.itemscript.template.getAndInterpret = function(textUrl, contextUrl, callback) {
+        $wnd.itemscript.template.getAndInterpretGwt(textUrl, contextUrl, {
+        "onSuccess" : function(value) {
+        callback["onSuccess"](value["value"]);
+        },
+        "onError" : function(message) {
+        callback["onError"](message);
+        }
+        });
+        };
+    }-*/;
 
     public static void getAndInterpretGwt(String textUrl, String contextUrl, final JavaScriptObject callback) {
         MultipleGet.get(GwtSystem.SYSTEM, new Params().p("text", GwtSystem.hostPageRelative(textUrl))
@@ -76,6 +81,11 @@ public class GwtTemplate {
                         .interpretToValue(responses.get("context"))));
             }
         });
+    }
+
+    @Override
+    public void onModuleLoad() {
+        exportCalls();
     }
 
     public static String interpretGwt(String text, JavaScriptObject context) {
