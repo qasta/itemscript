@@ -84,6 +84,18 @@ public class FunctionFoundry {
                 return new AndFunction(system, args);
             }
         });
+        factories.put("not", new FunctionFactory() {
+            @Override
+            public Function create(JsonSystem system, List<Expression> args) {
+                return new NotFunction(system);
+            }
+        });
+        factories.put("empty", new FunctionFactory() {
+            @Override
+            public Function create(JsonSystem system, List<Expression> args) {
+                return new EmptyFunction(system);
+            }
+        });
     }
 
     public static Function create(JsonSystem system, String functionName, List<Expression> args) {

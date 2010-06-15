@@ -2,5 +2,5 @@
     <source path='client' />
 	<inherits name='com.google.gwt.user.User' />
 	<inherits name="org.itemscript.Itemscript" />
-	<entry-point class="org.itemscript.examples.gwt.client.GwtExample" />
+	<entry-point class="examples.org.itemscript.gwt.client.GwtExample" />
 </module>

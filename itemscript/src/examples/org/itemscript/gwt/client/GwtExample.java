@@ -27,48 +27,33 @@
  * Author: Jacob Davies
  */
 
-package org.itemscript.examples.gwt.server;
-
-import java.io.IOException;
-import java.io.Writer;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+package examples.org.itemscript.gwt.client;
 
 import org.itemscript.core.JsonSystem;
-import org.itemscript.core.values.JsonValue;
-import org.itemscript.standard.MinimalConfig;
+import org.itemscript.core.gwt.GwtSystem;
+
+import com.google.gwt.core.client.EntryPoint;
 
 /**
- * A testing class that simply parses and re-sends any JSON sent to this.
- * 
- * Note that this should ABSOLUTELY NOT be installed as-is on a webserver that is visible to the world! It may cause you to be
- * vulnerable to cross-site scripting attacks or expose you to other major security problems.
- * 
- * Protecting it with authentication MAY protect you from some problems, but you should make very certain you understand
- * what you're getting into before you do so.
+ * A short GWT example.
  * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
- *
  */
-public class ReflectJsonServlet extends HttpServlet {
+public class GwtExample implements EntryPoint {
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doPutOrPost(req, resp);
-    }
-
-    @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doPutOrPost(req, resp);
-    }
-
-    private void doPutOrPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        JsonSystem system = MinimalConfig.createSystem();
-        JsonValue value = system.parseReader(req.getReader());
-        resp.setContentType("application/json");
-        Writer writer = resp.getWriter();
-        writer.write(value.toCompactJsonString());
+    public void onModuleLoad() {
+        final JsonSystem system = GwtSystem.SYSTEM;
+        //        system.get(GWT.getHostPageBaseURL() + "test.json", new GetCallback() {
+        //            @Override
+        //            public void onError(Throwable e) {
+        //                throw new RuntimeException(e);
+        //            }
+        //
+        //            @Override
+        //            public void onSuccess(JsonValue value) {
+        //                RootPanel.get()
+        //                        .add(new HTML(StaticJsonUtil.toHtmlJson(value)));
+        //            }
+        //        });
     }
 }
