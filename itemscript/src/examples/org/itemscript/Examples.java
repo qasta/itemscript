@@ -27,7 +27,7 @@
  * Author: Jacob Davies
  */
 
-package org.itemscript.examples;
+package examples.org.itemscript;
 
 import java.io.Reader;
 import java.io.StringReader;
