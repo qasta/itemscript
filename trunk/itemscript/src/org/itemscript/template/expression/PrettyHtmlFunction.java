@@ -13,6 +13,10 @@ public class PrettyHtmlFunction extends FunctionBase {
 
     @Override
     public JsonValue execute(TemplateExec template, JsonValue context, JsonValue value) {
-        return system().createString(StaticJsonUtil.toHtmlJson(value));
+        if (value != null) {
+            return system().createString(StaticJsonUtil.toHtmlJson(value));
+        } else {
+            return system().createString("null");
+        }
     }
 }
