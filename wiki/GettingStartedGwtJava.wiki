@@ -125,8 +125,7 @@ prints:
 
                     @Override
                     public void onSuccess(PutResponse putResponse) {
-                        RootPanel.get()
-                                .add(new HTML(StaticJsonUtil.toHtmlJson(putResponse.value())));
+                        System.err.println("put complete");
                     }
                 });
 }}}
