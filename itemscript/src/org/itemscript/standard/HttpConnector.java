@@ -104,25 +104,29 @@ public final class HttpConnector extends ConnectorBase
         try {
             URLConnection connection = new URL(url + "").openConnection();
             // Note: we are ignoring content-encoding for now...
-            String contentType = connection.getContentType();
-            if (StaticJsonUtil.looksLikeJson(url, contentType)) {
-                return system().createItem(url + "", createMeta(connection),
-                        StandardUtil.readJson(system(), new InputStreamReader(connection.getInputStream())))
-                        .value();
-            } else if (contentType.startsWith("text")) {
-                return system().createItem(
-                        url + "",
-                        createMeta(connection),
-                        StandardUtil.readText(system(), new BufferedReader(new InputStreamReader(
-                                connection.getInputStream()))))
-                        .value();
-            } else {
-                return system().createItem(url + "", createMeta(connection),
-                        StandardUtil.readBinary(system(), connection.getInputStream()))
-                        .value();
-            }
+            return createItemFromResponse(url, connection);
         } catch (IOException e) {
             throw ItemscriptError.internalError(this, "get.IOException", e);
+        }
+    }
+
+    private JsonValue createItemFromResponse(Url url, URLConnection connection) throws IOException {
+        String contentType = connection.getContentType();
+        if (StaticJsonUtil.looksLikeJson(url, contentType)) {
+            return system().createItem(url + "", createMeta(connection),
+                    StandardUtil.readJson(system(), new InputStreamReader(connection.getInputStream())))
+                    .value();
+        } else if (contentType.startsWith("text")) {
+            return system().createItem(
+                    url + "",
+                    createMeta(connection),
+                    StandardUtil.readText(system(), new BufferedReader(new InputStreamReader(
+                            connection.getInputStream()))))
+                    .value();
+        } else {
+            return system().createItem(url + "", createMeta(connection),
+                    StandardUtil.readBinary(system(), connection.getInputStream()))
+                    .value();
         }
     }
 
@@ -138,7 +142,11 @@ public final class HttpConnector extends ConnectorBase
             Writer w = new OutputStreamWriter(connection.getOutputStream());
             w.write(value.toCompactJsonString());
             w.close();
-            return new ItemscriptPutResponse(url + "", createMeta(connection), null);
+            JsonValue retValue = null;
+            if (connection.getContentLength() > 0) {
+                retValue = createItemFromResponse(url, connection);
+            }
+            return new ItemscriptPutResponse(url + "", createMeta(connection), retValue);
         } catch (IOException e) {
             throw ItemscriptError.internalError(this, "post.IOException", e);
         }
@@ -156,7 +164,11 @@ public final class HttpConnector extends ConnectorBase
             Writer w = new OutputStreamWriter(connection.getOutputStream());
             w.write(value.toCompactJsonString());
             w.close();
-            return new ItemscriptPutResponse(url + "", createMeta(connection), null);
+            JsonValue retValue = null;
+            if (connection.getContentLength() > 0) {
+                retValue = createItemFromResponse(url, connection);
+            }
+            return new ItemscriptPutResponse(url + "", createMeta(connection), retValue);
         } catch (IOException e) {
             throw ItemscriptError.internalError(this, "put.IOException", e);
         }
