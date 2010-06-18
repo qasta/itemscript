@@ -121,3 +121,9 @@ prints:
 {{{
     System.out.println(system.get("mem:/Test/?countItems").intValue()); // prints 1
 }}}
+
+== PUT a value to a URL ==
+
+{{{
+    PutResponse put = system.put("http://127.0.0.1:8888/service", value);
+}}}
