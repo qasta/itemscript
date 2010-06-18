@@ -21,7 +21,7 @@ be used as an example configuration for any production system. Doing so may expo
 	ANY production server. It may expose you to serious security problems. -->
 	<servlet>
 		<servlet-name>ReflectJson</servlet-name>
-		<servlet-class>org.itemscript.examples.gwt.server.ReflectJsonServlet</servlet-class>
+		<servlet-class>examples.org.itemscript.gwt.server.ReflectJsonServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<url-pattern>/ReflectJson</url-pattern>
