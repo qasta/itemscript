@@ -112,6 +112,7 @@ prints:
     ],
     "test-float" : 1.5
 }
+}}}
 
 == PUT a value via HTTP ==
 
