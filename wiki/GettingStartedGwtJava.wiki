@@ -112,4 +112,42 @@ prints:
     ],
     "test-float" : 1.5
 }
+
+== PUT a value via HTTP ==
+
+{{{
+ GwtSystem.SYSTEM.put("/path/to/value", value, new PutCallback() {
+                    @Override
+                    public void onError(Throwable e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    @Override
+                    public void onSuccess(PutResponse putResponse) {
+                        RootPanel.get()
+                                .add(new HTML(StaticJsonUtil.toHtmlJson(putResponse.value())));
+                    }
+                });
+}}}
+
+
+== POST a value via HTTP ==
+
+Support for PUT is unfortunately not universal in older browsers. You can force a request to be a POST request by adding a query string, which the server should ignore.
+
+This mechanism is probably going to change; a general way of detecting whether the browser supports PUT and DELETE and a standard encapsulation of PUT and DELETE requests in POST requests would be more useful, or just a flag that switches everything to PUT-in-POST/DELETE-in-POST.
+
+{{{
+ GwtSystem.SYSTEM.put("/path/to/value?post", value, new PutCallback() {
+                    @Override
+                    public void onError(Throwable e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    @Override
+                    public void onSuccess(PutResponse putResponse) {
+                        RootPanel.get()
+                                .add(new HTML(StaticJsonUtil.toHtmlJson(putResponse.value())));
+                    }
+                });
 }}}
