@@ -30,9 +30,17 @@
 package examples.org.itemscript.gwt.client;
 
 import org.itemscript.core.JsonSystem;
+import org.itemscript.core.connectors.GetCallback;
+import org.itemscript.core.connectors.PutCallback;
 import org.itemscript.core.gwt.GwtSystem;
+import org.itemscript.core.util.StaticJsonUtil;
+import org.itemscript.core.values.JsonValue;
+import org.itemscript.core.values.PutResponse;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * A short GWT example.
@@ -43,17 +51,26 @@ public class GwtExample implements EntryPoint {
     @Override
     public void onModuleLoad() {
         final JsonSystem system = GwtSystem.SYSTEM;
-        //        system.get(GWT.getHostPageBaseURL() + "test.json", new GetCallback() {
-        //            @Override
-        //            public void onError(Throwable e) {
-        //                throw new RuntimeException(e);
-        //            }
-        //
-        //            @Override
-        //            public void onSuccess(JsonValue value) {
-        //                RootPanel.get()
-        //                        .add(new HTML(StaticJsonUtil.toHtmlJson(value)));
-        //            }
-        //        });
+        GwtSystem.SYSTEM.get(GWT.getHostPageBaseURL() + "cat.json", new GetCallback() {
+            @Override
+            public void onSuccess(JsonValue value) {
+                GwtSystem.SYSTEM.put(GWT.getHostPageBaseURL() + "ReflectJson", value, new PutCallback() {
+                    @Override
+                    public void onError(Throwable e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    @Override
+                    public void onSuccess(PutResponse putResponse) {
+                        RootPanel.get()
+                                .add(new HTML(StaticJsonUtil.toHtmlJson(putResponse.value())));
+                    }
+                });
+            }
+
+            public void onError(Throwable e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }
