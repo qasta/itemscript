@@ -38,34 +38,33 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.itemscript.core.JsonSystem;
+import org.itemscript.core.values.ItemscriptCreator;
 import org.itemscript.core.values.JsonValue;
 import org.itemscript.standard.MinimalConfig;
 
-/**
- * A testing class that simply parses and re-sends any JSON sent to this.
- * 
- * Note that this should ABSOLUTELY NOT be installed as-is on a webserver that is visible to the world! It may cause you to be
- * vulnerable to cross-site scripting attacks or expose you to other major security problems.
- * 
- * Protecting it with authentication MAY protect you from some problems, but you should make very certain you understand
- * what you're getting into before you do so.
- * 
- * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
- *
- */
-public class ReflectJsonServlet extends HttpServlet {
+public class PostEncapServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         JsonSystem system = MinimalConfig.createSystem();
-        String json = req.getParameter("value");
+        String method = null;
         JsonValue value = null;
-        if (json != null && json.length() > 0) {
-            value = system.parse(json);
+        String fragment = null;
+        if (req.getContentType()
+                .startsWith("application/x-www-form-urlencoded")) {
+            method = req.getParameter("method");
+            String valueJson = req.getParameter("value");
+            if (valueJson != null && valueJson.length() > 0) {
+                value = system.parse(valueJson);
+            }
+            fragment = req.getParameter("fragment");
         }
         resp.setContentType("application/json");
         if (value != null) {
             Writer writer = resp.getWriter();
-            writer.write(value.toCompactJsonString());
+            writer.write(ItemscriptCreator.quotedString(method + " " + value + " " + fragment));
+            System.err.println("method: " + method);
+            System.err.println("value: " + value);
+            System.err.println("fragment: " + fragment);
         }
     }
 
@@ -74,7 +73,20 @@ public class ReflectJsonServlet extends HttpServlet {
         JsonSystem system = MinimalConfig.createSystem();
         JsonValue value = system.parseReader(req.getReader());
         resp.setContentType("application/json");
-        Writer writer = resp.getWriter();
-        writer.write(value.toCompactJsonString());
+        JsonValue retValue1 = value.copy();
+        JsonValue retValue = retValue1;
+        resp.getWriter()
+                .write(retValue.toCompactJsonString());
+    }
+
+    private JsonValue putValue(JsonValue value) {
+        JsonValue retValue = value.copy();
+        return retValue;
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        JsonSystem system = MinimalConfig.createSystem();
+        resp.setStatus(200);
     }
 }

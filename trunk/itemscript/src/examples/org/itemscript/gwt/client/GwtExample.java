@@ -32,10 +32,12 @@ package examples.org.itemscript.gwt.client;
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.connectors.GetCallback;
 import org.itemscript.core.connectors.PutCallback;
+import org.itemscript.core.connectors.RemoveCallback;
 import org.itemscript.core.gwt.GwtSystem;
 import org.itemscript.core.util.StaticJsonUtil;
 import org.itemscript.core.values.JsonValue;
 import org.itemscript.core.values.PutResponse;
+import org.itemscript.core.values.RemoveResponse;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -54,7 +56,7 @@ public class GwtExample implements EntryPoint {
         GwtSystem.SYSTEM.get(GWT.getHostPageBaseURL() + "cat.json", new GetCallback() {
             @Override
             public void onSuccess(JsonValue value) {
-                GwtSystem.SYSTEM.put(GWT.getHostPageBaseURL() + "ReflectJson?post", value, new PutCallback() {
+                GwtSystem.SYSTEM.put(GWT.getHostPageBaseURL() + "test/foo", value, new PutCallback() {
                     @Override
                     public void onError(Throwable e) {
                         throw new RuntimeException(e);
@@ -71,6 +73,15 @@ public class GwtExample implements EntryPoint {
             public void onError(Throwable e) {
                 throw new RuntimeException(e);
             }
+        });
+        GwtSystem.SYSTEM.remove(GWT.getHostPageBaseURL() + "test/foo", new RemoveCallback() {
+            @Override
+            public void onError(Throwable e) {
+                throw new RuntimeException(e);
+            }
+
+            @Override
+            public void onSuccess(RemoveResponse removeResponse) {}
         });
     }
 }

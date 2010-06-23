@@ -29,6 +29,7 @@
 
 package org.itemscript.core.gwt;
 
+import org.itemscript.core.JsonSystem;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Url;
 import org.itemscript.core.values.JsonObject;
@@ -47,6 +48,9 @@ import com.google.gwt.http.client.URL;
  * 
  */
 public class RequestUtils {
+    public static final String VALUE_KEY = "value";
+    public static final String METHOD_KEY = "method";
+
     /**
      * Build a query string from a JsonObject.
      * 
@@ -65,6 +69,9 @@ public class RequestUtils {
                     }
                 } else {
                     processQueryStringEntry(first, sb, key, entry);
+                }
+                if (first) {
+                    first = false;
                 }
             }
             return sb.toString();
@@ -223,20 +230,6 @@ public class RequestUtils {
         return request;
     }
 
-    // FIXME - We need to correctly encode the form parameters for multipart/form-data.
-    //
-    //    /**
-    //     * Send a multipart/form-data POST request.
-    //     * 
-    //     * @param url The URL to post to.
-    //     * @param params The parameters to send in the POST request.
-    //     * @param callback The callback to call when the POST request completes.
-    //     * @return The Request object for this request.
-    //     */
-    //    public static Request sendMultipartRequest(String url, JsonObject params, RequestCallback callback) {
-    //        return sendPostRequest(url, params, callback, "multipart/form-data");
-    //    }
-    //
     /**
      * Send a standard POST request.
      * 
@@ -253,6 +246,25 @@ public class RequestUtils {
             RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, url);
             builder.setHeader("content-type", "application/x-www-form-urlencoded");
             request = builder.sendRequest(buildQueryString(params), callback);
+        } catch (RequestException e) {
+            if (callback != null) {
+                callback.onError(request, e);
+            } else {
+                throw new ItemscriptError("error.util.requestUtils.post.request.failed.no.callback", e);
+            }
+        }
+        return request;
+    }
+
+    public static Request sendPostEncapsulatedRequest(JsonSystem system, String url, String method,
+            JsonValue value, RequestCallback callback) {
+        Request request = null;
+        try {
+            RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, url);
+            builder.setHeader("content-type", "application/x-www-form-urlencoded");
+            request = builder.sendRequest(buildQueryString(system.createObject()
+                    .p(METHOD_KEY, method)
+                    .p(VALUE_KEY, value != null ? value.toCompactJsonString() : "")), callback);
         } catch (RequestException e) {
             if (callback != null) {
                 callback.onError(request, e);

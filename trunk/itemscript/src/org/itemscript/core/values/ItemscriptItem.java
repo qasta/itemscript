@@ -29,10 +29,9 @@
 
 package org.itemscript.core.values;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.itemscript.core.ItemscriptSystem;
 import org.itemscript.core.JsonSystem;
@@ -114,11 +113,14 @@ public final class ItemscriptItem implements JsonItem {
     private void dispatchEvent(Event event) {
         // Must copy this first to prevent concurrent modification problems if an event handler adds a new event handler to this
         // item.
-        Set<Handler> handlersSet = new HashSet<Handler>();
-        for (Handler handler : handlers.values()) {
-            handlersSet.add(handler);
+        Collection<Handler> values = handlers.values();
+        Handler[] handlersValues = new Handler[values.size()];
+        int i = 0;
+        for (Handler handler : values.toArray(handlersValues)) {
+            handlersValues[i] = handler;
+            ++i;
         }
-        for (Handler handler : handlersSet) {
+        for (Handler handler : handlersValues) {
             handler.handle(event);
         }
     }
