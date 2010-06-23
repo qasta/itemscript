@@ -194,9 +194,10 @@ public final class StaticJsonUtil {
      * color map.
      * 
      * @param value The value to convert.
-     * @return An HTML string.
+     * @return An HTML string, or null if the value was a Java null.
      */
     public static String toHtmlJson(JsonValue value) {
+        if (value == null) { return null; }
         JsonObject defaultColorMap = value.system()
                 .getObject(DEFAULT_COLOR_MAP_PATH);
         if (defaultColorMap == null) {
@@ -224,9 +225,10 @@ public final class StaticJsonUtil {
      * 
      * @param value The value to convert.
      * @param colorMap The color map to use; see {@link StaticJsonUtil} for constants to use as keys in the map.
-     * @return An HTML string.
+     * @return An HTML string, or null if the value was a Java null.
      */
     public static String toHtmlJson(JsonValue value, JsonObject colorMap) {
+        if (value == null) { return null; }
         StringBuffer sb = new StringBuffer();
         sb.append("<pre>\n");
         toHtmlJson(value, sb, colorMap, 0);

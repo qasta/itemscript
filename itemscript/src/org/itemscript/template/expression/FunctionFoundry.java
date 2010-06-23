@@ -96,6 +96,18 @@ public class FunctionFoundry {
                 return new EmptyFunction(system);
             }
         });
+        factories.put("parseTsv", new FunctionFactory() {
+            @Override
+            public Function create(JsonSystem system, List<Expression> args) {
+                return new ParseTsvFunction(system);
+            }
+        });
+        factories.put("parseTsvWithHeaderLine", new FunctionFactory() {
+            @Override
+            public Function create(JsonSystem system, List<Expression> args) {
+                return new ParseTsvWithHeaderLineFunction(system);
+            }
+        });
     }
 
     public static Function create(JsonSystem system, String functionName, List<Expression> args) {

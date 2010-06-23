@@ -18,4 +18,9 @@ public class Text extends Segment {
     public JsonValue interpret(TemplateExec templateExec, JsonValue context) {
         return text;
     }
+
+    @Override
+    public String toString() {
+        return "[Text text=" + text + "]";
+    }
 }

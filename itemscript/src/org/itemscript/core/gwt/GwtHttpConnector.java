@@ -38,6 +38,9 @@ import org.itemscript.core.connectors.AsyncPutConnector;
 import org.itemscript.core.connectors.GetCallback;
 import org.itemscript.core.connectors.PutCallback;
 import org.itemscript.core.connectors.RemoveCallback;
+import org.itemscript.core.events.Event;
+import org.itemscript.core.events.EventType;
+import org.itemscript.core.events.Handler;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Url;
 import org.itemscript.core.util.StaticJsonUtil;
@@ -59,7 +62,11 @@ import com.google.gwt.http.client.Response;
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
 public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, AsyncPostConnector, HasSystem {
+    public static final String POST_ENCAPSULATED_KEY = "postEncapsulated";
+    public static final String CONFIG_URL = "mem:/itemscript/GwtHttpConnector#" + POST_ENCAPSULATED_KEY;
+    public static final String PUT_METHOD = "PUT";
     private JsonSystem system;
+    private boolean postEncapsulated;
 
     /**
      * Create a new GwtHttpConnector.
@@ -68,6 +75,33 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
      */
     public GwtHttpConnector(JsonSystem system) {
         this.system = system;
+        JsonValue postEncapsulatedVal = system.get(CONFIG_URL);
+        if (postEncapsulatedVal == null || !postEncapsulatedVal.isBoolean()) {
+            postEncapsulated = true;
+            postEncapsulatedVal = system.put(CONFIG_URL, postEncapsulated)
+                    .value();
+        } else {
+            postEncapsulated = postEncapsulatedVal.booleanValue();
+        }
+        // Now attach an event handler in case someone changes it...
+        postEncapsulatedVal.item()
+                .addHandler(new Handler() {
+                    @Override
+                    public void handle(Event event) {
+                        // If it's removed that's an error.
+                        if (event.eventType()
+                                .equals(EventType.REMOVE)) {
+                            throw ItemscriptError.internalError(this, "handle.postEncapsulated.removed");
+                        } else {
+                            Boolean value = event.value()
+                                    .asObject()
+                                    .getBoolean(POST_ENCAPSULATED_KEY);
+                            if (value == null) { throw ItemscriptError.internalError(this,
+                                    "handle.postEncapsulated.changed.to.non.boolean.value", value + ""); }
+                            postEncapsulated = value;
+                        }
+                    }
+                });
     }
 
     private JsonObject createMeta(Response response) {
@@ -132,7 +166,7 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
 
     @Override
     public void post(final Url url, JsonValue value, final PutCallback callback) {
-        RequestUtils.sendJsonPostRequest(url + "", value, new RequestCallback() {
+        RequestCallback requestCallback = new RequestCallback() {
             @Override
             public void onError(Request request, Throwable exception) {
                 callback.onError(exception);
@@ -159,12 +193,17 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
                                     .p("text", response.getStatusText())));
                 }
             }
-        });
+        };
+        if (!postEncapsulated) {
+            RequestUtils.sendJsonPostRequest(url + "", value, requestCallback);
+        } else {
+            RequestUtils.sendPostEncapsulatedRequest(system, url + "", "POST", value, requestCallback);
+        }
     }
 
     @Override
     public void put(final Url url, JsonValue value, final PutCallback callback) {
-        RequestUtils.sendJsonPutRequest(url + "", value, new RequestCallback() {
+        RequestCallback requestCallback = new RequestCallback() {
             @Override
             public void onError(Request request, Throwable exception) {
                 callback.onError(exception);
@@ -190,12 +229,17 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
                                     .p("text", response.getStatusText())));
                 }
             }
-        });
+        };
+        if (!postEncapsulated) {
+            RequestUtils.sendJsonPutRequest(url + "", value, requestCallback);
+        } else {
+            RequestUtils.sendPostEncapsulatedRequest(system, url + "", PUT_METHOD, value, requestCallback);
+        }
     }
 
     @Override
     public void remove(final Url url, final RemoveCallback callback) {
-        RequestUtils.sendDeleteRequest(url + "", new RequestCallback() {
+        RequestCallback requestCallback = new RequestCallback() {
             @Override
             public void onError(Request request, Throwable exception) {
                 callback.onError(exception);
@@ -214,7 +258,12 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
                                     .p("text", response.getStatusText())));
                 }
             }
-        });
+        };
+        if (!postEncapsulated) {
+            RequestUtils.sendDeleteRequest(url + "", requestCallback);
+        } else {
+            RequestUtils.sendPostEncapsulatedRequest(system, url + "", "DELETE", null, requestCallback);
+        }
     }
 
     @Override

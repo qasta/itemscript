@@ -1,5 +1,5 @@
-#Tue Mar 16 18:17:52 PDT 2010
+#Fri Jun 18 16:19:18 PDT 2010
 eclipse.preferences.version=1
-entryPointModules=org.itemscript.examples.gwt.Example|org.itemscript.Itemscript
+entryPointModules=org.itemscript.Itemscript|examples.org.itemscript.gwt.Example|org.itemscript.Template
 filesCopiedToWebInfLib=gwt-servlet.jar
 gwtCompileSettings=PGd3dC1jb21waWxlLXNldHRpbmdzPjxsb2ctbGV2ZWw+SU5GTzwvbG9nLWxldmVsPjxvdXRwdXQtc3R5bGU+T0JGVVNDQVRFRDwvb3V0cHV0LXN0eWxlPjxleHRyYS1hcmdzPjwhW0NEQVRBW11dPjwvZXh0cmEtYXJncz48dm0tYXJncz48IVtDREFUQVstWG14NTEybV1dPjwvdm0tYXJncz48L2d3dC1jb21waWxlLXNldHRpbmdzPg\=\=
