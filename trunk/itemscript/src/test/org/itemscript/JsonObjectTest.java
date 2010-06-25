@@ -106,6 +106,16 @@ public class JsonObjectTest extends ItemscriptTestBase {
     }
 
     @Test
+    public void testRemoveByPath() {
+        JsonObject object = system().createObject();
+        object.createObject("x")
+                .p("y", "1");
+        object.removeByPath("x/y");
+        assertEquals(0, object.getObject("x")
+                .size());
+    }
+
+    @Test
     public void testEntrySet() {
         JsonObject object = system().createObject()
                 .p("1", "foo")
