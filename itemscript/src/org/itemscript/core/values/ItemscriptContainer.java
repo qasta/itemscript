@@ -257,6 +257,11 @@ public abstract class ItemscriptContainer extends ItemscriptValue implements Jso
         return true;
     }
 
+    @Override
+    public void putByPath(String path, JsonValue value) {
+        JsonAccessHelper.putByPath(this, path, value);
+    }
+
     protected void prepareValueForPut(String key, JsonValue value) {
         if (value.parent() != null) { throw ItemscriptError.internalError(this,
                 "prepareValueForPut.value.is.in.another.container"); }
@@ -329,5 +334,10 @@ public abstract class ItemscriptContainer extends ItemscriptValue implements Jso
         ((ItemscriptValue) value).setParent(null);
         ((ItemscriptValue) value).setKey(null);
         ((ItemscriptValue) value).setItem(null);
+    }
+
+    @Override
+    public void removeByPath(String path) {
+        JsonAccessHelper.removeByPath(this, path);
     }
 }

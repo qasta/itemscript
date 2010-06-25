@@ -194,11 +194,6 @@ final class ItemscriptObject extends ItemscriptContainer implements JsonObject {
     }
 
     @Override
-    public void putByPath(String path, JsonValue value) {
-        JsonAccessHelper.putByPath(this, path, value);
-    }
-
-    @Override
     public void putValue(String key, JsonValue value) {
         put(key, value);
     }

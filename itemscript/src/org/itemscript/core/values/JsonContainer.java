@@ -311,7 +311,7 @@ public interface JsonContainer extends JsonValue, JsonGetAccess {
      * 
      * @param path The path to the new value.
      * @param value The value to put.
-     * @throws ItemscriptError If a value that needed to be a container to interpret the path was a scalar valur, or if
+     * @throws ItemscriptError If a value that needed to be a container to interpret the path was a scalar value, or if
      * a string key needs to be applied to an array container, or if the path was null or empty.
      */
     public void putByPath(String path, JsonValue value);
@@ -340,6 +340,15 @@ public interface JsonContainer extends JsonValue, JsonGetAccess {
      * @param key The key to remove.
      */
     public void removeValue(String key);
+
+    /**
+     * Remove a value from this container by path.
+     * 
+     * @param path The path to the value to remove.
+     * @throws ItemscriptError If a value that needed to be a container to interpret the path was a scalar value, or if
+     * a string key needs to be applied to an array container, or if the path was null or empty.
+     */
+    public void removeByPath(String path);
 
     /**
      * Get the number of entries in this container.

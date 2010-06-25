@@ -5,6 +5,7 @@ import org.itemscript.core.JsonSystem;
 import org.itemscript.core.Params;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Url;
+import org.itemscript.core.values.ItemscriptContainer;
 import org.itemscript.core.values.ItemscriptCreator;
 import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonContainer;
@@ -336,5 +337,25 @@ public final class JsonAccessHelper {
         JsonContainer lastContainer = next.asContainer();
         // Then put the value in that container.
         lastContainer.putValue(pathComponents[pathComponents.length - 1], value);
+    }
+
+    public static void removeByPath(ItemscriptContainer container, String path) {
+        String[] pathComponents = path.split("/");
+        JsonValue next = container;
+        for (int i = 0; i < (pathComponents.length - 1); ++i) {
+            String key = pathComponents[i];
+            if (!next.isContainer()) { throw ItemscriptError.internalError(next,
+                    "removeByPath.next.was.not.a.container", new Params().p("next", next + "")
+                            .p("path", path)
+                            .p("key", key)); }
+            JsonContainer currentContainer = next.asContainer();
+            next = currentContainer.getValue(key);
+            if (next == null) {
+                next = currentContainer.createObject(key);
+            }
+        }
+        JsonContainer lastContainer = next.asContainer();
+        // Then remove the value from that container.
+        lastContainer.removeValue(pathComponents[pathComponents.length - 1]);
     }
 }

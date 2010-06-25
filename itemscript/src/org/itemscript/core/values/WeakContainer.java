@@ -347,6 +347,10 @@ public abstract class WeakContainer implements JsonContainer {
     }
 
     @Override
+    public final void removeByPath(String path) {
+        throw new UnsupportedOperationException();
+    }
+    @Override
     public final JsonNative putNative(String key, Object value) {
         throw new UnsupportedOperationException();
     }
