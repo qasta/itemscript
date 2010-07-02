@@ -41,7 +41,7 @@ abstract class TypeBase implements Type, HasSystem {
         if (extendsType == null) { throw ItemscriptError.internalError(this, "constructor.extendsType.was.null"); }
         this.isBaseAnyType = false;
         if (def != null) {
-            this.description = def.getString("DESCRIPTION");
+            this.description = def.getString(".description");
         } else {
             this.description = null;
         }
@@ -90,6 +90,11 @@ abstract class TypeBase implements Type, HasSystem {
     @Override
     public boolean isString() {
         return false;
+    }
+    
+    @Override
+    public boolean isDecimal() {
+    	return false;
     }
 
     @Override

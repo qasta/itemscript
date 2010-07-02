@@ -23,6 +23,7 @@ public class SchemaTest extends ItemscriptTestBase {
     private JsonObject object;
     private JsonArray array;
     private JsonString binary;
+    private JsonString decVal;
     private boolean threwException;
 
     public Schema schema() {
@@ -45,6 +46,7 @@ public class SchemaTest extends ItemscriptTestBase {
                 .a("value");
         this.binary = system().get("classpath:test/org/itemscript/test.png")
                 .asString();
+        this.decVal = system().createString("1.0");
         this.threwException = false;
     }
 
@@ -58,6 +60,7 @@ public class SchemaTest extends ItemscriptTestBase {
         schema.validate("any", emptyString);
         schema.validate("any", object);
         schema.validate("any", array);
+        schema.validate("any", decVal);
         try {
             schema.validate("any", null);
         } catch (ItemscriptError e) {
@@ -71,43 +74,6 @@ public class SchemaTest extends ItemscriptTestBase {
         schema.validate("array", array);
         try {
             schema.validate("array", string);
-        } catch (ItemscriptError e) {
-            threwException = true;
-        }
-        assertTrue(threwException);
-    }
-
-    @Test
-    public void testArrayChoose() {
-        JsonObject def = system().createObject();
-        def.put("EXTENDS", "string");
-        JsonArray pattern = def.createArray("CHOOSE");
-        pattern.add("xyz");
-        pattern.add("abc");
-        Type type = schema().resolve(def);
-        schema.validate(type, system().createString("xyz"));
-        schema.validate(type, system().createString("abc"));
-        try {
-            schema.validate(type, system().createString("abc 123"));
-        } catch (ItemscriptError e) {
-            threwException = true;
-        }
-        assertTrue(threwException);
-    }
-
-    @Test
-    public void testArrayPattern() {
-        JsonObject def = system().createObject();
-        def.put("EXTENDS", "string");
-        JsonArray pattern = def.createArray("PATTERN");
-        pattern.add("xyz*");
-        pattern.add("*abc");
-        Type type = schema().resolve(def);
-        schema.validate(type, system().createString("xyz"));
-        schema.validate(type, system().createString("xyz 123"));
-        schema.validate(type, system().createString("hey hey hey abc"));
-        try {
-            schema.validate(type, system().createString("abc 123"));
         } catch (ItemscriptError e) {
             threwException = true;
         }
@@ -135,7 +101,49 @@ public class SchemaTest extends ItemscriptTestBase {
         }
         assertTrue(threwException);
     }
+    
+    @Test
+    public void testBooleanHasBooleanValue() {
+        JsonObject def = system().createObject();
+        def.put(".extends", "boolean");
+        def.put(".booleanValue", true);
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createBoolean(true));
+        try {
+            schema.validate(type, system().createBoolean(false));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
 
+    @Test
+    public void testBooleanHasNoBooleanValue() {
+        JsonObject def = system().createObject();
+        def.put(".extends", "boolean");
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createBoolean(true));
+        schema.validate(type, system().createBoolean(false));
+    }
+    
+    @Test
+    public void testDecimal() {
+        schema.validate("decimal", decVal);
+        try {
+            schema.validate("decimal", null);
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+        threwException = false;
+        try {
+            schema.validate("decimal", booleanVal);
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
     @Test
     public void testInteger() {
         schema.validate("integer", intVal);
@@ -147,6 +155,153 @@ public class SchemaTest extends ItemscriptTestBase {
         assertTrue(threwException);
     }
 
+    @Test
+    public void testIntegerGreaterThan() {
+    	JsonObject def = system().createObject();
+        def.put(".extends", "integer");
+        def.put(".greaterThan", 5);
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createNumber(6));
+        try {
+            schema.validate(type, system().createNumber(4));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        try {
+        	schema.validate(type, system().createNumber(5));
+        } catch (ItemscriptError e) {
+        	threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
+    @Test
+    public void testIntegerLessThan() {
+    	JsonObject def = system().createObject();
+        def.put(".extends", "integer");
+        def.put(".lessThan", 5);
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createNumber(4));
+        try {
+            schema.validate(type, system().createNumber(6));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        try {
+        	schema.validate(type, system().createNumber(5));
+        } catch (ItemscriptError e) {
+        	threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
+    @Test
+    public void testIntegerGreaterThanOrEqualTo() {
+    	JsonObject def = system().createObject();
+        def.put(".extends", "integer");
+        def.put(".greaterThanOrEqualTo", 5);
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createNumber(5));
+        schema.validate(type, system().createNumber(6));
+        try {
+            schema.validate(type, system().createNumber(4));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+
+    @Test
+    public void testIntegerLessThanOrEqualTo() {
+    	JsonObject def = system().createObject();
+        def.put(".extends", "integer");
+        def.put(".lessThanOrEqualTo", 5);
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createNumber(5));
+        schema.validate(type, system().createNumber(4));
+        try {
+            schema.validate(type, system().createNumber(6));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
+    @Test
+    public void testIntegerEqualTo() {
+    	JsonObject def = system().createObject();
+        def.put(".extends", "integer");
+        def.put(".equalTo", -5);
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createNumber(-5));
+        try {
+            schema.validate(type, system().createNumber(4));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
+    @Test
+    public void testIntegerEvenTrue() {
+    	JsonObject def = system().createObject();
+        def.put(".extends", "integer");
+        def.put(".even", true);
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createNumber(4));
+        try {
+            schema.validate(type, system().createNumber(5));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
+    @Test
+    public void testIntegerEvenFalse() {
+    	JsonObject def = system().createObject();
+        def.put(".extends", "integer");
+        def.put(".even", false);
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createNumber(-5));
+        try {
+            schema.validate(type, system().createNumber(4));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
+    @Test
+    public void testIntegerOddTrue() {
+    	JsonObject def = system().createObject();
+        def.put(".extends", "integer");
+        def.put(".odd", true);
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createNumber(-5));
+        try {
+            schema.validate(type, system().createNumber(4));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
+    @Test
+    public void testIntegerOddFalse() {
+    	JsonObject def = system().createObject();
+        def.put(".extends", "integer");
+        def.put(".odd", false);
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createNumber(4));
+        try {
+            schema.validate(type, system().createNumber(-5));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
     @Test
     public void testNull() {
         schema.validate("null", nullVal);
@@ -175,7 +330,94 @@ public class SchemaTest extends ItemscriptTestBase {
         }
         assertTrue(threwException);
     }
+    
+    @Test
+    public void testNumberGreaterThan() {
+    	JsonObject def = system().createObject();
+        def.put(".extends", "number");
+        def.put(".greaterThan", 5);
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createNumber(5.1));
+        try {
+            schema.validate(type, system().createNumber(4));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        try {
+        	schema.validate(type, system().createNumber(5));
+        } catch (ItemscriptError e) {
+        	threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
+    @Test
+    public void testNumberLessThan() {
+    	JsonObject def = system().createObject();
+        def.put(".extends", "number");
+        def.put(".lessThan", 5);
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createNumber(4.9));
+        try {
+            schema.validate(type, system().createNumber(5.1));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        try {
+        	schema.validate(type, system().createNumber(5));
+        } catch (ItemscriptError e) {
+        	threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
+    @Test
+    public void testNumberGreaterThanOrEqualTo() {
+    	JsonObject def = system().createObject();
+        def.put(".extends", "number");
+        def.put(".greaterThanOrEqualTo", 5);
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createNumber(5));
+        schema.validate(type, system().createNumber(5.1));
+        try {
+            schema.validate(type, system().createNumber(4.9));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
 
+    @Test
+    public void testNumberLessThanOrEqualTo() {
+    	JsonObject def = system().createObject();
+        def.put(".extends", "number");
+        def.put(".lessThanOrEqualTo", 5);
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createNumber(5));
+        schema.validate(type, system().createNumber(4.9));
+        try {
+            schema.validate(type, system().createNumber(5.1));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
+    @Test
+    public void testNumberEqualTo() {
+    	JsonObject def = system().createObject();
+        def.put(".extends", "number");
+        def.put(".equalTo", -5.789);
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createNumber(-5.789));
+        try {
+            schema.validate(type, system().createNumber(4.9));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
     @Test
     public void testObject() {
         schema.validate("object", object);
@@ -207,25 +449,10 @@ public class SchemaTest extends ItemscriptTestBase {
     }
 
     @Test
-    public void testSingleChoose() {
-        JsonObject def = system().createObject();
-        def.put("EXTENDS", "string");
-        def.put("CHOOSE", "xyz");
-        Type type = schema().resolve(def);
-        schema.validate(type, system().createString("xyz"));
-        try {
-            schema.validate(type, system().createString("xyzijoij"));
-        } catch (ItemscriptError e) {
-            threwException = true;
-        }
-        assertTrue(threwException);
-    }
-
-    @Test
     public void testSinglePattern() {
         JsonObject def = system().createObject();
-        def.put("EXTENDS", "string");
-        def.put("PATTERN", "xyz*");
+        def.put(".extends", "string");
+        def.put(".pattern", "xyz*");
         Type type = schema().resolve(def);
         schema.validate(type, system().createString("xyz"));
         schema.validate(type, system().createString("xyz 123"));
@@ -258,8 +485,8 @@ public class SchemaTest extends ItemscriptTestBase {
     @Test
     public void testStringMax() {
         JsonObject def = system().createObject();
-        def.put("EXTENDS", "string");
-        def.put("MAX", 3);
+        def.put(".extends", "string");
+        def.put(".maxLength", 3);
         Type type = schema().resolve(def);
         try {
             schema.validate(type, system().createString("xyzijoij"));
@@ -272,11 +499,111 @@ public class SchemaTest extends ItemscriptTestBase {
     @Test
     public void testStringMin() {
         JsonObject def = system().createObject();
-        def.put("EXTENDS", "string");
-        def.put("MIN", 10);
+        def.put(".extends", "string");
+        def.put(".minLength", 10);
         Type type = schema().resolve(def);
         try {
             schema.validate(type, system().createString("xyz"));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
+    @Test
+    public void testStringIs() {
+    	JsonObject def = system().createObject();
+    	def.put(".extends", "string");
+    	def.put(".isLength", 5);
+    	Type type = schema().resolve(def);
+    	schema.validate(type, system().createString("abcde"));
+    	try {
+    		schema.validate(type, system().createString("four"));
+    	} catch (ItemscriptError e) {
+    		threwException = true;
+    	}
+    	assertTrue(threwException);
+    }
+    
+    @Test
+    public void testStringEquals() {
+    	JsonObject def = system().createObject();
+    	def.put(".extends", "string");
+    	def.put(".equals", "flower");
+    	Type type = schema().resolve(def);
+    	schema.validate(type, system().createString("flower"));
+    	try {
+    		schema.validate(type, system().createString("flour"));
+    	} catch (ItemscriptError e) {
+    		threwException = true;
+    	}
+    	assertTrue(threwException);
+    }
+    
+    @Test
+    public void testStringRegExPattern() {
+    	JsonObject def = system().createObject();
+    	def.put(".extends", "string");
+    	def.put(".regExPattern", "[a-z]+");
+    	Type type = schema().resolve(def);
+    	schema.validate(type, system().createString("abc"));
+    	try {
+    		schema.validate(type, system().createString("a3d"));
+    	} catch (ItemscriptError e) {
+    		threwException = true;
+    	}
+    	assertTrue(threwException);
+    }
+    
+    @Test
+    public void testStringInArray() {
+        JsonObject def = system().createObject();
+        def.put(".extends", "string");
+        JsonArray inArray = def.createArray(".inArray");
+        inArray.add("xyz");
+        inArray.add("abc");
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createString("xyz"));
+        schema.validate(type, system().createString("abc"));
+        try {
+            schema.validate(type, system().createString("abc 123"));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
+    @Test
+    public void testStringNotInArray() {
+        JsonObject def = system().createObject();
+        def.put(".extends", "string");
+        JsonArray inArray = def.createArray(".notInArray");
+        inArray.add("xyz");
+        inArray.add("abc");
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createString("abc 123"));
+        schema.validate(type, system().createString("xy"));
+        try {
+            schema.validate(type, system().createString("abc"));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+
+    @Test
+    public void testStringPattern() {
+        JsonObject def = system().createObject();
+        def.put(".extends", "string");
+        JsonArray pattern = def.createArray(".pattern");
+        pattern.add("xyz*");
+        pattern.add("*abc");
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createString("xyz"));
+        schema.validate(type, system().createString("xyz 123"));
+        schema.validate(type, system().createString("hey hey hey abc"));
+        try {
+            schema.validate(type, system().createString("abc 123"));
         } catch (ItemscriptError e) {
             threwException = true;
         }
@@ -303,7 +630,7 @@ public class SchemaTest extends ItemscriptTestBase {
     public void testWrongTypeForOptionalKey() {
         JsonObject def = system().createObject();
         def.put("name", "string");
-        def.put("OPTIONAL phone", "string");
+        def.put(".optional phone", "string");
         Type type = schema().resolve(def);
         JsonObject instance = system().createObject();
         instance.put("name", "Jacob");
