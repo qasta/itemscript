@@ -1,5 +1,5 @@
 /*
- * Copyright © 2010, Data Base Architects, Inc. All rights reserved.
+ * Copyright ï¿½ 2010, Data Base Architects, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -169,7 +169,7 @@ public class StringAnalyzer implements HasSystem {
         } else {
             // Anything else is an error.
             throw ItemscriptError.internalError(this, "analyzeExpressionToken.unexpected.token",
-                    peekExpressionToken + "");
+                    new Params().p("expressionToken", peekExpressionToken + "").p("text", system().createString(scanner.text())) + "");
         }
     }
 

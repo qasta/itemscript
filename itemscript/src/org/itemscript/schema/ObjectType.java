@@ -12,7 +12,7 @@ import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 
 class ObjectType extends TypeBase {
-    public static final String KEY_PREFIX = "KEY ";
+    public static final String KEY_PREFIX = ".key ";
     private Map<String, JsonValue> requiredKeys;
     private Map<String, Type> resolvedRequiredKeys;
     private Map<String, JsonValue> optionalKeys;
@@ -45,8 +45,8 @@ class ObjectType extends TypeBase {
                     String remainder = key.substring(KEY_PREFIX.length());
                     requiredKeys.put(remainder, def.get(key)
                             .copy());
-                } else if (key.startsWith("OPTIONAL ")) {
-                    String remainder = key.substring("OPTIONAL ".length());
+                } else if (key.startsWith(".optional ")) {
+                    String remainder = key.substring(".optional ".length());
                     optionalKeys.put(remainder, def.get(key)
                             .copy());
                 }

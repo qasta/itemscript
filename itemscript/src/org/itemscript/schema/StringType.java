@@ -11,50 +11,90 @@ import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 
 class StringType extends TypeBase {
-    private boolean hasDef;
-    private final int min;
-    private final int max;
-    private final List<String> choose;
+    private static final String PATTERN_KEY = ".pattern";
+	private static final String MAX_LENGTH_KEY = ".maxLength";
+	private static final String MIN_LENGTH_KEY = ".minLength";
+	private static final String IS_LENGTH_KEY = ".isLength";
+	private static final String EQUALS_KEY = ".equals";
+	private static final String REG_EX_PATTERN_KEY = ".regExPattern";
+	private static final String IN_ARRAY_KEY = ".inArray";
+	private static final String NOT_IN_ARRAY_KEY = ".notInArray";
+	private boolean hasDef;
+    private final int minLength;
+    private final int maxLength;
     private final List<String> pattern;
+    private final int isLength;
+    private final String equals;
+    private final String regExPattern;
+    private final List<String> inArray;
+    private final List<String> notInArray;
 
     public StringType(Schema schema, Type extendsType, JsonObject def) {
         super(schema, extendsType, def);
         if (def != null) {
             hasDef = true;
-            if (def.hasNumber("MIN")) {
-                min = def.getInt("MIN");
+            if (def.hasNumber(MIN_LENGTH_KEY)) {
+                minLength = def.getInt(MIN_LENGTH_KEY);
             } else {
-                min = -1;
+                minLength = -1;
             }
-            if (def.hasNumber("MAX")) {
-                max = def.getInt("MAX");
+            if (def.hasNumber(MAX_LENGTH_KEY)) {
+                maxLength = def.getInt(MAX_LENGTH_KEY);
             } else {
-                max = -1;
-            }
-            choose = new ArrayList<String>();
-            if (def.hasArray("CHOOSE")) {
-                JsonArray array = def.getArray("CHOOSE");
-                for (int i = 0; i < array.size(); ++i) {
-                    choose.add(array.getRequiredString(i));
-                }
-            } else if (def.hasString("CHOOSE")) {
-                choose.add(def.getString("CHOOSE"));
+                maxLength = -1;
             }
             pattern = new ArrayList<String>();
-            if (def.hasArray("PATTERN")) {
-                JsonArray array = def.getArray("PATTERN");
+            if (def.hasArray(PATTERN_KEY)) {
+                JsonArray array = def.getArray(PATTERN_KEY);
                 for (int i = 0; i < array.size(); ++i) {
                     pattern.add(array.getRequiredString(i));
                 }
-            } else if (def.hasString("PATTERN")) {
-                pattern.add(def.getString("PATTERN"));
+            } else if (def.hasString(PATTERN_KEY)) {
+                pattern.add(def.getString(PATTERN_KEY));
+            }
+            if (def.hasNumber(IS_LENGTH_KEY)) {
+            	isLength = def.getInt(IS_LENGTH_KEY);
+            } else{
+            	isLength = -1;
+            }
+            if (def.hasString(EQUALS_KEY)) {
+            	equals = def.getString(EQUALS_KEY);
+            } else{
+            	equals = null;
+            }
+            if (def.hasString(REG_EX_PATTERN_KEY)) {
+            	regExPattern = def.getString(REG_EX_PATTERN_KEY);
+            } else{
+            	regExPattern = null;
+            }
+            if (def.hasArray(IN_ARRAY_KEY)) {
+            	inArray = new ArrayList<String>();
+            	JsonArray array = def.getArray(IN_ARRAY_KEY);
+            	for (int i = 0; i < array.size(); ++i) {
+            		inArray.add(array.getRequiredString(i));
+            	}
+            } else {
+            	inArray = null;
+            }
+            if (def.hasArray(NOT_IN_ARRAY_KEY)) {
+            	notInArray = new ArrayList<String>();
+            	JsonArray array = def.getArray(NOT_IN_ARRAY_KEY);
+            	for (int i = 0; i < array.size(); ++i) {
+            		notInArray.add(array.getRequiredString(i));
+            	}
+            } else {
+            	notInArray = null;
             }
         } else {
             hasDef = false;
-            min = -1;
-            max = -1;
-            choose = null;
+            minLength = -1;
+            maxLength = -1;
             pattern = null;
+            isLength = -1;
+            equals = null;
+            regExPattern = null;
+            inArray = null;
+            notInArray = null;
         }
     }
 
@@ -80,24 +120,13 @@ class StringType extends TypeBase {
     }
 
     private void validateString(String path, String string) {
-        if (min > 0) {
-            if (string.length() < min) { throw ItemscriptError.internalError(this,
+        if (minLength > 0) {
+            if (string.length() < minLength) { throw ItemscriptError.internalError(this,
                     "validateString.value.shorter.than.min.length", pathValueParams(path, string)); }
         }
-        if (max > 0) {
-            if (string.length() > max) { throw ItemscriptError.internalError(this,
+        if (maxLength > 0) {
+            if (string.length() > maxLength) { throw ItemscriptError.internalError(this,
                     "validateString.value.longer.than.max.length", pathValueParams(path, string)); }
-        }
-        if (choose.size() > 0) {
-            boolean matched = false;
-            for (int i = 0; i < choose.size(); ++i) {
-                String chooseString = choose.get(i);
-                if (string.equals(chooseString)) {
-                    matched = true;
-                }
-            }
-            if (!matched) { throw ItemscriptError.internalError(this,
-                    "validateString.value.did.not.match.any.choice", pathValueParams(path, string)); }
         }
         if (pattern.size() > 0) {
             boolean matched = false;
@@ -109,6 +138,40 @@ class StringType extends TypeBase {
             }
             if (!matched) { throw ItemscriptError.internalError(this,
                     "validateString.value.did.not.match.any.pattern", pathValueParams(path, string)); }
+        }
+        if (isLength > 0) {
+        	if (string.length() != isLength) { throw ItemscriptError.internalError(this,
+        			"validateString.value.does.not.equal.is.length", pathValueParams(path, string)); }
+        }
+        if (equals != null) {
+        	if (!string.equals(equals)) { throw ItemscriptError.internalError(this,
+        			"validateString.value.does.not.equal.equal.to", pathValueParams(path, string)); }
+        }
+        if (regExPattern != null) {
+        	if (!string.matches(regExPattern)) { throw ItemscriptError.internalError(this,
+        			"validateString.value.does.not.match.reg.ex.pattern", pathValueParams(path, string)); }
+        }
+        if (inArray != null) {
+            boolean matched = false;
+            for (int i = 0; i < inArray.size(); ++i) {
+                String inArrayString = inArray.get(i);
+                if (string.equals(inArrayString)) {
+                    matched = true;
+                }
+            }
+            if (!matched) { throw ItemscriptError.internalError(this,
+                    "validateString.value.did.not.match.a.valid.choice", pathValueParams(path, string)); }
+        }
+        if (notInArray != null) {
+            boolean matched = false;
+            for (int i = 0; i < notInArray.size(); ++i) {
+                String notInArrayString = notInArray.get(i);
+                if (string.equals(notInArrayString)) {
+                    matched = true;
+                }
+            }
+            if (matched) { throw ItemscriptError.internalError(this,
+                    "validateString.value.matched.an.invalid.choice", pathValueParams(path, string)); }
         }
     }
 }

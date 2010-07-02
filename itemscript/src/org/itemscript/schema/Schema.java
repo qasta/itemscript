@@ -53,20 +53,24 @@ public class Schema implements HasSystem {
         return new BooleanType(this, extendsType, def);
     }
 
+    private Type createDecimalType(Type extendsType, JsonObject def) {
+    	return new DecimalType(this, extendsType, def);
+    }
+    
     private Type createFromArray(JsonArray array) {
         // An empty array means a generic array.
         if (array.size() == 0) { return get("array"); }
         return createFromObject(system().createObject()
-                .p("EXTENDS", "array")
-                .p("CONTAINS", array));
+                .p(".extends", "array")
+                .p(".contains", array));
     }
 
     private Type createFromObject(JsonObject def) {
         // An empty object means a generic object.
         if (def.size() == 0) { return get("object"); }
-        if (def.hasString("EXTENDS")) {
+        if (def.hasString(".extends")) {
             // Get the actual type.
-            Type extendsType = get(def.getString("EXTENDS"));
+            Type extendsType = get(def.getString(".extends"));
             if (extendsType.isObject()) {
                 return createObjectType(extendsType, def);
             } else if (extendsType.isArray()) {
@@ -83,6 +87,8 @@ public class Schema implements HasSystem {
                 return createBooleanType(extendsType, def);
             } else if (extendsType.isNull()) {
                 return createNullType(extendsType, def);
+            } else if (extendsType.isDecimal()) {
+            	return createDecimalType(extendsType, def);
             } else {
                 // This of course should never happen.
                 throw ItemscriptError.internalError(this, "createFromObject.extendsType.unknown.type", extendsType
@@ -129,6 +135,7 @@ public class Schema implements HasSystem {
         typesObject.putNative("binary", new BinaryType(this, anyType, null));
         typesObject.putNative("array", new ArrayType(this, anyType, null));
         typesObject.putNative("object", new ObjectType(this, anyType, null));
+        typesObject.putNative("decimal", new DecimalType(this, anyType, null));
     }
 
     public boolean match(String pattern, String string) {
