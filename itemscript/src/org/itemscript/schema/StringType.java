@@ -145,7 +145,7 @@ class StringType extends TypeBase {
         }
         if (equals != null) {
         	if (!string.equals(equals)) { throw ItemscriptError.internalError(this,
-        			"validateString.value.does.not.equal.equal.to", pathValueParams(path, string)); }
+        			"validateString.value.does.not.equal.equals", pathValueParams(path, string)); }
         }
         if (regExPattern != null) {
         	if (!string.matches(regExPattern)) { throw ItemscriptError.internalError(this,
