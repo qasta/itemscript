@@ -1,6 +1,9 @@
 
 package org.itemscript.schema;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
@@ -14,8 +17,8 @@ final class NumberType extends TypeBase {
 	private static final String GREATER_THAN_OR_EQUAL_TO_KEY = ".greaterThanOrEqualTo";
 	private static final String LESS_THAN_OR_EQUAL_TO_KEY = ".lessThanOrEqualTo";
 	private static final String EQUAL_TO_KEY = ".equalTo";
-	//private static final String IN_ARRAY_KEY = ".inArray";
-	//private static final String NOT_IN_ARRAY_KEY = "notInArray";
+	private static final String IN_ARRAY_KEY = ".inArray";
+	private static final String NOT_IN_ARRAY_KEY = ".notInArray";
 	private boolean hasDef;
 	private final double greaterThan;
 	private final boolean hasGreaterThan;
@@ -27,8 +30,8 @@ final class NumberType extends TypeBase {
 	private final boolean hasLessThanOrEqualTo;
 	private final double equalTo;
 	private final boolean hasEqualTo;
-	//private final JsonArray inArray;
-	//private final JsonArray notInArray;
+    private final List<Double> inArray;
+    private final List<Double> notInArray;;
 	
     NumberType(Schema schema, Type extendsType, JsonObject def) {
         super(schema, extendsType, def);
@@ -69,7 +72,26 @@ final class NumberType extends TypeBase {
             	hasEqualTo = false;
             	equalTo = -1;
             }
+            if (def.hasArray(IN_ARRAY_KEY)) {
+            	inArray = new ArrayList<Double>();
+            	JsonArray array = def.getArray(IN_ARRAY_KEY);
+            	for (int i = 0; i < array.size(); ++i) {
+            		inArray.add(array.getRequiredDouble(i));
+            	}
+            } else {
+            	inArray = null;
+            }
+            if (def.hasArray(NOT_IN_ARRAY_KEY)) {
+            	notInArray = new ArrayList<Double>();
+            	JsonArray array = def.getArray(NOT_IN_ARRAY_KEY);
+            	for (int i = 0; i < array.size(); ++i) {
+            		notInArray.add(array.getRequiredDouble(i));
+            	}
+            } else {
+            	notInArray = null;
+            }
         } else {
+        	hasDef = false;
         	greaterThan = -1;
         	hasGreaterThan = false;
         	lessThan = -1;
@@ -80,6 +102,8 @@ final class NumberType extends TypeBase {
         	hasLessThanOrEqualTo = false;
         	equalTo = -1;
         	hasEqualTo = false;
+        	inArray = null;
+        	notInArray = null;
         }
     }
 
@@ -124,6 +148,30 @@ final class NumberType extends TypeBase {
         if (hasEqualTo) {
         	if (num != equalTo) { throw ItemscriptError.internalError(this,
                     "validateNumber.value.is.not.equal.to.equal.to", pathValueParams(path, num)); }
+        }
+        if (inArray != null) {
+            boolean matched = false;
+            for (int i = 0; i < inArray.size(); ++i) {
+                double inArrayDouble = inArray.get(i);
+                if (num == inArrayDouble) {
+                    matched = true;
+                    break;
+                }
+            }
+            if (!matched) { throw ItemscriptError.internalError(this,
+                    "validateString.value.did.not.match.a.valid.choice", pathValueParams(path, num)); }
+        }
+        if (notInArray != null) {
+            boolean matched = false;
+            for (int i = 0; i < notInArray.size(); ++i) {
+                double notInArrayDouble = notInArray.get(i);
+                if (num == notInArrayDouble) {
+                    matched = true;
+                    break;
+                }
+            }
+            if (matched) { throw ItemscriptError.internalError(this,
+                    "validateString.value.matched.an.invalid.choice", pathValueParams(path, num)); }
         }
     }
 }
