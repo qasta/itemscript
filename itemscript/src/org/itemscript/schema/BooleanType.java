@@ -43,7 +43,7 @@ final class BooleanType extends TypeBase {
     @Override
     public void validate(String path, JsonValue value) {
         super.validate(path, value);
-        if (!value.isBoolean()) { throw ItemscriptError.internalError(this, "validate.value.was.not.boolean",
+        if (!value.isBoolean()) { throw ItemscriptError.internalError(this, "validateBoolean.value.was.not.boolean",
                 schema().pathParams(path)
                         .p("value", value.toCompactJsonString())); }
         if (hasDef) {

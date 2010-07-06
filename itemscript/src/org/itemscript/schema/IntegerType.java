@@ -144,7 +144,7 @@ final class IntegerType extends TypeBase {
     public void validate(String path, JsonValue value) {
         super.validate(path, value);
         if (value.doubleValue() != Math.round(value.doubleValue())) { throw ItemscriptError.internalError(
-                this, "validate.had.fractional.digits", schema().pathParams(path)
+                this, "validateInteger.had.fractional.digits", schema().pathParams(path)
                         .p("value", value.toCompactJsonString())); }
         if (hasDef) {
             validateInteger(path, value.intValue());
@@ -154,40 +154,40 @@ final class IntegerType extends TypeBase {
     private void validateInteger(String path, Integer num) {
         if (hasGreaterThan) {
             if (num <= greaterThan) { throw ItemscriptError.internalError(this,
-                    "validateNumber.value.is.less.than.or.equal.to.min", pathValueParams(path, num)); }
+                    "validateInteger.value.is.less.than.or.equal.to.min", pathValueParams(path, num)); }
         }
         if (hasLessThan) {
         	if (num >= lessThan) { throw ItemscriptError.internalError(this,
-                    "validateNumber.value.is.greater.than.or.equal.to.max", pathValueParams(path, num)); }
+                    "validateInteger.value.is.greater.than.or.equal.to.max", pathValueParams(path, num)); }
         }
         if (hasGreaterThanOrEqualTo) {
         	if (num < greaterThanOrEqualTo) { throw ItemscriptError.internalError(this,
-                    "validateNumber.value.is.less.than.min", pathValueParams(path, num)); }
+                    "validateInteger.value.is.less.than.min", pathValueParams(path, num)); }
         }
         if (hasLessThanOrEqualTo) {
         	if (num > lessThanOrEqualTo) { throw ItemscriptError.internalError(this,
-                    "validateNumber.value.is.greater.than.max", pathValueParams(path, num)); }
+                    "validateInteger.value.is.greater.than.max", pathValueParams(path, num)); }
         }
         if (hasEqualTo) {
         	if (num != equalTo) { throw ItemscriptError.internalError(this,
-                    "validateNumber.value.is.not.equal.to.equal.to", pathValueParams(path, num)); }
+                    "validateInteger.value.is.not.equal.to.equal.to", pathValueParams(path, num)); }
         }
         if (hasEven) {
         	if (even) {
         		if ((num % 2) != 0) { throw ItemscriptError.internalError(this,
-                        "validateNumber.value.is.not.even", pathValueParams(path, num)); }
+                        "validateInteger.value.is.not.even", pathValueParams(path, num)); }
         	} else {
         		if ((num % 2) == 0) { throw ItemscriptError.internalError(this,
-                        "validateNumber.value.is.not.odd", pathValueParams(path, num)); }
+                        "validateInteger.value.is.not.odd", pathValueParams(path, num)); }
         	}
         }
         if (hasOdd) {
         	if (odd) {
         		if ((num % 2) == 0) { throw ItemscriptError.internalError(this,
-                        "validateNumber.value.is.not.odd", pathValueParams(path, num)); }
+                        "validateInteger.value.is.not.odd", pathValueParams(path, num)); }
         	} else {
         		if ((num % 2) != 0) { throw ItemscriptError.internalError(this,
-                        "validateNumber.value.is.not.even", pathValueParams(path, num)); }
+                        "validateInteger.value.is.not.even", pathValueParams(path, num)); }
         	}
         }
         if (inArray != null) {
@@ -199,7 +199,7 @@ final class IntegerType extends TypeBase {
                 }
             }
             if (!matched) { throw ItemscriptError.internalError(this,
-                    "validateString.value.did.not.match.a.valid.choice", pathValueParams(path, num)); }
+                    "validateInteger.value.did.not.match.a.valid.choice", pathValueParams(path, num)); }
         }
         if (notInArray != null) {
             boolean matched = false;
@@ -210,7 +210,7 @@ final class IntegerType extends TypeBase {
                 }
             }
             if (matched) { throw ItemscriptError.internalError(this,
-                    "validateString.value.matched.an.invalid.choice", pathValueParams(path, num)); }
+                    "validateInteger.value.matched.an.invalid.choice", pathValueParams(path, num)); }
         }
     }
 }

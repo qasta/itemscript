@@ -19,6 +19,8 @@ final class NumberType extends TypeBase {
 	private static final String EQUAL_TO_KEY = ".equalTo";
 	private static final String IN_ARRAY_KEY = ".inArray";
 	private static final String NOT_IN_ARRAY_KEY = ".notInArray";
+	private static final String EVEN_KEY = ".even";
+	private static final String ODD_KEY = ".odd";
 	private boolean hasDef;
 	private final double greaterThan;
 	private final boolean hasGreaterThan;
@@ -31,7 +33,11 @@ final class NumberType extends TypeBase {
 	private final double equalTo;
 	private final boolean hasEqualTo;
     private final List<Double> inArray;
-    private final List<Double> notInArray;;
+    private final List<Double> notInArray;
+    private final boolean even;
+    private final boolean hasEven;
+    private final boolean odd;
+    private final boolean hasOdd;
 	
     NumberType(Schema schema, Type extendsType, JsonObject def) {
         super(schema, extendsType, def);
@@ -90,6 +96,20 @@ final class NumberType extends TypeBase {
             } else {
             	notInArray = null;
             }
+            if (def.hasBoolean(EVEN_KEY)) {
+            	even = def.getBoolean(EVEN_KEY);
+            	hasEven = true;
+            } else {
+            	even = false;
+            	hasEven = false;
+            }
+            if (def.hasBoolean(ODD_KEY)) {
+            	odd = def.getBoolean(ODD_KEY);
+            	hasOdd = true;
+            } else {
+            	odd = false;
+            	hasOdd = false;
+            }
         } else {
         	hasDef = false;
         	greaterThan = -1;
@@ -104,6 +124,10 @@ final class NumberType extends TypeBase {
         	hasEqualTo = false;
         	inArray = null;
         	notInArray = null;
+        	even = false;
+        	hasEven = false;
+        	odd = false;
+        	hasOdd = false;
         }
     }
 
@@ -159,7 +183,7 @@ final class NumberType extends TypeBase {
                 }
             }
             if (!matched) { throw ItemscriptError.internalError(this,
-                    "validateString.value.did.not.match.a.valid.choice", pathValueParams(path, num)); }
+                    "validateNumber.value.did.not.match.a.valid.choice", pathValueParams(path, num)); }
         }
         if (notInArray != null) {
             boolean matched = false;
@@ -171,7 +195,29 @@ final class NumberType extends TypeBase {
                 }
             }
             if (matched) { throw ItemscriptError.internalError(this,
-                    "validateString.value.matched.an.invalid.choice", pathValueParams(path, num)); }
+                    "validateNumber.value.matched.an.invalid.choice", pathValueParams(path, num)); }
+        }
+        if (hasEven) {
+        	if (num.doubleValue() != Math.round(num.doubleValue())) { throw ItemscriptError.internalError(
+                    this, "validateNumber.is.not.an.integer", pathValueParams(path, num)); }
+        	if (even) {
+        		if ((num % 2) != 0) { throw ItemscriptError.internalError(this,
+                        "validateNumber.value.is.not.even", pathValueParams(path, num)); }
+        	} else {
+        		if ((num % 2) == 0) { throw ItemscriptError.internalError(this,
+                        "validateNumber.value.is.not.odd", pathValueParams(path, num)); }
+        	}
+        }
+        if (hasOdd) {
+        	if (num.doubleValue() != Math.round(num.doubleValue())) { throw ItemscriptError.internalError(
+                    this, "validateNumber.is.not.an.integer", pathValueParams(path, num)); }
+        	if (odd) {
+        		if ((num % 2) == 0) { throw ItemscriptError.internalError(this,
+                        "validateNumber.value.is.not.odd", pathValueParams(path, num)); }
+        	} else {
+        		if ((num % 2) != 0) { throw ItemscriptError.internalError(this,
+                        "validateNumber.value.is.not.even", pathValueParams(path, num)); }
+        	}
         }
     }
 }
