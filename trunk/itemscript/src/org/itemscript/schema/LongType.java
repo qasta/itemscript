@@ -9,7 +9,7 @@ import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 
-class DecimalType extends TypeBase {
+class LongType extends TypeBase {
 	private static final String GREATER_THAN_KEY = ".greaterThan";
 	private static final String LESS_THAN_KEY = ".lessThan";
 	private static final String GREATER_THAN_OR_EQUAL_TO_KEY = ".greaterThanOrEqualTo";
@@ -34,7 +34,7 @@ class DecimalType extends TypeBase {
 	private final boolean odd;
 	private final boolean hasOdd;
 
-	public DecimalType(Schema schema, Type extendsType, JsonObject def) {
+	public LongType(Schema schema, Type extendsType, JsonObject def) {
 		super(schema, extendsType, def);
 		if (def != null) {
 			hasDef = true;
@@ -270,13 +270,6 @@ class DecimalType extends TypeBase {
 						pathValueParams(path, string));
 			}
 		}
-		if (equalTo != null) {
-			if (!decimalEquals(string, equalTo)) {
-				throw ItemscriptError.internalError(this,
-						"validateDecimal.value.is.not.equal.to.equalTo",
-						pathValueParams(path, string));
-			}
-		}
 		/**
 		if (fractionDigits > 0) {
 			//CHECK DIGITS AFTER DECIMAL POINT.
@@ -352,32 +345,5 @@ class DecimalType extends TypeBase {
 			}
 		}
 		return true;
-	}
-	
-	/**
-	 * Returns whether not the two string values are numerically equal.
-	 * 
-	 * @param dec
-	 * @param value
-	 * @return true if the strings are equal, false if not
-	 */
-	
-	private boolean decimalEquals(String num1, String num2) {
-		num1 = num1.trim();
-		num2 = num2.trim();
-		num1 = cutZeroes(num1);
-		num2 = cutZeroes(num2);
-		return num1.equals(num2);
-	}
-	
-	/**
-	 * Simplifies a decimal in string form by removing all leading and trailing zeroes.
-	 * 
-	 * @param dec
-	 * @return the new simplified string
-	 */
-	
-	private String cutZeroes(String dec) {
-		return dec;
 	}
 }
