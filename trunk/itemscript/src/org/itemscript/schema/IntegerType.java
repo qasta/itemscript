@@ -1,6 +1,8 @@
 
 package org.itemscript.schema;
 
+import java.util.ArrayList;
+
 import org.itemscript.core.Params;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.values.JsonObject;
@@ -16,25 +18,25 @@ final class IntegerType extends TypeBase {
 	private static final String EQUAL_TO_KEY = ".equalTo";
 	private static final String EVEN_KEY = ".even";
 	private static final String ODD_KEY = ".odd";
-	//private static final String IN_ARRAY_KEY = ".inArray";
-	//private static final String NOT_IN_ARRAY_KEY = "notInArray";
+	private static final String IN_ARRAY_KEY = ".inArray";
+	private static final String NOT_IN_ARRAY_KEY = ".notInArray";
 	private boolean hasDef;
-	private final double greaterThan;
+	private final int greaterThan;
 	private final boolean hasGreaterThan;
-	private final double lessThan;
+	private final int lessThan;
 	private final boolean hasLessThan;
-	private final double greaterThanOrEqualTo;
+	private final int greaterThanOrEqualTo;
 	private final boolean hasGreaterThanOrEqualTo;
-	private final double lessThanOrEqualTo;
+	private final int lessThanOrEqualTo;
 	private final boolean hasLessThanOrEqualTo;
-	private final double equalTo;
+	private final int equalTo;
 	private final boolean hasEqualTo;
 	private final boolean even;
 	private final boolean hasEven;
 	private final boolean odd;
 	private final boolean hasOdd;
-	//private final JsonArray inArray;
-	//private final JsonArray notInArray;
+	private final ArrayList<Integer> inArray;
+	private final ArrayList<Integer> notInArray;
 	
     IntegerType(Schema schema, Type extendsType, JsonObject def) {
         super(schema, extendsType, def);
@@ -42,35 +44,35 @@ final class IntegerType extends TypeBase {
             hasDef = true;
             if (def.hasNumber(GREATER_THAN_KEY)) {
             	hasGreaterThan = true;
-                greaterThan = def.getDouble(GREATER_THAN_KEY);
+                greaterThan = def.getInt(GREATER_THAN_KEY);
             } else {
             	hasGreaterThan = false;
             	greaterThan = -1;
             }
             if (def.hasNumber(LESS_THAN_KEY)) {
             	hasLessThan = true;
-            	lessThan = def.getDouble(LESS_THAN_KEY);
+            	lessThan = def.getInt(LESS_THAN_KEY);
             } else {
             	hasLessThan = false;
             	lessThan = -1;
             }
             if (def.hasNumber(GREATER_THAN_OR_EQUAL_TO_KEY)) {
             	hasGreaterThanOrEqualTo = true;
-            	greaterThanOrEqualTo = def.getDouble(GREATER_THAN_OR_EQUAL_TO_KEY);	
+            	greaterThanOrEqualTo = def.getInt(GREATER_THAN_OR_EQUAL_TO_KEY);	
             } else {
             	hasGreaterThanOrEqualTo = false;
             	greaterThanOrEqualTo = -1;
             }
             if (def.hasNumber(LESS_THAN_OR_EQUAL_TO_KEY)) {
             	hasLessThanOrEqualTo = true;
-            	lessThanOrEqualTo = def.getDouble(LESS_THAN_OR_EQUAL_TO_KEY);
+            	lessThanOrEqualTo = def.getInt(LESS_THAN_OR_EQUAL_TO_KEY);
             } else {
             	hasLessThanOrEqualTo = false;
             	lessThanOrEqualTo = -1;
             }
             if (def.hasNumber(EQUAL_TO_KEY)) {
             	hasEqualTo = true;
-            	equalTo = def.getDouble(EQUAL_TO_KEY);
+            	equalTo = def.getInt(EQUAL_TO_KEY);
             } else {
             	hasEqualTo = false;
             	equalTo = -1;
@@ -89,7 +91,26 @@ final class IntegerType extends TypeBase {
             	hasOdd = false;
             	odd = false;
             }
+            if (def.hasArray(IN_ARRAY_KEY)) {
+            	inArray = new ArrayList<Integer>();
+            	JsonArray array = def.getArray(IN_ARRAY_KEY);
+            	for (int i = 0; i < array.size(); ++i) {
+            		inArray.add(array.getRequiredInt(i));
+            	}
+            } else {
+            	inArray = null;
+            }
+            if (def.hasArray(NOT_IN_ARRAY_KEY)) {
+            	notInArray = new ArrayList<Integer>();
+            	JsonArray array = def.getArray(NOT_IN_ARRAY_KEY);
+            	for (int i = 0; i < array.size(); ++i) {
+            		notInArray.add(array.getRequiredInt(i));
+            	}
+            } else {
+            	notInArray = null;
+            }
         } else {
+        	hasDef = false;
         	greaterThan = -1;
         	hasGreaterThan = false;
         	lessThan = -1;
@@ -104,6 +125,8 @@ final class IntegerType extends TypeBase {
         	hasEven = false;
         	odd = false;
         	hasOdd = false;
+        	inArray = null;
+        	notInArray = null;
         }
     }
 
@@ -166,6 +189,28 @@ final class IntegerType extends TypeBase {
         		if ((num % 2) != 0) { throw ItemscriptError.internalError(this,
                         "validateNumber.value.is.not.even", pathValueParams(path, num)); }
         	}
+        }
+        if (inArray != null) {
+            boolean matched = false;
+            for (int i = 0; i < inArray.size(); ++i) {
+                int inArrayInt = inArray.get(i);
+                if (num == inArrayInt) {
+                    matched = true;
+                }
+            }
+            if (!matched) { throw ItemscriptError.internalError(this,
+                    "validateString.value.did.not.match.a.valid.choice", pathValueParams(path, num)); }
+        }
+        if (notInArray != null) {
+            boolean matched = false;
+            for (int i = 0; i < notInArray.size(); ++i) {
+                int notInArrayInt = notInArray.get(i);
+                if (num == notInArrayInt) {
+                    matched = true;
+                }
+            }
+            if (matched) { throw ItemscriptError.internalError(this,
+                    "validateString.value.matched.an.invalid.choice", pathValueParams(path, num)); }
         }
     }
 }
