@@ -183,6 +183,7 @@ public class SchemaTest extends ItemscriptTestBase {
     @Test
     public void testDecimal() {
         schema.validate("decimal", decVal);
+        schema.validate("decimal", system().createString(" 9.0 "));
         try {
             schema.validate("decimal", null);
         } catch (ItemscriptError e) {
@@ -192,6 +193,34 @@ public class SchemaTest extends ItemscriptTestBase {
         threwException = false;
         try {
             schema.validate("decimal", booleanVal);
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+        threwException = false;
+        
+        JsonString invalidDec;
+        invalidDec = system().createString("9.");
+        try {
+            schema.validate("decimal", invalidDec);
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+        threwException = false;
+        
+        invalidDec = system().createString("98abc23");
+        try {
+            schema.validate("decimal", invalidDec);
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+        threwException = false;
+        
+        invalidDec = system().createString("1. 23");
+        try {
+            schema.validate("decimal", invalidDec);
         } catch (ItemscriptError e) {
             threwException = true;
         }
@@ -237,6 +266,61 @@ public class SchemaTest extends ItemscriptTestBase {
     }
     
     @Test
+    public void testDecimalEqualTo() {
+    	JsonObject def = system().createObject();
+        def.put(".extends", "decimal");
+        def.put(".equalTo", "15.95");
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createString("15.95"));
+        schema.validate(type, system().createString("15.9500"));
+        schema.validate(type, system().createString("000015.95"));
+        schema.validate(type, system().createString("00015.950000"));
+        try {
+            schema.validate(type, system().createString("1.5950"));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+        threwException = false;
+        try {
+            schema.validate(type, system().createString("0015.95001200"));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
+    @Test
+    public void testDecimalZeroEqualTo() {
+    	JsonObject def = system().createObject();
+        def.put(".extends", "decimal");
+        def.put(".equalTo", "0");
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createString("0.0"));
+        schema.validate(type, system().createString("000.0000"));
+        schema.validate(type, system().createString("000000"));
+        schema.validate(type, system().createString(".0"));
+        schema.validate(type, system().createString("-0"));
+        schema.validate(type, system().createString("-0.0"));
+        schema.validate(type, system().createString("-000.0000"));
+        schema.validate(type, system().createString("-000000"));
+        schema.validate(type, system().createString("-.0"));
+        try {
+            schema.validate(type, system().createString("0.000010000"));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+        threwException = false;
+        try {
+            schema.validate(type, system().createString("0."));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
+    @Test
     public void testDecimalGreaterThan() {
     	JsonObject def = system().createObject();
         def.put(".extends", "decimal");
@@ -254,6 +338,123 @@ public class SchemaTest extends ItemscriptTestBase {
         	schema.validate(type, system().createString("5"));
         } catch (ItemscriptError e) {
         	threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
+    @Test
+    public void testDecimalLessThan() {
+    	JsonObject def = system().createObject();
+        def.put(".extends", "decimal");
+        def.put(".lessThan", "5");
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createString("4"));
+        try {
+            schema.validate(type, system().createString("9"));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+        threwException = false;
+        try {
+        	schema.validate(type, system().createString("5"));
+        } catch (ItemscriptError e) {
+        	threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
+    @Test
+    public void testDecimalGreaterThanOrEqualTo() {
+    	JsonObject def = system().createObject();
+        def.put(".extends", "decimal");
+        def.put(".greaterThanOrEqualTo", "5");
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createString("9"));
+        schema.validate(type, system().createString("5"));
+        try {
+            schema.validate(type, system().createString("4"));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
+    @Test
+    public void testDecimalLessThanOrEqualTo() {
+    	JsonObject def = system().createObject();
+        def.put(".extends", "decimal");
+        def.put(".lessThanOrEqualTo", "5");
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createString("4"));
+        schema.validate(type, system().createString("5"));
+        try {
+            schema.validate(type, system().createString("9"));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
+    @Test
+    public void testDecimalFractionDigits() {
+    	JsonObject def = system().createObject();
+        def.put(".extends", "decimal");
+        def.put(".fractionDigits", 2);
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createString("4"));
+        schema.validate(type, system().createString("5.12"));
+        try {
+            schema.validate(type, system().createString(".134"));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
+    @Test
+    public void testDecimalEven() {
+    	JsonObject def = system().createObject();
+        def.put(".extends", "decimal");
+        def.put(".even", true);
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createString("4"));
+        schema.validate(type, system().createString("094.000"));
+        schema.validate(type, system().createString("0000"));
+        try {
+            schema.validate(type, system().createString(".134"));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+        threwException = false;
+        try {
+            schema.validate(type, system().createString("5"));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
+    @Test
+    public void testDecimalOdd() {
+    	JsonObject def = system().createObject();
+        def.put(".extends", "decimal");
+        def.put(".odd", false);
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createString("4"));
+        schema.validate(type, system().createString("094.000"));
+        try {
+            schema.validate(type, system().createString(".134"));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+        threwException = false;
+        try {
+            schema.validate(type, system().createString("5"));
+        } catch (ItemscriptError e) {
+            threwException = true;
         }
         assertTrue(threwException);
     }
