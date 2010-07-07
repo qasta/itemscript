@@ -103,6 +103,10 @@ public class Schema implements HasSystem {
     private Type createIntegerType(Type extendsType, JsonObject def) {
         return new IntegerType(this, extendsType, def);
     }
+    
+    private Type createLongType(Type extendsType, JsonObject def) {
+        return new LongType(this, extendsType, def);
+    }
 
     private Type createNullType(Type extendsType, JsonObject def) {
         return new NullType(this, extendsType, def);
@@ -136,6 +140,7 @@ public class Schema implements HasSystem {
         typesObject.putNative("array", new ArrayType(this, anyType, null));
         typesObject.putNative("object", new ObjectType(this, anyType, null));
         typesObject.putNative("decimal", new DecimalType(this, anyType, null));
+        typesObject.putNative("long", new LongType(this, anyType, null));
     }
 
     public boolean match(String pattern, String string) {

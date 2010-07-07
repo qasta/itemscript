@@ -15,7 +15,6 @@ class LongType extends TypeBase {
 	private static final String GREATER_THAN_OR_EQUAL_TO_KEY = ".greaterThanOrEqualTo";
 	private static final String LESS_THAN_OR_EQUAL_TO_KEY = ".lessThanOrEqualTo";
 	private static final String EQUAL_TO_KEY = ".equalTo";
-	private static final String FRACTION_DIGITS_KEY = ".fractionDigits";
 	private static final String IN_ARRAY_KEY = ".inArray";
 	private static final String NOT_IN_ARRAY_KEY = ".notInArray";
 	private static final String EVEN_KEY = ".even";
@@ -26,7 +25,6 @@ class LongType extends TypeBase {
 	private final String greaterThanOrEqualTo;
 	private final String lessThanOrEqualTo;
 	private final String equalTo;
-	private final int fractionDigits;
 	private final List<String> inArray;
 	private final List<String> notInArray;
 	private final boolean even;
@@ -63,11 +61,6 @@ class LongType extends TypeBase {
 				equalTo = def.getString(EQUAL_TO_KEY);
 			} else {
 				equalTo = null;
-			}
-			if (def.hasNumber(FRACTION_DIGITS_KEY)) {
-				fractionDigits = def.getInt(FRACTION_DIGITS_KEY);
-			} else {
-				fractionDigits = -1;
 			}
 			if (def.hasArray(IN_ARRAY_KEY)) {
 				inArray = new ArrayList<String>();
@@ -108,7 +101,6 @@ class LongType extends TypeBase {
 			greaterThanOrEqualTo = null;
 			lessThanOrEqualTo = null;
 			equalTo = null;
-			fractionDigits = -1;
 			inArray = null;
 			notInArray = null;
 			even = false;
@@ -120,7 +112,7 @@ class LongType extends TypeBase {
 	}
 
 	@Override
-	public boolean isDecimal() {
+	public boolean isLong() {
 		return true;
 	}
 

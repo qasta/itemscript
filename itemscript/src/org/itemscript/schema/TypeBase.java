@@ -96,6 +96,11 @@ abstract class TypeBase implements Type, HasSystem {
     public boolean isDecimal() {
     	return false;
     }
+    
+    @Override
+    public boolean isLong() {
+    	return false;
+    }
 
     @Override
     public Schema schema() {
