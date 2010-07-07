@@ -23,6 +23,8 @@ public interface Type {
     public boolean isString();
     
     public boolean isDecimal();
+    
+    public boolean isLong();
 
     public Schema schema();
 

@@ -38,15 +38,16 @@ final class BinaryType extends TypeBase {
     @Override
     public void validate(String path, JsonValue value) {
         super.validate(path, value);
+        byte[] binaryValue;
         try {
-            byte[] binaryValue = value.binaryValue();
+            binaryValue = value.binaryValue();
         } catch (RuntimeException e) {
             throw ItemscriptError.internalError(this, "validate.could.not.parse.as.base64", schema().pathParams(
                     path)
                     .p("value", value.toCompactJsonString()));
         }
         if (hasDef) {
-        	validateBinary(path, value.binaryValue());
+			validateBinary(path, binaryValue);
         }
     }
     
