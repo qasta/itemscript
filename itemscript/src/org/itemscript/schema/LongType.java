@@ -116,64 +116,59 @@ class LongType extends TypeBase {
 		return true;
 	}
 
-	private Params pathValueParams(String path, String dec) {
-		return schema().pathParams(path).p("value", dec);
+	private Params pathValueParams(String path, Long longVal) {
+		return schema().pathParams(path).p("value", longVal);
 	}
 
 	@Override
 	public void validate(String path, JsonValue value) {
 		super.validate(path, value);
+		Long longVal;
 		if (!value.isString()) {
 			throw ItemscriptError.internalError(this,
 					"validate.value.was.not.string", schema().pathParams(path)
 							.p("value", value.toCompactJsonString()));
 		}
+		try {
+			longVal = Long.parseLong(value.stringValue());
+		} catch (NumberFormatException e) {
+			throw ItemscriptError.internalError(this,
+					"validate.value.was.not.proper.long", schema().pathParams(path)
+							.p("value", value.toCompactJsonString()));
+		}
 		if (hasDef) {
-			if (isDecimal(value.stringValue())) {
-				validateDecimal(path, value.stringValue());
-			} else {
-				throw ItemscriptError.internalError(this,
-						"validate.value.was.not.decimal", schema().pathParams(
-								path).p("value", value.toCompactJsonString()));
-			}
+			validateLong(path, longVal);
 		}
 	}
 
-	private void validateDecimal(String path, String string) {
-		double decValue;
-		double inArrayValue;
-		double notInArrayValue;
-		double greaterThanValue;
-		double greaterThanOrEqualToValue;
-		double lessThanValue;
-		double lessThanOrEqualToValue;
-		double equalToValue;
-		try {
-			decValue = Double.parseDouble(string);
-		} catch (NumberFormatException e) {
-			throw ItemscriptError.internalError(this,
-					"validateDecimal.value.could.not.be.parsed.into.double",
-					pathValueParams(path, string));
-		}
+	private void validateLong(String path, Long longVal) {
+		long inArrayValue;
+		long notInArrayValue;
+		long equalToValue;
+		long greaterThanValue;
+		long lessThanValue;
+		long greaterThanOrEqualToValue;
+		long lessThanOrEqualToValue;
+		
 		if (inArray != null) {
 			boolean matched = false;
 			for (int i = 0; i < inArray.size(); ++i) {
 				String inArrayString = inArray.get(i);
 				try {
-					inArrayValue = Double.parseDouble(inArrayString);
+					inArrayValue = Long.parseLong(inArrayString);
 				} catch (NumberFormatException e) {
 					throw ItemscriptError.internalError(this,
-						"validateDecimal.inArrayString.could.not.be.parsed.into.double",
-						pathValueParams(path, string));
+						"validateLong.inArrayString.could.not.be.parsed.into.long",
+						pathValueParams(path, longVal));
 				}
-				if (decValue == inArrayValue) {
+				if (longVal == inArrayValue) {
 					matched = true;
 				}
 			}
 			if (!matched) {
 				throw ItemscriptError.internalError(this,
-						"validateDecimal.value.did.not.match.a.valid.choice",
-						pathValueParams(path, string));
+						"validateLong.value.did.not.match.a.valid.choice",
+						pathValueParams(path, longVal));
 			}
 		}
 		if (notInArray != null) {
@@ -181,161 +176,112 @@ class LongType extends TypeBase {
 			for (int i = 0; i < notInArray.size(); ++i) {
 				String notInArrayString = notInArray.get(i);
 				try {
-					notInArrayValue = Double.parseDouble(notInArrayString);
+					notInArrayValue = Long.parseLong(notInArrayString);
 				} catch (NumberFormatException e) {
 					throw ItemscriptError.internalError(this,
-						"validateDecimal.notInArrayString.could.not.be.parsed.into.double",
-						pathValueParams(path, string));
+						"validateLong.notInArrayString.could.not.be.parsed.into.long",
+						pathValueParams(path, longVal));
 				}
-				if (decValue == notInArrayValue) {
+				if (longVal == notInArrayValue) {
 					matched = true;
 				}
 			}
 			if (matched) {
 				throw ItemscriptError.internalError(this,
-						"validateDecimal.value.did.not.match.a.valid.choice",
-						pathValueParams(path, string));
+						"validateLong.value.matched.an.invalid.choice",
+						pathValueParams(path, longVal));
 			}
-		};
-		if (greaterThan != null) {;
+		}
+		if (equalTo != null) {
 			try {
-				greaterThanValue = Double.parseDouble(greaterThan);
+				equalToValue = Long.parseLong(equalTo);
 			} catch (NumberFormatException e) {
 				throw ItemscriptError
-						.internalError(
-								this,
-								"validateDecimal.greaterThan.could.not.be.parsed.into.double",
-								pathValueParams(path, string));
+						.internalError(this, "validateLong.equalTo.could.not.be.parsed.into.long",
+								pathValueParams(path, longVal));
 			}
-			if (decValue <= greaterThanValue) {
+			if (longVal != equalToValue) {
 				throw ItemscriptError.internalError(this,
-						"validateDecimal.value.is.less.than.or.equal.to.min",
-						pathValueParams(path, string));
+						"validateLong.value.is.not.equal.to.equalTo",
+						pathValueParams(path, longVal));
+			}
+		}
+		if (greaterThan != null) {;
+			try {
+				greaterThanValue = Long.parseLong(greaterThan);
+			} catch (NumberFormatException e) {
+				throw ItemscriptError
+						.internalError(this, "validateLong.greaterThan.could.not.be.parsed.into.long",
+								pathValueParams(path, longVal));
+			}
+			if (longVal <= greaterThanValue) {
+				throw ItemscriptError.internalError(this,
+						"validateLong.value.is.less.than.or.equal.to.min",
+						pathValueParams(path, longVal));
 			}
 		}
 		if (lessThan != null) {
 			try {
-				lessThanValue = Double.parseDouble(lessThan);
+				lessThanValue = Long.parseLong(lessThan);
 			} catch (NumberFormatException e) {
 				throw ItemscriptError
-						.internalError(
-								this,
-								"validateDecimal.lessThan.could.not.be.parsed.into.double",
-								pathValueParams(path, string));
+						.internalError(this, "validateLong.lessThan.could.not.be.parsed.into.long",
+								pathValueParams(path, longVal));
 			}
-			if (decValue >= lessThanValue) {
+			if (longVal >= lessThanValue) {
 				throw ItemscriptError.internalError(this,
-						"validateDecimal.value.is.greater.than.or.equal.to.max",
-						pathValueParams(path, string));
+						"validateLong.value.is.greater.than.or.equal.to.max",
+						pathValueParams(path, longVal));
 			}
 		}
 		if (greaterThanOrEqualTo != null) {
 			try {
-				greaterThanOrEqualToValue = Double
-						.parseDouble(greaterThanOrEqualTo);
+				greaterThanOrEqualToValue = Long
+						.parseLong(greaterThanOrEqualTo);
 			} catch (NumberFormatException e) {
 				throw ItemscriptError
-						.internalError(
-								this,
-								"validateDecimal.greaterThanOrEqualTo.could.not.be.parsed.into.double",
-								pathValueParams(path, string));
+						.internalError(this,
+								"validateLong.greaterThanOrEqualTo.could.not.be.parsed.into.long",
+								pathValueParams(path, longVal));
 			}
-			if (decValue < greaterThanOrEqualToValue) {
+			if (longVal < greaterThanOrEqualToValue) {
 				throw ItemscriptError.internalError(this,
-						"validateDecimal.value.is.less.than.min",
-						pathValueParams(path, string));
+						"validateLong.value.is.less.than.min",
+						pathValueParams(path, longVal));
 			}
 		}
 		if (lessThanOrEqualTo != null) {
 			try {
-				lessThanOrEqualToValue = Double.parseDouble(lessThanOrEqualTo);
+				lessThanOrEqualToValue = Long.parseLong(lessThanOrEqualTo);
 			} catch (NumberFormatException e) {
 				throw ItemscriptError
-						.internalError(
-								this,
-								"validateDecimal.lessThanOrEqualTo.could.not.be.parsed.into.double",
-								pathValueParams(path, string));
+						.internalError(this,
+								"validateLong.lessThanOrEqualTo.could.not.be.parsed.into.long",
+								pathValueParams(path, longVal));
 			}
-			if (decValue > lessThanOrEqualToValue) {
+			if (longVal > lessThanOrEqualToValue) {
 				throw ItemscriptError.internalError(this,
-						"validateDecimal.value.is.greater.than.max",
-						pathValueParams(path, string));
+						"validateLong.value.is.greater.than.max",
+						pathValueParams(path, longVal));
 			}
 		}
-		/**
-		if (fractionDigits > 0) {
-			//CHECK DIGITS AFTER DECIMAL POINT.
-		}
-		*/
-		/**
 		if (hasEven) {
-			//CHECK THAT THE NUMBER IS AN INTEGER BEFORE CONTINUING, WHICH MEANS GETTING RID
-			 * OF TRAILING ZEROS AT THE END OF A DECIMAL POINT
 			if (even) {
-				if ((num % 2) != 0) { throw ItemscriptError.internalError(this,
-                        "validateNumber.value.is.not.even", pathValueParams(path, num)); }
+				if ((longVal % 2) != 0) { throw ItemscriptError.internalError(this,
+                        "validateLong.value.is.not.even", pathValueParams(path, longVal)); }
         	} else {
-        		if ((num % 2) == 0) { throw ItemscriptError.internalError(this,
-                        "validateNumber.value.is.not.odd", pathValueParams(path, num)); }
+        		if ((longVal % 2) == 0) { throw ItemscriptError.internalError(this,
+                        "validateLong.value.is.not.odd", pathValueParams(path, longVal)); }
         	}
         }
         if (hasOdd) {
         	if (odd) {
-        		if ((num % 2) == 0) { throw ItemscriptError.internalError(this,
-                        "validateNumber.value.is.not.odd", pathValueParams(path, num)); }
+        		if ((longVal % 2) == 0) { throw ItemscriptError.internalError(this,
+                        "validateLong.value.is.not.odd", pathValueParams(path, longVal)); }
         	} else {
-        		if ((num % 2) != 0) { throw ItemscriptError.internalError(this,
-                        "validateNumber.value.is.not.even", pathValueParams(path, num)); }
+        		if ((longVal % 2) != 0) { throw ItemscriptError.internalError(this,
+                        "validateLong.value.is.not.even", pathValueParams(path, longVal)); }
         	}
         }
-			}
-		}*/
-	}
-
-	/**
-	 * Splits string into two parts if there where there is a decimal point.
-	 * Then calls checkDigits to verify that both parts are digits. If there is
-	 * no decimal point, then checkDigits verifies the entire string.
-	 * 
-	 * @param string
-	 * @return true if verified, false if not
-	 */
-	private boolean isDecimal(String string) {
-		string = string.trim();
-		int startIndex = 0;
-		int pointIndex = -1;
-		if (string.charAt(0) == '+' || string.charAt(0) == '-') {
-			startIndex = 1;
-		}
-		pointIndex = string.indexOf(".");
-		if (pointIndex > -1) {
-			if (checkDigits(string.substring(startIndex, pointIndex))) {
-				if (checkDigits(string.substring(pointIndex + 1))) {
-					return true;
-				}
-			}
-		} else {
-			if (checkDigits(string)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Loops through the string and checks that every character is a numerical
-	 * digit. If it finds a character that is not a Digit it breaks out of the loop.
-	 * 
-	 * @param string
-	 * @return true if all digits, false if not
-	 */
-	private boolean checkDigits(String string) {
-		for (int i = 0; i < string.length(); i++) {
-			char digit = string.charAt(i);
-			if (!Character.isDigit(digit)) {
-				return false;
-			}
-		}
-		return true;
 	}
 }

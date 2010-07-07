@@ -89,6 +89,8 @@ public class Schema implements HasSystem {
                 return createNullType(extendsType, def);
             } else if (extendsType.isDecimal()) {
             	return createDecimalType(extendsType, def);
+            } else if (extendsType.isLong()) {
+            	return createLongType(extendsType, def);
             } else {
                 // This of course should never happen.
                 throw ItemscriptError.internalError(this, "createFromObject.extendsType.unknown.type", extendsType
