@@ -8,25 +8,28 @@ import org.itemscript.core.values.JsonValue;
 import org.itemscript.core.values.JsonArray;
 
 final class ArrayType extends TypeBase {
-	private static final String VALIDATE_ALL_KEY = ".validateAll";
+	//private static final String VALIDATE_ALL_KEY = ".validateAll";
 	private static final String EXACT_SIZE_KEY = ".exactSize";
 	private static final String MIN_SIZE_KEY = ".minSize";
 	private static final String MAX_SIZE_KEY = ".maxSize";
+	private static final String CONTAINS_KEY = ".contains";
 	private final boolean hasDef;
-	private final boolean validateAll;
+	//private final boolean validateAll;
 	private final int exactSize;
 	private final int minSize;
 	private final int maxSize;
+	private final String contains;
+	private final Type containsType;
 	
     ArrayType(Schema schema, Type extendsType, JsonObject def) {
         super(schema, extendsType, def);
         if (def != null) {
 			hasDef = true;
-			if (def.hasBoolean(VALIDATE_ALL_KEY)) {
+			/**if (def.hasBoolean(VALIDATE_ALL_KEY)) {
 				validateAll = def.getBoolean(VALIDATE_ALL_KEY);
 			} else {
 				validateAll = false;
-			}
+			}*/
 			if (def.hasNumber(EXACT_SIZE_KEY)) {
 				exactSize = def.getInt(EXACT_SIZE_KEY);
 			} else {
@@ -42,12 +45,21 @@ final class ArrayType extends TypeBase {
 			} else {
 				maxSize = -1;
 			}
+			if (def.hasString(CONTAINS_KEY)) {
+				contains = def.getString(CONTAINS_KEY);
+				containsType = schema().resolve(def);
+			} else {
+				contains = null;
+				containsType = null;
+			}
         } else {
         	hasDef = false;
-        	validateAll = false;
+        	//validateAll = false;
         	exactSize = -1;
         	minSize = -1;
         	maxSize = -1;
+        	contains = null;
+        	containsType = null;
         }
     }
 
@@ -73,14 +85,6 @@ final class ArrayType extends TypeBase {
     }
     
     private void validateArray(String path, JsonArray array) {
-        /**if (validateAll) {
-        	for(int i = 0; array.getObject(i) != null; i++) {
-        		if ()
-        	}
-        }
-            if (num <= greaterThan) { throw ItemscriptError.internalError(this,
-                    "validateNumber.value.is.less.than.or.equal.to.min", pathValueParams(path, num)); }
-        }**/
     	if (exactSize > 0) {
     		if (array.size() != exactSize) { throw ItemscriptError.internalError(this,
                     "validateArray.array.is.the.wrong.size", pathValueParams(path, array)); }
@@ -93,5 +97,17 @@ final class ArrayType extends TypeBase {
     		if (array.size() > maxSize) { throw ItemscriptError.internalError(this,
                     "validateArray.array.size.is.greater.than.max", pathValueParams(path, array)); }
     	}
+    	/**
+    	if (contains != null) {
+    		for (int i = 0; i < array.size(); i++) {
+    			if (array )
+    		}
+    	}*/
+    	/**
+        if (validateAll) {
+        	for(int i = 0; array.getObject(i) != null; i++) {
+	    		if ()
+        	}
+        }*/
     }
 }
