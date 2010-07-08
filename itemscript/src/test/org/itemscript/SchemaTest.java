@@ -1,6 +1,7 @@
 
 package test.org.itemscript;
 
+
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonBoolean;
@@ -74,7 +75,10 @@ public class SchemaTest extends ItemscriptTestBase {
 
     @Test
     public void testArray() {
+    	JsonArray emptyArray = system().createArray();
+    	
         schema.validate("array", array);
+        schema.validate("array", emptyArray);
         try {
             schema.validate("array", string);
         } catch (ItemscriptError e) {
@@ -83,34 +87,83 @@ public class SchemaTest extends ItemscriptTestBase {
         assertTrue(threwException);
     }
     
-    /**@Test
-    public void testArrayExactSize() {
-    	
-    	JsonArray array = new JsonArray();
-    	
-    	inArray = new ArrayList<Double>();
-    	JsonArray array = def.getArray(IN_ARRAY_KEY);
-    	for (int i = 0; i < array.size(); ++i) {
-    		inArray.add(array.getRequiredDouble(i));
-    	}
-    	
-    	array.add("one");
-    	array.add("two");
-    	array.add("three");
-    	
-        JsonObject def = system().createObject();
-        def.put(".extends", "array");
+    @Test
+    public void testArrayExactSize() {	    	
+    	JsonObject def = system().createObject();
+    	def.put(".extends", "array");
         def.put(".exactSize", 3);
+        
+    	JsonArray validArray = system().createArray();      
+    	validArray.add("one");
+    	validArray.add("two");
+    	validArray.add("three");
+    	
+    	JsonArray invalidArray = system().createArray();      
+    	invalidArray.add("one");
+    	invalidArray.add("two");
+    	invalidArray.add("three");
+    	invalidArray.add("four");
+        
         Type type = schema().resolve(def);
-        schema.validate(type, array);
+        schema.validate(type, validArray);
         try {
-            schema.validate(type, system().createBoolean(false));
+            schema.validate(type, invalidArray);
         } catch (ItemscriptError e) {
             threwException = true;
         }
         assertTrue(threwException);
-    }*/
+    }
+    
+    @Test
+    public void testArrayMinSize() {	    	
+    	JsonObject def = system().createObject();
+    	def.put(".extends", "array");
+        def.put(".minSize", 2);
+        
+    	JsonArray validArray = system().createArray();      
+    	validArray.add("one");
+    	validArray.add("two");
+    	
+    	JsonArray invalidArray = system().createArray();      
+    	invalidArray.add("one");
+        
+        Type type = schema().resolve(def);
+        schema.validate(type, validArray);
+        try {
+            schema.validate(type, invalidArray);
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
 
+    @Test
+    public void testArrayMaxSize() {	    	
+    	JsonObject def = system().createObject();
+    	def.put(".extends", "array");
+        def.put(".maxSize", 3);
+        
+    	JsonArray validArray = system().createArray();      
+    	validArray.add("one");
+    	validArray.add("two");
+    	validArray.add("three");
+    	
+    	JsonArray invalidArray = system().createArray();      
+    	invalidArray.add("one");
+    	invalidArray.add("two");
+    	invalidArray.add("three");
+    	invalidArray.add("four");
+        
+        Type type = schema().resolve(def);
+        schema.validate(type, validArray);
+        try {
+            schema.validate(type, invalidArray);
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
     @Test
     public void testBinary() {
         schema.validate("binary", binary);
