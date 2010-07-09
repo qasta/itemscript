@@ -77,17 +77,35 @@ public class SchemaTest extends ItemscriptTestBase {
     public void testAnyTypes() {	 
     	JsonObject def = system().createObject();
     	def.put(".extends", "any");
-        def.put(".string", "string");
-        def.put(".number",	"number");
+        def.put(".string", "long");
+        def.put(".number",	"integer");
+        def.put(".string", "decimal");
         
         Type type = schema().resolve(def);
-        schema.validate(type, system().createString("blah"));
+        schema.validate(type, system().createString("2"));
+        schema.validate(type, system().createNumber(1));
+        schema.validate(type, system().createString("-1.565"));
+
         try {
-            schema.validate(type, system().createNumber(9));
+        	schema.validate(type, system().createArray());
         } catch (ItemscriptError e) {
-            threwException = true;
+        	threwException = true;
         }
         assertTrue(threwException);
+        threwException = false;
+        try {
+        	schema.validate(type, system().createNumber(1.5));
+        } catch (ItemscriptError e) {
+        	threwException = true;
+        }
+        assertTrue(threwException);
+        threwException = false;
+        try {
+        	schema.validate(type, system().createString("abcdef"));
+        } catch (ItemscriptError e) {
+        	threwException = true;
+        }
+        assertTrue(threwException);    
     }
 
     @Test

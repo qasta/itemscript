@@ -57,7 +57,7 @@ class ObjectType extends TypeBase {
     }
 
     @Override
-    public boolean isNumber() {
+    public boolean isObject() {
         return true;
     }
 
