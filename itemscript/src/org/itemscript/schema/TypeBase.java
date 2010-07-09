@@ -101,6 +101,11 @@ abstract class TypeBase implements Type, HasSystem {
     public boolean isLong() {
     	return false;
     }
+    
+    @Override
+    public boolean isAny() {
+    	return false;
+    }
 
     @Override
     public Schema schema() {
@@ -111,7 +116,7 @@ abstract class TypeBase implements Type, HasSystem {
     public JsonSystem system() {
         return system;
     }
-
+    
     @Override
     public void validate(String path, JsonValue value) {
         if (!isBaseAnyType) {

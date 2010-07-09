@@ -41,6 +41,10 @@ public class Schema implements HasSystem {
         }
     }
 
+    private Type createAnyType(Type extendsType, JsonObject def) {
+    	return new AnyType(this, extendsType, def);
+    }
+    
     private Type createArrayType(Type extendsType, JsonObject def) {
         return new ArrayType(this, extendsType, def);
     }
@@ -71,7 +75,9 @@ public class Schema implements HasSystem {
         if (def.hasString(".extends")) {
             // Get the actual type.
             Type extendsType = get(def.getString(".extends"));
-            if (extendsType.isObject()) {
+            if (extendsType.isAny()) {
+            	return createAnyType(extendsType, def);
+            } else if (extendsType.isObject()) {
                 return createObjectType(extendsType, def);
             } else if (extendsType.isArray()) {
                 return createArrayType(extendsType, def);
@@ -132,7 +138,7 @@ public class Schema implements HasSystem {
 
     private void initTypes(JsonObject typesObject) {
         AnyType anyType = new AnyType(this);
-        typesObject.putNative("any", anyType);
+        typesObject.putNative("any", new AnyType(this, anyType, null));
         typesObject.putNative("string", new StringType(this, anyType, null));
         typesObject.putNative("number", new NumberType(this, anyType, null));
         typesObject.putNative("boolean", new BooleanType(this, anyType, null));

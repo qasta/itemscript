@@ -72,13 +72,36 @@ public class SchemaTest extends ItemscriptTestBase {
         }
         assertTrue(threwException);
     }
+    
+    @Test
+    public void testAnyTypes() {	 
+    	JsonObject def = system().createObject();
+    	def.put(".extends", "any");
+        def.put(".string", "string");
+        def.put(".number",	"number");
+        
+        Type type = schema().resolve(def);
+        schema.validate(type, system().createString("blah"));
+        try {
+            schema.validate(type, system().createNumber(9));
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
 
     @Test
     public void testArray() {
     	JsonArray emptyArray = system().createArray();
-    	
         schema.validate("array", array);
         schema.validate("array", emptyArray);
+        try {
+           	schema.validate("array", null);
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+        threwException = false;
         try {
             schema.validate("array", string);
         } catch (ItemscriptError e) {
@@ -163,6 +186,99 @@ public class SchemaTest extends ItemscriptTestBase {
         }
         assertTrue(threwException);
     }
+    
+    @Test
+    public void testArrayContainsDecimal() {	 
+    	JsonObject def = system().createObject();
+    	def.put(".extends", "array");
+        def.put(".contains", "decimal");
+        
+    	JsonArray validArray = system().createArray();      
+    	validArray.add("1.12");
+    	validArray.add("0");
+    	validArray.add("-12.0");
+        Type type = schema().resolve(def);
+        
+        schema.validate(type, validArray);
+        
+    	JsonArray invalidArray = system().createArray();      
+    	invalidArray.add("1");
+    	invalidArray.add("2.0");
+    	invalidArray.add("three");
+        try {
+            schema.validate(type, invalidArray);
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
+    @Test
+    public void testArrayContainsObject() {	 
+    	JsonObject def = system().createObject();
+    	def.put(".extends", "array");
+        def.put(".contains", "object");
+              
+    	JsonArray validArray = system().createArray();
+    	JsonObject item1 = system().createObject();
+    	JsonObject item2 = system().createObject();
+    	JsonObject item3 = system().createObject();
+    	item2.p("bool", true);
+    	item3.p("int", 1.0);
+    	validArray.add(item1);
+    	validArray.add(item2);
+    	validArray.add(item3);
+        Type type = schema().resolve(def);
+        
+        schema.validate(type, validArray);
+    }
+    
+    @Test
+    public void testArrayContainsNumber() {	 
+    	JsonObject def = system().createObject();
+    	def.put(".extends", "array");
+    	
+    	JsonObject numObject = system().createObject();
+        def.put(".contains", numObject);
+        numObject.put(".extends", "number");
+        numObject.put(".greaterThan", 2);
+        
+        Type type = schema().resolve(def);
+        
+    	JsonArray validArray = system().createArray();
+    	JsonNumber item1 = system().createNumber(5.0);
+    	validArray.add(3);
+    	validArray.add(4.0);
+    	validArray.add(item1);        
+        schema.validate(type, validArray);
+        
+        validArray.add(1);
+        try {
+            schema.validate(type, validArray);
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
+    @Test
+    public void testArrayContainsArray() {	 
+    	JsonObject def = system().createObject();
+    	def.put(".extends", "array");
+        def.put(".contains", "array");
+        
+    	JsonArray validArray = system().createArray();
+    	JsonArray array1 = system().createArray();
+    	array1.add(true);
+    	array1.add("string");
+    	array1.add(5.02000);
+    	validArray.add(array1);
+
+        Type type = schema().resolve(def);
+        
+        schema.validate(type, validArray);
+    }
+    
     
     @Test
     public void testBinary() {
