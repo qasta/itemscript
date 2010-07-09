@@ -1,6 +1,7 @@
 
 package org.itemscript.schema;
 
+import org.itemscript.core.Params;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.values.JsonValue;
 import org.itemscript.core.values.JsonObject;
@@ -72,6 +73,11 @@ final class AnyType extends TypeBase {
         return true;
     }
     
+    private Params pathValueParams(String path, JsonValue value) {
+        return schema().pathParams(path)
+                .p("value", value);
+    }
+    
     @Override
     public void validate(String path, JsonValue value) {
         super.validate(path, value);
@@ -85,6 +91,7 @@ final class AnyType extends TypeBase {
     
     private void validateAny(String path, JsonValue value) {
 		boolean useSlash = path.length() > 0;
+		boolean validValue = false;
 		Type stringType;
 		Type numberType;
 		Type boolType;
@@ -93,23 +100,42 @@ final class AnyType extends TypeBase {
 		
 		if (string != null) {
     		stringType = schema().resolve(string);
-    		stringType.validate(path + (useSlash ? "/" : ""), value);
+    		if (value.isString()) {
+    			stringType.validate(path + (useSlash ? "/" : ""), value);
+    			validValue = true;
+    		}
 		}
 		if (number != null) {
 			numberType = schema().resolve(number);
-    		numberType.validate(path + (useSlash ? "/" : ""), value);
+			if (value.isNumber()) {
+				numberType.validate(path + (useSlash ? "/" : ""), value);
+				validValue = true;
+			}
 		}
 		if (bool != null) {
     		boolType = schema().resolve(bool);
-    		boolType.validate(path + (useSlash ? "/" : ""), value);
+    		if (value.isBoolean()) {
+    			boolType.validate(path + (useSlash ? "/" : ""), value);
+    			validValue = true;
+    		}
     	}
 		if (array != null) {
     		arrayType = schema().resolve(array);
-    		arrayType.validate(path + (useSlash ? "/" : ""), value);
+    		if (value.isArray()) {
+    			arrayType.validate(path + (useSlash ? "/" : ""), value);
+    			validValue = true;
+    		}
 		}
 		if (object != null) {
     		objectType = schema().resolve(object);
-    		objectType.validate(path + (useSlash ? "/" : ""), value);
+    		if (value.isObject()) {
+    			objectType.validate(path + (useSlash ? "/" : ""), value);
+    			validValue = true;
+    		}
+		}
+		if (!validValue) {
+			throw ItemscriptError.internalError(this,
+        			"validateAny.value.was.not.of.specified.type", pathValueParams(path, value));
 		}
     }
 }
