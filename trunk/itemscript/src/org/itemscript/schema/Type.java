@@ -25,6 +25,8 @@ public interface Type {
     public boolean isDecimal();
     
     public boolean isLong();
+    
+    public boolean isAny();
 
     public Schema schema();
 
