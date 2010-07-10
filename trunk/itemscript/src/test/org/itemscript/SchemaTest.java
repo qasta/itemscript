@@ -101,7 +101,7 @@ public class SchemaTest extends ItemscriptTestBase {
         assertTrue(threwException);
         threwException = false;
         try {
-        	schema.validate(type, system().createString("abcdef"));
+        	schema.validate(type, system().createString("abcdefg"));
         } catch (ItemscriptError e) {
         	threwException = true;
         }
@@ -1306,7 +1306,7 @@ public class SchemaTest extends ItemscriptTestBase {
         JsonObject def = system().createObject();
         def.put("name", "string");
         def.createObject("address");
-        def.put("OPTIONAL phone", "string");
+        def.put(".optional phone", "string");
         Type type = schema().resolve(def);
         JsonObject instance = system().createObject();
         instance.put("name", "Jacob");
@@ -1316,6 +1316,52 @@ public class SchemaTest extends ItemscriptTestBase {
             schema.validate(type, object);
         } catch (ItemscriptError e) {
             threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
+    @Test
+    public void testSimpleObjectTypePattern() {
+        JsonObject def = system().createObject();
+        def.put("name", "string");
+        def.put(".optional phone", "string");
+        def.put(".optional pocketChangefoo", "number");
+        def.put("zipfoo", "integer");
+        def.put(".pattern *foo", "integer");
+        Type type = schema().resolve(def);
+        JsonObject instance = system().createObject();
+        instance.put("name", "Jacob");
+        instance.put("zipfoo", 91234);
+        instance.put("notright", "hi");
+
+        schema.validate(type, instance);
+        
+        instance.put("pocketChangefoo", 56.5);
+        try {
+        	schema.validate(type, instance);
+        } catch (ItemscriptError e) {
+        	threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
+    @Test
+    public void testSimpleObjectTypeWildcard() {
+        JsonObject def = system().createObject();
+        def.put("name", "string");
+        def.put(".optional phone", "string");
+        def.put(".wildcard", "integer");
+        Type type = schema().resolve(def);
+        JsonObject instance = system().createObject();
+        instance.put("name", "Jacob");
+        instance.put("zip", 91234);
+
+        schema.validate(type, instance);
+        instance.put("phone", "510-123-5454");
+        try {
+        	schema.validate(type, instance);
+        } catch (ItemscriptError e) {
+        	threwException = true;
         }
         assertTrue(threwException);
     }
