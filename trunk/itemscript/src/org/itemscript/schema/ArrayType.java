@@ -7,36 +7,21 @@ import org.itemscript.core.values.JsonValue;
 import org.itemscript.core.values.JsonArray;
 
 final class ArrayType extends TypeBase {
-	private static final String EXACT_SIZE_KEY = ".exactSize";
-	private static final String MIN_SIZE_KEY = ".minSize";
-	private static final String MAX_SIZE_KEY = ".maxSize";
 	private static final String CONTAINS_KEY = ".contains";
+	private static final String EXACT_SIZE_KEY = ".exactSize";
+	private static final String MAX_SIZE_KEY = ".maxSize";
+	private static final String MIN_SIZE_KEY = ".minSize";
 	private final boolean hasDef;
-	private final int exactSize;
-	private final int minSize;
-	private final int maxSize;
 	private final JsonValue contains;
 	private final Type containsType;
+	private final int exactSize;
+	private final int maxSize;
+	private final int minSize;
 
 	ArrayType(Schema schema, Type extendsType, JsonObject def) {
 		super(schema, extendsType, def);
 		if (def != null) {
 			hasDef = true;
-			if (def.hasNumber(EXACT_SIZE_KEY)) {
-				exactSize = def.getInt(EXACT_SIZE_KEY);
-			} else {
-				exactSize = -1;
-			}
-			if (def.hasNumber(MIN_SIZE_KEY)) {
-				minSize = def.getInt(MIN_SIZE_KEY);
-			} else {
-				minSize = -1;
-			}
-			if (def.hasNumber(MAX_SIZE_KEY)) {
-				maxSize = def.getInt(MAX_SIZE_KEY);
-			} else {
-				maxSize = -1;
-			}
 			if (def.containsKey(CONTAINS_KEY)) {
 				contains = def.getValue(CONTAINS_KEY);
 				containsType = schema().resolve(contains);
@@ -44,13 +29,28 @@ final class ArrayType extends TypeBase {
 				contains = null;
 				containsType = null;
 			}
+			if (def.hasNumber(EXACT_SIZE_KEY)) {
+				exactSize = def.getInt(EXACT_SIZE_KEY);
+			} else {
+				exactSize = -1;
+			}
+			if (def.hasNumber(MAX_SIZE_KEY)) {
+				maxSize = def.getInt(MAX_SIZE_KEY);
+			} else {
+				maxSize = -1;
+			}
+			if (def.hasNumber(MIN_SIZE_KEY)) {
+				minSize = def.getInt(MIN_SIZE_KEY);
+			} else {
+				minSize = -1;
+			}
 		} else {
 			hasDef = false;
-			exactSize = -1;
-			minSize = -1;
-			maxSize = -1;
 			contains = null;
 			containsType = null;
+			exactSize = -1;
+			maxSize = -1;
+			minSize = -1;
 		}
 	}
 
@@ -77,17 +77,17 @@ final class ArrayType extends TypeBase {
 	}
 
 	private void validateArray(String path, JsonArray array) {
+		if (contains != null) {
+			boolean useSlash = path.length() > 0;
+			for (int i = 0; i < array.size(); i++) {
+				containsType.validate(path + (useSlash ? "/" : "") + i, array
+						.get(i));
+			}
+		}
 		if (exactSize > 0) {
 			if (array.size() != exactSize) {
 				throw ItemscriptError.internalError(this,
 						"validateArray.array.is.the.wrong.size",
-						pathValueParams(path, array));
-			}
-		}
-		if (minSize > 0) {
-			if (array.size() < minSize) {
-				throw ItemscriptError.internalError(this,
-						"validateArray.array.size.is.smaller.than.min",
 						pathValueParams(path, array));
 			}
 		}
@@ -98,11 +98,11 @@ final class ArrayType extends TypeBase {
 						pathValueParams(path, array));
 			}
 		}
-		if (contains != null) {
-			boolean useSlash = path.length() > 0;
-			for (int i = 0; i < array.size(); i++) {
-				containsType.validate(path + (useSlash ? "/" : "") + i, array
-						.get(i));
+		if (minSize > 0) {
+			if (array.size() < minSize) {
+				throw ItemscriptError.internalError(this,
+						"validateArray.array.size.is.smaller.than.min",
+						pathValueParams(path, array));
 			}
 		}
 	}
