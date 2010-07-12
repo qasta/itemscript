@@ -13,8 +13,8 @@ class LongType extends TypeBase {
 	private static final String EQUAL_TO_KEY = ".equalTo";
 	private static final String EVEN_KEY = ".even";
 	private static final String GREATER_THAN_KEY = ".greaterThan";
-	private static final String IN_ARRAY_KEY = ".inArray";
 	private static final String GREATER_THAN_OR_EQUAL_TO_KEY = ".greaterThanOrEqualTo";
+	private static final String IN_ARRAY_KEY = ".inArray";
 	private static final String LESS_THAN_KEY = ".lessThan";
 	private static final String LESS_THAN_OR_EQUAL_TO_KEY = ".lessThanOrEqualTo";
 	private static final String NOT_IN_ARRAY_KEY = ".notInArray";
