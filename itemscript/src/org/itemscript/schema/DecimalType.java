@@ -10,64 +10,63 @@ import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 
 class DecimalType extends TypeBase {
-	private static final String GREATER_THAN_KEY = ".greaterThan";
-	private static final String LESS_THAN_KEY = ".lessThan";
-	private static final String GREATER_THAN_OR_EQUAL_TO_KEY = ".greaterThanOrEqualTo";
-	private static final String LESS_THAN_OR_EQUAL_TO_KEY = ".lessThanOrEqualTo";
 	private static final String EQUAL_TO_KEY = ".equalTo";
-	private static final String IN_ARRAY_KEY = ".inArray";
-	private static final String NOT_IN_ARRAY_KEY = ".notInArray";
-	private static final String FRACTION_DIGITS_KEY = ".fractionDigits";
 	private static final String EVEN_KEY = ".even";
+	private static final String FRACTION_DIGITS_KEY = ".fractionDigits";
+	private static final String GREATER_THAN_KEY = ".greaterThan";
+	private static final String GREATER_THAN_OR_EQUAL_TO_KEY = ".greaterThanOrEqualTo";
+	private static final String IN_ARRAY_KEY = ".inArray";
+	private static final String LESS_THAN_KEY = ".lessThan";
+	private static final String LESS_THAN_OR_EQUAL_TO_KEY = ".lessThanOrEqualTo";
+	private static final String NOT_IN_ARRAY_KEY = ".notInArray";
 	private static final String ODD_KEY = ".odd";
 	private final boolean hasDef;
-	private final String greaterThan;
-	private final String lessThan;
-	private final String greaterThanOrEqualTo;
-	private final String lessThanOrEqualTo;
-	private final String equalTo;
-	private final List<String> inArray;
-	private final List<String> notInArray;
-	private final int fractionDigits;
 	private final boolean even;
 	private final boolean hasEven;
-	private final boolean odd;
 	private final boolean hasOdd;
+	private final boolean odd;
+	private final int fractionDigits;
+	private final String equalTo;
+	private final String greaterThan;
+	private final String greaterThanOrEqualTo;
+	private final String lessThan;
+	private final String lessThanOrEqualTo;
+	private final List<String> inArray;
+	private final List<String> notInArray;
+
+
 
 	public DecimalType(Schema schema, Type extendsType, JsonObject def) {
 		super(schema, extendsType, def);
 		if (def != null) {
 			hasDef = true;
+			if (def.hasString(EQUAL_TO_KEY)) {
+				equalTo = def.getString(EQUAL_TO_KEY);
+			} else {
+				equalTo = null;
+			}
+			if (def.hasBoolean(EVEN_KEY)) {
+				hasEven = true;
+				even = def.getBoolean(EVEN_KEY);
+			} else {
+				hasEven = false;
+				even = false;
+			}
+			if (def.hasNumber(FRACTION_DIGITS_KEY)) {
+				fractionDigits = def.getInt(FRACTION_DIGITS_KEY);
+			} else {
+				fractionDigits = -1;
+			}			
 			if (def.hasString(GREATER_THAN_KEY)) {
 				greaterThan = def.getString(GREATER_THAN_KEY);
 			} else {
 				greaterThan = null;
-			}
-			if (def.hasString(LESS_THAN_KEY)) {
-				lessThan = def.getString(LESS_THAN_KEY);
-			} else {
-				lessThan = null;
 			}
 			if (def.hasString(GREATER_THAN_OR_EQUAL_TO_KEY)) {
 				greaterThanOrEqualTo = def
 						.getString(GREATER_THAN_OR_EQUAL_TO_KEY);
 			} else {
 				greaterThanOrEqualTo = null;
-			}
-			if (def.hasString(LESS_THAN_OR_EQUAL_TO_KEY)) {
-				lessThanOrEqualTo = def.getString(LESS_THAN_OR_EQUAL_TO_KEY);
-			} else {
-				lessThanOrEqualTo = null;
-			}
-			if (def.hasString(EQUAL_TO_KEY)) {
-				equalTo = def.getString(EQUAL_TO_KEY);
-			} else {
-				equalTo = null;
-			}
-			if (def.hasNumber(FRACTION_DIGITS_KEY)) {
-				fractionDigits = def.getInt(FRACTION_DIGITS_KEY);
-			} else {
-				fractionDigits = -1;
 			}
 			if (def.hasArray(IN_ARRAY_KEY)) {
 				inArray = new ArrayList<String>();
@@ -78,6 +77,16 @@ class DecimalType extends TypeBase {
 			} else {
 				inArray = null;
 			}
+			if (def.hasString(LESS_THAN_KEY)) {
+				lessThan = def.getString(LESS_THAN_KEY);
+			} else {
+				lessThan = null;
+			}
+			if (def.hasString(LESS_THAN_OR_EQUAL_TO_KEY)) {
+				lessThanOrEqualTo = def.getString(LESS_THAN_OR_EQUAL_TO_KEY);
+			} else {
+				lessThanOrEqualTo = null;
+			}
 			if (def.hasArray(NOT_IN_ARRAY_KEY)) {
 				notInArray = new ArrayList<String>();
 				JsonArray array = def.getArray(NOT_IN_ARRAY_KEY);
@@ -86,13 +95,6 @@ class DecimalType extends TypeBase {
 				}
 			} else {
 				notInArray = null;
-			}
-			if (def.hasBoolean(EVEN_KEY)) {
-				hasEven = true;
-				even = def.getBoolean(EVEN_KEY);
-			} else {
-				hasEven = false;
-				even = false;
 			}
 			if (def.hasBoolean(ODD_KEY)) {
 				hasOdd = true;
@@ -103,19 +105,18 @@ class DecimalType extends TypeBase {
 			}
 		} else {
 			hasDef = false;
-			greaterThan = null;
-			lessThan = null;
-			greaterThanOrEqualTo = null;
-			lessThanOrEqualTo = null;
 			equalTo = null;
-			fractionDigits = -1;
-			inArray = null;
-			notInArray = null;
 			even = false;
+			fractionDigits = -1;
+			greaterThan = null;
+			greaterThanOrEqualTo = null;
 			hasEven = false;
-			odd = false;
 			hasOdd = false;
-			
+			inArray = null;
+			lessThan = null;
+			lessThanOrEqualTo = null;
+			notInArray = null;
+			odd = false;
 		}
 	}
 
@@ -152,6 +153,7 @@ class DecimalType extends TypeBase {
 		double greaterThanOrEqualToValue;
 		double lessThanValue;
 		double lessThanOrEqualToValue;
+		
 		try {
 			decValue = Double.parseDouble(dec);
 		} catch (NumberFormatException e) {
@@ -159,38 +161,17 @@ class DecimalType extends TypeBase {
 					"validateDecimal.value.could.not.be.parsed.into.double",
 					pathValueParams(path, dec));
 		}
-		if (inArray != null) {
-			boolean matched = false;
-			for (int i = 0; i < inArray.size(); ++i) {
-				String inArrayString = inArray.get(i);
-				if (decimalEquals(dec, inArrayString)) {
-					matched = true;
-				}
-			}
-			if (!matched) {
-				throw ItemscriptError.internalError(this,
-						"validateDecimal.value.did.not.match.a.valid.choice",
-						pathValueParams(path, dec));
-			}
-		}
-		if (notInArray != null) {
-			boolean matched = false;
-			for (int i = 0; i < notInArray.size(); ++i) {
-				String notInArrayString = notInArray.get(i);
-				if (decimalEquals(dec, notInArrayString)) {
-					matched = true;
-				}
-			}
-			if (matched) {
-				throw ItemscriptError.internalError(this,
-						"validateDecimal.value.matched.an.invalid.choice",
-						pathValueParams(path, dec));
-			}
-		}
 		if (equalTo != null) {
 			if (!decimalEquals(dec, equalTo)) {
 				throw ItemscriptError.internalError(this,
 						"validateDecimal.value.is.not.equal.to.equalTo",
+						pathValueParams(path, dec));
+			}
+		}
+		if (fractionDigits > 0) {
+			if (numFractionDigits(dec) > fractionDigits) {
+				throw ItemscriptError.internalError(this,
+						"validateDecimal.value.has.wrong.number.of.fraction.digits",
 						pathValueParams(path, dec));
 			}
 		}
@@ -210,22 +191,6 @@ class DecimalType extends TypeBase {
 						pathValueParams(path, dec));
 			}
 		}
-		if (lessThan != null) {
-			try {
-				lessThanValue = Double.parseDouble(lessThan);
-			} catch (NumberFormatException e) {
-				throw ItemscriptError
-						.internalError(
-								this,
-								"validateDecimal.lessThan.could.not.be.parsed.into.double",
-								pathValueParams(path, dec));
-			}
-			if (decValue >= lessThanValue) {
-				throw ItemscriptError.internalError(this,
-						"validateDecimal.value.is.greater.than.or.equal.to.max",
-						pathValueParams(path, dec));
-			}
-		}
 		if (greaterThanOrEqualTo != null) {
 			try {
 				greaterThanOrEqualToValue = Double
@@ -240,29 +205,6 @@ class DecimalType extends TypeBase {
 			if (decValue <= greaterThanOrEqualToValue && !decimalEquals(dec, greaterThanOrEqualTo)) {
 				throw ItemscriptError.internalError(this,
 						"validateDecimal.value.is.less.than.min",
-						pathValueParams(path, dec));
-			}
-		}
-		if (lessThanOrEqualTo != null) {
-			try {
-				lessThanOrEqualToValue = Double.parseDouble(lessThanOrEqualTo);
-			} catch (NumberFormatException e) {
-				throw ItemscriptError
-						.internalError(
-								this,
-								"validateDecimal.lessThanOrEqualTo.could.not.be.parsed.into.double",
-								pathValueParams(path, dec));
-			}
-			if (decValue >= lessThanOrEqualToValue && !decimalEquals(dec, lessThanOrEqualTo)) {
-				throw ItemscriptError.internalError(this,
-						"validateDecimal.value.is.greater.than.max",
-						pathValueParams(path, dec));
-			}
-		}
-		if (fractionDigits > 0) {
-			if (numFractionDigits(dec) > fractionDigits) {
-				throw ItemscriptError.internalError(this,
-						"validateDecimal.value.has.wrong.number.of.fraction.digits",
 						pathValueParams(path, dec));
 			}
 		}
@@ -294,6 +236,66 @@ class DecimalType extends TypeBase {
                         "validateDecimal.value.is.not.even", pathValueParams(path, dec)); }
         	}
         }
+		if (inArray != null) {
+			boolean matched = false;
+			for (int i = 0; i < inArray.size(); ++i) {
+				String inArrayString = inArray.get(i);
+				if (decimalEquals(dec, inArrayString)) {
+					matched = true;
+				}
+			}
+			if (!matched) {
+				throw ItemscriptError.internalError(this,
+						"validateDecimal.value.did.not.match.a.valid.choice",
+						pathValueParams(path, dec));
+			}
+		}
+		if (lessThan != null) {
+			try {
+				lessThanValue = Double.parseDouble(lessThan);
+			} catch (NumberFormatException e) {
+				throw ItemscriptError
+						.internalError(
+								this,
+								"validateDecimal.lessThan.could.not.be.parsed.into.double",
+								pathValueParams(path, dec));
+			}
+			if (decValue >= lessThanValue) {
+				throw ItemscriptError.internalError(this,
+						"validateDecimal.value.is.greater.than.or.equal.to.max",
+						pathValueParams(path, dec));
+			}
+		}
+		if (lessThanOrEqualTo != null) {
+			try {
+				lessThanOrEqualToValue = Double.parseDouble(lessThanOrEqualTo);
+			} catch (NumberFormatException e) {
+				throw ItemscriptError
+						.internalError(
+								this,
+								"validateDecimal.lessThanOrEqualTo.could.not.be.parsed.into.double",
+								pathValueParams(path, dec));
+			}
+			if (decValue >= lessThanOrEqualToValue && !decimalEquals(dec, lessThanOrEqualTo)) {
+				throw ItemscriptError.internalError(this,
+						"validateDecimal.value.is.greater.than.max",
+						pathValueParams(path, dec));
+			}
+		}
+		if (notInArray != null) {
+			boolean matched = false;
+			for (int i = 0; i < notInArray.size(); ++i) {
+				String notInArrayString = notInArray.get(i);
+				if (decimalEquals(dec, notInArrayString)) {
+					matched = true;
+				}
+			}
+			if (matched) {
+				throw ItemscriptError.internalError(this,
+						"validateDecimal.value.matched.an.invalid.choice",
+						pathValueParams(path, dec));
+			}
+		}
 	}
 
 	/**
@@ -331,7 +333,7 @@ class DecimalType extends TypeBase {
 
 	/**
 	 * Loops through the string and checks that every character is a numerical
-	 * digit. If it finds a character that is not a Digit it breaks out of the loop.
+	 * digit. If the character is not a Digit it breaks out of the loop.
 	 * 
 	 * @param string
 	 * @return true if all digits, false if not
@@ -368,9 +370,9 @@ class DecimalType extends TypeBase {
 			return true;
 		}
 	
-		if (num1len == num2len) { //same length
-			if (sameSign(dec1, dec2)) { //same sign
-				return dec1.regionMatches(num1BeginIndex, dec2, num2BeginIndex, num1len); //same region
+		if (num1len == num2len) {
+			if (sameSign(dec1, dec2)) {
+				return dec1.regionMatches(num1BeginIndex, dec2, num2BeginIndex, num1len);
 			}
 		}
 		return false;
@@ -412,7 +414,7 @@ class DecimalType extends TypeBase {
 		}		
 		
 		//Case: Both values are 0's with a dot. I.e. num1 = 0.00, num2 = .0
-		if (dec1len == 0 && dec2len == 0) { //will only be zero if in the format "...000.000..."
+		if (dec1len == 0 && dec2len == 0) {
 			return true;
 		}
 		

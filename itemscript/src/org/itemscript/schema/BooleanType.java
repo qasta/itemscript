@@ -9,9 +9,9 @@ import org.itemscript.core.values.JsonValue;
 final class BooleanType extends TypeBase {
 	private static final String BOOLEAN_VALUE_KEY = ".booleanValue";
 	private boolean hasDef;
-	private final boolean hasBooleanValue;	
     private final boolean booleanValue;
-	
+	private final boolean hasBooleanValue;	
+
     BooleanType(Schema schema, Type extendsType, JsonObject def) {
         super(schema, extendsType, def);
         if (def != null) {
@@ -25,8 +25,8 @@ final class BooleanType extends TypeBase {
             }
         } else {
         	hasDef = false;
-        	hasBooleanValue = false;
         	booleanValue = false;
+        	hasBooleanValue = false;
         }
     }
 

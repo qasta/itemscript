@@ -17,13 +17,13 @@ class ObjectType extends TypeBase {
     public static final String OPTIONAL_KEY = ".optional ";
     public static final String PATTERN_KEY = ".pattern ";
     public static final String WILDCARD_KEY = ".wildcard";
-    private Map<String, JsonValue> requiredKeys;
-    private Map<String, Type> resolvedRequiredKeys;
-    private Map<String, JsonValue> optionalKeys;
-    private Map<String, Type> resolvedOptionalKeys;
     private final boolean hasDef;
     private boolean resolved;
+    private Map<String, JsonValue> optionalKeys;
+    private Map<String, JsonValue> requiredKeys;
     private Map<String, JsonValue> patterns;
+    private Map<String, Type> resolvedOptionalKeys;
+    private Map<String, Type> resolvedRequiredKeys;
     private JsonValue wildcard;
 
     ObjectType(Schema schema, Type extendsType, JsonObject def) {
@@ -66,6 +66,12 @@ class ObjectType extends TypeBase {
             }
         } else {
             hasDef = false;
+            optionalKeys = null;
+            patterns = null;
+            requiredKeys = null;
+            resolved = false;
+            resolvedOptionalKeys = null;
+            resolvedRequiredKeys = null;
             wildcard = null;
         }
     }
@@ -121,7 +127,7 @@ class ObjectType extends TypeBase {
 	    			}
 	    		}
     		}
-	    	if (!validWildcardTypes(checkWildcardList)) {
+	    	if (!validWildcardTypes(checkWildcardList, path)) {
 	    		throw ItemscriptError.internalError(this,
 	            		"validateObject.extra.instance.keys.did.not.all.match.wildcard.type",
 	            		pathValueParams(path, object));
@@ -163,16 +169,25 @@ class ObjectType extends TypeBase {
         }
     }
     
-    private boolean validWildcardTypes(ArrayList<JsonValue> wildcardList) {
+    /**
+     * Validates all of the values in the list using the wildcard's Type validator.
+     * @param wildcardList
+     * @param path
+     * @return true if all are valid, false if not
+     */
+    private boolean validWildcardTypes(ArrayList<JsonValue> wildcardList, String path) {
+		boolean useSlash = path.length() > 0;
+    	
     	if (!wildcardList.isEmpty()) {
     		Type wildcardType = schema().resolve(wildcard);
     		for (int i = 0; i < wildcardList.size(); i++) {
-	    		JsonValue listValue = wildcardList.remove(i);
-	    		Type listType = schema().resolve(listValue);
-	    		if (listType != wildcardType) {
+	    		JsonValue listValue = wildcardList.get(i);
+	    		try {
+	    			wildcardType.validate(path + (useSlash ? "/" : ""), listValue);
+	    		} catch (ItemscriptError e) {
 	    			return false;
 	    		}
-	    	}
+    		}
     	}
 	    return true;
     }

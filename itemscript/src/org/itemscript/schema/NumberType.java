@@ -12,37 +12,51 @@ import org.itemscript.core.Params;
 import org.itemscript.core.values.JsonArray;
 
 final class NumberType extends TypeBase {
-	private static final String GREATER_THAN_KEY = ".greaterThan";
-	private static final String LESS_THAN_KEY = ".lessThan";
-	private static final String GREATER_THAN_OR_EQUAL_TO_KEY = ".greaterThanOrEqualTo";
-	private static final String LESS_THAN_OR_EQUAL_TO_KEY = ".lessThanOrEqualTo";
 	private static final String EQUAL_TO_KEY = ".equalTo";
-	private static final String IN_ARRAY_KEY = ".inArray";
-	private static final String NOT_IN_ARRAY_KEY = ".notInArray";
 	private static final String EVEN_KEY = ".even";
+	private static final String GREATER_THAN_KEY = ".greaterThan";
+	private static final String GREATER_THAN_OR_EQUAL_TO_KEY = ".greaterThanOrEqualTo";
+	private static final String IN_ARRAY_KEY = ".inArray";
+	private static final String LESS_THAN_KEY = ".lessThan";
+	private static final String LESS_THAN_OR_EQUAL_TO_KEY = ".lessThanOrEqualTo";
+	private static final String NOT_IN_ARRAY_KEY = ".notInArray";
 	private static final String ODD_KEY = ".odd";
 	private boolean hasDef;
-	private final double greaterThan;
-	private final boolean hasGreaterThan;
-	private final double lessThan;
-	private final boolean hasLessThan;
-	private final double greaterThanOrEqualTo;
-	private final boolean hasGreaterThanOrEqualTo;
-	private final double lessThanOrEqualTo;
-	private final boolean hasLessThanOrEqualTo;
-	private final double equalTo;
+    private final boolean even;
 	private final boolean hasEqualTo;
+    private final boolean hasEven;
+	private final boolean hasGreaterThan;
+	private final boolean hasGreaterThanOrEqualTo;
+	private final boolean hasLessThan;
+	private final boolean hasLessThanOrEqualTo;
+    private final boolean hasOdd;
+    private final boolean odd;
+	private final double equalTo;
+	private final double greaterThan;
+	private final double greaterThanOrEqualTo;
+	private final double lessThan;
+	private final double lessThanOrEqualTo;
     private final List<Double> inArray;
     private final List<Double> notInArray;
-    private final boolean even;
-    private final boolean hasEven;
-    private final boolean odd;
-    private final boolean hasOdd;
-	
+
     NumberType(Schema schema, Type extendsType, JsonObject def) {
         super(schema, extendsType, def);
         if (def != null) {
             hasDef = true;
+            if (def.hasNumber(EQUAL_TO_KEY)) {
+            	hasEqualTo = true;
+            	equalTo = def.getDouble(EQUAL_TO_KEY);
+            } else {
+            	hasEqualTo = false;
+            	equalTo = -1;
+            }
+            if (def.hasBoolean(EVEN_KEY)) {
+            	even = def.getBoolean(EVEN_KEY);
+            	hasEven = true;
+            } else {
+            	even = false;
+            	hasEven = false;
+            }
             if (def.hasNumber(GREATER_THAN_KEY)) {
             	hasGreaterThan = true;
                 greaterThan = def.getDouble(GREATER_THAN_KEY);
@@ -50,33 +64,12 @@ final class NumberType extends TypeBase {
             	hasGreaterThan = false;
             	greaterThan = -1;
             }
-            if (def.hasNumber(LESS_THAN_KEY)) {
-            	hasLessThan = true;
-            	lessThan = def.getDouble(LESS_THAN_KEY);
-            } else {
-            	hasLessThan = false;
-            	lessThan = -1;
-            }
             if (def.hasNumber(GREATER_THAN_OR_EQUAL_TO_KEY)) {
             	hasGreaterThanOrEqualTo = true;
             	greaterThanOrEqualTo = def.getDouble(GREATER_THAN_OR_EQUAL_TO_KEY);	
             } else {
             	hasGreaterThanOrEqualTo = false;
             	greaterThanOrEqualTo = -1;
-            }
-            if (def.hasNumber(LESS_THAN_OR_EQUAL_TO_KEY)) {
-            	hasLessThanOrEqualTo = true;
-            	lessThanOrEqualTo = def.getDouble(LESS_THAN_OR_EQUAL_TO_KEY);
-            } else {
-            	hasLessThanOrEqualTo = false;
-            	lessThanOrEqualTo = -1;
-            }
-            if (def.hasNumber(EQUAL_TO_KEY)) {
-            	hasEqualTo = true;
-            	equalTo = def.getDouble(EQUAL_TO_KEY);
-            } else {
-            	hasEqualTo = false;
-            	equalTo = -1;
             }
             if (def.hasArray(IN_ARRAY_KEY)) {
             	inArray = new ArrayList<Double>();
@@ -87,6 +80,20 @@ final class NumberType extends TypeBase {
             } else {
             	inArray = null;
             }
+            if (def.hasNumber(LESS_THAN_KEY)) {
+            	hasLessThan = true;
+            	lessThan = def.getDouble(LESS_THAN_KEY);
+            } else {
+            	hasLessThan = false;
+            	lessThan = -1;
+            }
+            if (def.hasNumber(LESS_THAN_OR_EQUAL_TO_KEY)) {
+            	hasLessThanOrEqualTo = true;
+            	lessThanOrEqualTo = def.getDouble(LESS_THAN_OR_EQUAL_TO_KEY);
+            } else {
+            	hasLessThanOrEqualTo = false;
+            	lessThanOrEqualTo = -1;
+            }
             if (def.hasArray(NOT_IN_ARRAY_KEY)) {
             	notInArray = new ArrayList<Double>();
             	JsonArray array = def.getArray(NOT_IN_ARRAY_KEY);
@@ -95,13 +102,6 @@ final class NumberType extends TypeBase {
             	}
             } else {
             	notInArray = null;
-            }
-            if (def.hasBoolean(EVEN_KEY)) {
-            	even = def.getBoolean(EVEN_KEY);
-            	hasEven = true;
-            } else {
-            	even = false;
-            	hasEven = false;
             }
             if (def.hasBoolean(ODD_KEY)) {
             	odd = def.getBoolean(ODD_KEY);
@@ -112,22 +112,22 @@ final class NumberType extends TypeBase {
             }
         } else {
         	hasDef = false;
-        	greaterThan = -1;
-        	hasGreaterThan = false;
-        	lessThan = -1;
-        	hasLessThan = false;
-        	greaterThanOrEqualTo = -1;
-        	hasGreaterThanOrEqualTo = false;
-        	lessThanOrEqualTo = -1;
-        	hasLessThanOrEqualTo = false;
-        	equalTo = -1;
         	hasEqualTo = false;
+        	hasEven = false;
+        	hasGreaterThan = false;
+        	hasGreaterThanOrEqualTo = false;        	
+        	hasLessThan = false;
+        	hasLessThanOrEqualTo = false;
+        	hasOdd = false;
+        	equalTo = -1;
+        	even = false;
+        	greaterThan = -1;
+        	greaterThanOrEqualTo = -1;
+        	lessThan = -1;
+        	lessThanOrEqualTo = -1;
         	inArray = null;
         	notInArray = null;
-        	even = false;
-        	hasEven = false;
         	odd = false;
-        	hasOdd = false;
         }
     }
 
@@ -153,25 +153,47 @@ final class NumberType extends TypeBase {
     }
     
     private void validateNumber(String path, Double num) {
+        if (hasEqualTo) {
+        	if (num != equalTo) { throw ItemscriptError.internalError(this,
+                    "validateNumber.value.is.not.equal.to.equal.to", pathValueParams(path, num)); }
+        }
+        if (hasEven) {
+        	if (num.doubleValue() != Math.round(num.doubleValue())) { throw ItemscriptError.internalError(
+                    this, "validateNumber.is.not.an.integer", pathValueParams(path, num)); }
+        	if (even) {
+        		if ((num % 2) != 0) { throw ItemscriptError.internalError(this,
+                        "validateNumber.value.is.not.even", pathValueParams(path, num)); }
+        	} else {
+        		if ((num % 2) == 0) { throw ItemscriptError.internalError(this,
+                        "validateNumber.value.is.not.odd", pathValueParams(path, num)); }
+        	}
+        }
         if (hasGreaterThan) {
             if (num <= greaterThan) { throw ItemscriptError.internalError(this,
                     "validateNumber.value.is.less.than.or.equal.to.min", pathValueParams(path, num)); }
-        }
-        if (hasLessThan) {
-        	if (num >= lessThan) { throw ItemscriptError.internalError(this,
-                    "validateNumber.value.is.greater.than.or.equal.to.max", pathValueParams(path, num)); }
         }
         if (hasGreaterThanOrEqualTo) {
         	if (num < greaterThanOrEqualTo) { throw ItemscriptError.internalError(this,
                     "validateNumber.value.is.less.than.min", pathValueParams(path, num)); }
         }
+        if (hasLessThan) {
+        	if (num >= lessThan) { throw ItemscriptError.internalError(this,
+                    "validateNumber.value.is.greater.than.or.equal.to.max", pathValueParams(path, num)); }
+        }
         if (hasLessThanOrEqualTo) {
         	if (num > lessThanOrEqualTo) { throw ItemscriptError.internalError(this,
                     "validateNumber.value.is.greater.than.max", pathValueParams(path, num)); }
         }
-        if (hasEqualTo) {
-        	if (num != equalTo) { throw ItemscriptError.internalError(this,
-                    "validateNumber.value.is.not.equal.to.equal.to", pathValueParams(path, num)); }
+        if (hasOdd) {
+        	if (num.doubleValue() != Math.round(num.doubleValue())) { throw ItemscriptError.internalError(
+                    this, "validateNumber.is.not.an.integer", pathValueParams(path, num)); }
+        	if (odd) {
+        		if ((num % 2) == 0) { throw ItemscriptError.internalError(this,
+                        "validateNumber.value.is.not.odd", pathValueParams(path, num)); }
+        	} else {
+        		if ((num % 2) != 0) { throw ItemscriptError.internalError(this,
+                        "validateNumber.value.is.not.even", pathValueParams(path, num)); }
+        	}
         }
         if (inArray != null) {
             boolean matched = false;
@@ -196,28 +218,6 @@ final class NumberType extends TypeBase {
             }
             if (matched) { throw ItemscriptError.internalError(this,
                     "validateNumber.value.matched.an.invalid.choice", pathValueParams(path, num)); }
-        }
-        if (hasEven) {
-        	if (num.doubleValue() != Math.round(num.doubleValue())) { throw ItemscriptError.internalError(
-                    this, "validateNumber.is.not.an.integer", pathValueParams(path, num)); }
-        	if (even) {
-        		if ((num % 2) != 0) { throw ItemscriptError.internalError(this,
-                        "validateNumber.value.is.not.even", pathValueParams(path, num)); }
-        	} else {
-        		if ((num % 2) == 0) { throw ItemscriptError.internalError(this,
-                        "validateNumber.value.is.not.odd", pathValueParams(path, num)); }
-        	}
-        }
-        if (hasOdd) {
-        	if (num.doubleValue() != Math.round(num.doubleValue())) { throw ItemscriptError.internalError(
-                    this, "validateNumber.is.not.an.integer", pathValueParams(path, num)); }
-        	if (odd) {
-        		if ((num % 2) == 0) { throw ItemscriptError.internalError(this,
-                        "validateNumber.value.is.not.odd", pathValueParams(path, num)); }
-        	} else {
-        		if ((num % 2) != 0) { throw ItemscriptError.internalError(this,
-                        "validateNumber.value.is.not.even", pathValueParams(path, num)); }
-        	}
         }
     }
 }

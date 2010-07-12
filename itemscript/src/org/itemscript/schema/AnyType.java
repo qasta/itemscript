@@ -7,25 +7,25 @@ import org.itemscript.core.values.JsonValue;
 import org.itemscript.core.values.JsonObject;
 
 final class AnyType extends TypeBase {
-	private static final String STRING_KEY = ".string";
-	private static final String NUMBER_KEY = ".number";
-	private static final String BOOLEAN_KEY = ".boolean";
 	private static final String ARRAY_KEY = ".array";
+	private static final String BOOLEAN_KEY = ".boolean";
+	private static final String NUMBER_KEY = ".number";
 	private static final String OBJECT_KEY = ".object";
+	private static final String STRING_KEY = ".string";
 	private final boolean hasDef;
-	JsonValue string;
-	JsonValue number;
-	JsonValue bool;
 	JsonValue array;
+	JsonValue bool;
+	JsonValue number;
 	JsonValue object;
+	JsonValue string;
 	
     AnyType(Schema schema) {
         super(schema);
-        string = null;
-        number = null;
-        bool = null;
         array = null;
+        bool = null;
+        number = null;
         object = null;
+        string = null;
         hasDef = false;
     }
     
@@ -33,38 +33,38 @@ final class AnyType extends TypeBase {
         super(schema, extendsType, def);
 		if (def != null) {
 			hasDef = true;
-	    	if (def.containsKey(STRING_KEY)) {
-	    		string = def.getValue(STRING_KEY);
-			} else {
-				string = null;
-	    	}
-	    	if (def.containsKey(NUMBER_KEY)) {
-	    		number = def.getValue(NUMBER_KEY);
+	    	if (def.containsKey(ARRAY_KEY)) {
+	    		array = def.getValue(ARRAY_KEY);
 	    	} else {
-	    		number = null;
+	    		array = null;
 	    	}
 	    	if (def.containsKey(BOOLEAN_KEY)) {
 	    		bool = def.getValue(BOOLEAN_KEY);
 	    	} else {
 	    		bool = null;
 	    	}
-	    	if (def.containsKey(ARRAY_KEY)) {
-	    		array = def.getValue(ARRAY_KEY);
+	    	if (def.containsKey(NUMBER_KEY)) {
+	    		number = def.getValue(NUMBER_KEY);
 	    	} else {
-	    		array = null;
+	    		number = null;
 	    	}
 	    	if (def.containsKey(OBJECT_KEY)) {
 	    		object = def.getValue(OBJECT_KEY);
 	    	} else {
 	    		object = null;
 	    	}
+	    	if (def.containsKey(STRING_KEY)) {
+	    		string = def.getValue(STRING_KEY);
+			} else {
+				string = null;
+	    	}
 		} else {
-			hasDef = false;
-			string = null;
-			number = null;
-			bool = null;
 			array = null;
+			bool = null;
+			number = null;
 			object = null;
+			string = null;
+			hasDef = false;
 		}
     }
   
