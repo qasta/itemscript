@@ -1,0 +1,457 @@
+=Itemscript Schema=
+
+Itemscript Schema is a very simple schema language for describing JSON values.
+
+It aims to be extremely concise, self-explanatory, and minimal. Other schema languages allow much
+more precision in specifying what values are acceptable, but are also much more complex and less concise.
+
+Schema languages are primarily for people; they're used to communicate expectations between
+people programming different parts of a system, or to document the external interfaces of a system.
+As such, the most important aspect of a schema language is that it be human-readable and human-writable, and that it be concise enough to be useful in documentation. No schema language can hope to convey all of the subtleties of a system's interfaces, but it can clarify things like the names and spellings of keys in objects, what types are expected (and not expected) in what places, and what fixed constraints exist on the size or range of values.
+
+Validation of instance values is not nearly as important in most real situations. Validation with Itemscript Schema does not change the instance value in any way, and does not assign types to values.
+All it does is confirm that what was supplied matches the types it knows about.
+
+==A Schema==
+
+A schema is a JSON object whose keys are the names of types, and whose values are the type definitions.
+
+There are about a dozen "core" types, with short names like "string", "object", and "any". Those are
+added into all schemas, so your schema definition doesn't need to include them.
+
+You should name your own types with a unique prefix; a good one is your domain name, reversed, like:
+"org.itemscript.Type". That way your schema can be combined with someone else's schema later, without the names interfering with each other. In this document, we'll include type definitions alone, without the rest of the schema.
+
+An example
+
+Let's start with an object:
+
+{{{
+{
+	"name" : "Bella",
+	"age" : 2,
+	"owner" : "Vera",
+	"breed" : "Cavalier King Charles"
+}
+}}}
+
+Here's a type that describes that object:
+
+{{{
+"com.petstore.Dog" : {
+	"name" : "string",
+	".optional age" : "integer"
+	"owner" : "string",
+	"breed" : "string"
+}
+}}}
+
+That type also matches this object:
+
+{{{
+{
+	"name" : "Fido",
+	"owner" : "Steve",
+	"breed" : "mutt",
+	"siblings" : ["Rex"]
+}
+}}}
+
+Note that the existence of extra values under keys not specified in the original type is no problem.
+By default, we just ignore any keys & values we don't know about. This is a good default, as it lets
+other people extend those objects without having to consult with us.
+
+That type doesn't match this object:
+
+{{{
+{
+	"name" : "Loki",
+	"species" : "cat",
+	"owner" : "Jacob"
+}
+}}}
+
+It's the missing "breed" value that's the problem with this object.
+
+It doesn't match this object either:
+
+{{{
+{
+	"name" : "Rex",
+	"age" : "6 months",
+	"owner" : "Steve",
+	"breed" : "mutt"
+}
+}}}
+
+The "age" value is optional, so it's okay if it's not present at all.
+But if it's present, it has to be an integer number, not a string.
+
+To distinguish between type definitions and objects you're describing, the former will be called "types"
+and the latter "instances".
+
+The basic types
+
+*object
+*array
+*string
+*decimal
+*long
+*binary
+*number
+*integer
+*boolean
+
+==Type definitions==
+
+A type definition can either be a JSON object or a JSON array. If it's an object, it contains keys
+that define the type, and it can be any kind of type, with the default being an object type if no
+“.extends” value is supplied. If it's an array, it always means an array type, and the allowable values
+for that array are given by the contents of the array. Until we get to talking about array type
+definitions, we'll assume that we're talking about type definitions in a JSON object.
+
+An empty object as a definition just means the basic "object" type that can contain any kind of values.
+An empty array as a definition just means the basic "array" type that can contain any kind of values.
+
+==Type reference==
+
+A type reference is a string giving the name of another type. The other type has to exist in the same
+schema. You use type references with “.extends” to say what type your type is extending.
+
+==Type specification==
+
+A type specification is used when you need to say what kind of type is allowed in an object or array.
+A type specification can either be a type reference referring to another type, or a type definition
+itself.
+So, you can write things like this:
+
+{
+	"name" : "string",
+	"address" : {
+		"street" : "string",
+		"city" : "string",
+		"zip" : "string"
+	}
+}
+
+A type specification can therefore be a JSON string, a JSON object, or a JSON array.
+
+All type definitions that are JSON objects
+
+Inside a type definition, all keys that start with an all-uppercase word are treated as schema-related.
+
+All type definitions can contain these two keys:
+.extends - with a string value that is a type reference giving the name of the type that this type is extending. The instance must match the type that this type extends (and the type that *that* type extends, and so on) as well as the type being specified. There is no way to "loosen" restrictions made by a type that you are extending.
+.description - with a string value that contains a description of the type.
+
+==Object type definitions==
+
+The default kind of type definition is an object type definition.
+Object type definitions are a JSON object whose keys are the names of keys that are required to appear
+in the matching instance, and whose corresponding values are type specifications for the types that the
+corresponding values in the instance must match.
+
+.optional [key name] – a key starting with the string ".optional" has a value that is a type specification. The remainder of the key after ".optional" is used as the name of a key that may (but does not have to) occur in the instance object. If it occurs, it must match the type specification.
+.key [key name] – a key starting with the string ".key" has a value that is a type specification. The remainder of the key after ".key" is used as the name of a key that must occur in the instance object and match the type specification. This is useful when you have an all-caps key you wish to specify as being required.
+.pattern [key pattern] – a key starting with the string ".pattern" has a value that is a type specification. The remainder of the key after ".pattern" is used as the pattern that will be used to match against keys in the instance object; any matching keys must match the type specification. If more than one .pattern key exists and a key in the instance object matches more than one of the patterns, it must match the type specifications of all the patterns it matches.
+.wildcard – a key named .wildcard means that any instance value identified by a key not matching another key specification in the type (a fixed key or a pattern) must match the corresponding type. This can be used to specify something like a Java Map. It's most useful without any other keys, but can be useful for a more compact syntax by allowing a mixture of special fixed keys and other keys (as for instance in an object definition in this schema language), although care should be taken that the two (or more) interpretations of keys do not overlap one another.
+
+==String type definitions==
+
+.equals – with a string value giving the exact string the instance string must equal.
+.isLength – with an integer value giving the exact length of an instance string, in characters.
+.inArray – with an array value providing an enumerable array of string values that the instance string can be equal to.
+.notInArray – with an array value providing an enumerable array of string values that the instance string can not be equal to.
+.minlength – with an integer value giving the minimum length of an instance string, in characters.
+.maxlength – with an integer value giving the maximum length of an instance string. in characters.
+.pattern – with a value that is either a single string or an array of strings; each is a pattern (see "Patterns", below), and an instance string must match one of these to match this type.
+.regExPattern – with a string value that is a regular expression used to validate the format of the instance string with.
+
+==Decimal type definitions==
+
+Decimal values represent an exact decimal number in a JSON string. The decimal type extends the basic string type. They are useful when working with currencies or other values where standard floating-point numbers are not appropriate. The representation is:
+
+decimal
+  int
+  int frac
+
+int
+  (Digit.)
+  (Digit 1-9.) digits
+  - (Digit.)
+  - (Digit 1-9.) digits
+
+frac
+  . digits
+
+No whitespace is permitted. Any string that does not match this pattern fails to match a decimal type.
+
+See number type definitions for list of generic numerical parameters, all number instance values must be of type decimal.
+.fractionDigits – with an integer value giving the maximum number of digits after the decimal point in an instance number.
+
+(Validator implementations that cannot handle very large numbers should be careful to ignore MIN and MAX specifications that are outside of their number range, and allow any decimal instance to match, rather than reject values that may be valid but uncheckable because of implementation limitations.)
+
+==Long type definition==
+
+Long values represent a 64-bit signed integer value with the same range as a Java long, with a minimum value of -2^63 and a maximum value of 2^63 - 1. The long type extends the decimal type, so they are also stored in a JSON string, and they implicitly specify the following restrictions:
+
+“.min” : "-2^63",
+".max" : "2^63 – 1",
+".fractionDigits" : 0
+
+No whitespace is permitted. Any string that does not match this pattern fails to match a long type.
+
+See number type definitions for list of generic numerical parameters, all number instance values must be of type long.
+
+This type is useful when you are transferring Java long values (or other 64-bit signed integers), because the JSON number type cannot represent the full range of a Java long value.
+
+==Binary type definitions==
+
+Binary values represent an array of bytes that can be converted to a base-64-encoded string for transport in JSON values. The binary type extends the string type.
+
+.maxBytes - With an integer or decimal value giving the maximum length of a binary instance, in bytes.
+
+(You should avoid using the string restrictions on binary values, since they will be applied to the base-64-encoded representation of the value, which is not very useful, and checking them may trigger the
+base-64 conversion unnecessarily.)
+
+==Number type definitions==
+
+.equalTo – with a number value giving the exact number the instance number can be equal to.
+.even – with a boolean value indicating whether or not the instance number needs to be even or not even.
+.greaterThan- with a number value giving the minimum value for instance number, must be greater than this number.
+.greaterThanOrEqualTo - with a number value giving the minimum value for instance number, must be greater than or equal to this number.
+.lessThan- with a number value giving the maximum value for instance number, must be less than this number.
+.lessThanOrEqualTo - with a number value giving the maximum value for instance number, must be less than or equal to this number.
+.inArray – with an array value providing an enumerable array of number values that the instance number can be equal to.
+.notInArray - with an array value providing an enumerable array of number values that the instance number can not be equal to.
+.odd - with a boolean value indicating whether or not the instance number needs to be odd or not odd.
+
+==Integer type definitions==
+
+Integers extend the number type, and are JSON numbers, but cannot have any non-zero fractional digits.
+
+See number type definitions for list of generic numerical parameters, all number instance values must be of type integer.
+
+==Boolean type definitions==
+
+Represent basic boolean structure.
+
+.booleanValue – with a boolean value specifying what the instance boolean must be in order to pass
+
+==Array type definitions==
+
+Array type definitions can be either a JSON object like other type definitions, or a JSON array.
+
+When they're a JSON object, they can contain the following keys:
+
+.exactSize - with an integer value giving the exact number of elements that an instance array must contain.
+.minSize – with an integer value giving the minimum number of elements that an instance array can contain.
+.maxSize – with an integer value giving the maximum number of elements that an instance array can contain.
+.contains - with a value that is a type specification giving the type of value that an instance array can contain. If you need them to be able to contain more than one type of value, specify an "any" type reference.
+
+When they're a JSON array, they can either be empty, or contain a single value that is a type specification giving the type of value that an instance array can contain. So, ["string"] defines an array
+type that can only contain strings and is exactly equivalent to a type definition of:
+
+{
+	"EXTENDS" : "array",
+	"CONTAINS" : "string"
+}
+
+==Any type definitions==
+
+An "any" type allows you to specify that a value can be one of several different types depending on what JSON type it is. This is often useful when you want to be able to supply different JSON types under the same key and trigger different behavior. For instance, a type specification is itself an instance of "any" type, as it can be either a JSON string, a JSON array, or a JSON object, each of which is
+treated differently.
+
+.string - With a value that is a type reference to a string type, specifies the type to match if the value is a JSON string.
+.number - With a value that is a type reference to a number type, specifies the type to match if the value is a JSON number.
+.boolean - With a value that is a type reference to a boolean type, specifies the type to match if the value is a JSON boolean.
+.array - With a value that is a type specification of an array type, specifies the type to match if the value is a JSON array.
+.object - With a value that is a type specification of an object type, specifies the type to match if the value is a JSON object.
+
+If any of these keys is present in a type extending "any", an instance value must be of one of the types that is specified. For instance, if .number and .array are present, an instance value must be a JSON number or JSON array.
+
+If none of the keys is present, any value type at all can be present.
+
+Recipes
+
+*A key with a fixed string value
+*A 2d array
+*Use of domain name for namespaces
+
+The schema definition for a schema:
+
+{{{
+{
+	"org.itemscript.Schema" :
+	{
+		".description" : "A schema.",
+		".pattern *" : "org.itemscript.EitherTypeDef"
+	},
+	"org.itemscript.EitherTypeDef" :
+	{
+		".extends" : "any",
+		".description" : "A type definition that is either a JSON object or a JSON array."
+		".array" : "org.itemscript.InlineArrayTypeDef",
+		".object" :"org.itemscript.TypeDef"
+	},
+	"org.itemscript.TypeDef" :
+	{
+		".extends" : "object",
+		".description" : "A type definition that is a JSON object.",
+		".optional .extends" : "org.itemscript.TypeRef",
+		".optional .description" : "string"
+	},
+	"org.itemscript.InlineArrayTypeDef" :
+	{
+		".extends" : "array",
+		".description" : "A type definition that is a JSON array.",
+		".size" : 1,
+		".optional .contains" : "org.itemscript.TypeSpec"
+	},
+	"org.itemscript.TypeRef" :
+	{
+		".extends" : "string",
+		".description" : "A reference to a type."
+	},
+	"org.itemscript.TypeSpec" :
+	{
+		".extends" : "any",
+		".description" : "Either a type reference or a type definition.",
+		".string" : "org.itemscript.TypeRef",
+		".object" : "org.itemscript.TypeDef",
+		".array" : "org.itemscript.InlineArrayTypeDef"
+	},
+	“org.itemscript.NullTypeDef” :
+	{
+		“.extends” : “org.itemscript.TypeDef”,
+		“.description” : “A definition of a null type.”
+	},
+	“org.itemscript.AnyTypeDef” :
+	{
+		“.extends” : “org.itemscript.TypeDef”,
+		“.description” : “A definition of an any type.”
+		“.string” : “org.itemscript.TypeSpec”,
+		“.number” : “org.itemscript.TypeSpec”,
+		“.boolean” : “org.itemscript.TypeSpec”,
+		“.array” : “org.itemscript.TypeSpec”,
+		“.object” : “org.itemscript.TypeSpec”,
+		“.optional .inArray” : “array”,
+		“.optional .notInArray” : “array”
+	},
+	"org.itemscript.ObjectTypeDef" :
+	{
+		".extends" : "org.itemscript.TypeDef",
+		".description" : "A definition of an object type.",
+		".pattern .optional *" : "org.itemscript.TypeSpec",
+		".pattern .key *" : "org.itemscript.TypeSpec",
+		".pattern .pattern *" : "org.itemscript.TypeSpec",
+		".optional .wildcard" : "org.itemscript.TypeSpec",
+		“.optional inArray” : “array”,
+		“.optional .notInArray” : “array”
+	},
+	"org.itemscript.ArrayTypeDef" :
+	{
+		".extends" : "org.itemscript.TypeDef",
+		".description" : "A definition of an array type.",
+		".optional .contains" : "org.itemscript.TypeSpec",
+		".optional .exactSize" : "integer",
+		“.optional .inArray” : “array”,
+		".optional .minSize" : "integer",
+		".optional .maxSize" : "integer",
+		“.optional .notInArray” : “array”
+
+	},
+	"org.itemscript.StringTypeDef" :
+	{
+		".extends" : "org.itemscript.TypeDef",
+		".description" : "A definition of a string type.",
+		".optional .equals" : "string",
+		".optional .isLength" : "integer",
+		".optional .minLength" : "integer",
+		".optional .maxLength" : "integer",
+		".optional .pattern" :
+		{
+			".extends" : "any",
+			".string" : "string",
+			".array" : ["string"]
+		},
+		".optional .regExPattern" : "string",
+		".optional .inArray" : "array",
+		".optional .notInArray" : "array"
+	},
+	"org.itemscript.DecimalTypeDef" :
+	{
+		".extends" : "org.itemscript.StringTypeDef",
+		".description" : "A definition of a decimal type.",
+		".optional .equalTo" : "decimal",
+		".optional .greaterThan" : "decimal",
+		".optional .lessThan" : "decimal",
+		".optional .greaterThanOrEqualTo" : "decimal",
+		".optional .lessThanOrEqualTo" : "decimal",
+		".optional .fractionDigits" : "integer",
+		“.optional .inArray” : “array”,
+		“.optional .notInArray” : “array”,
+		".optional .even" : "boolean",
+		".optional .odd" : "boolean"
+	},
+	"org.itemscript.LongTypeDef" :
+	{
+		".extends" : "org.itemscript.DecimalTypeDef",
+		".description" : "A definition of a long type.",
+		".optional .equalTo" : "long",
+		".optional .greaterThan" : "long",
+		".optional .lessThan" : "long",
+		".optional .greaterThanOrEqualTo" : "long",
+		".optional .lessThanOrEqualTo" : "long",
+		“.optional .inArray” : “array”,
+		“.optional .notInArray” : “array”,
+		".optional .even" : "boolean",
+		".optional .odd" : "boolean"
+	},
+	"org.itemscript.BinaryTypeDef" :
+	{
+		".extends" : "org.itemscript.StringTypeDef",
+		".description" : "A definition of a binary type.",
+		".optional .maxBytes" :
+		{
+			".extends" : "any",
+			".number" : "integer",
+			".string" : "decimal"
+		}
+	},
+	"org.itemscript.NumberTypeDef" :
+	{
+		".extends" : "org.itemscript.TypeDef",
+		".description" : "A definition of a number type.",
+		".optional .greaterThan" : "number",
+		".optional .lessThan" : "number",
+		".optional .greaterThanOrEqualTo" : "number",
+		".optional .lessThanOrEqualTo" : "number",
+		".optional .equalTo" : "number",
+		".optional .inArray" : "array",
+		".optional .notInArray" : "array",
+		“.optional .even” : “boolean”,
+		“.optional .odd” : “boolean”
+	},
+	“org.itemscript.IntegerTypeDef” :
+	{
+		“.extends” : “org.itemscript.NumberTypeDef”,
+		“.description” : “A definition of an integer type.”,
+		".optional .greaterThan" : "integer",
+		".optional .lessThan" : "integer",
+		".optional .greaterThanOrEqualTo" : "integer",
+		".optional .lessThanOrEqualTo" : "integer",
+		".optional .equalTo" : "integer",
+		".optional .inArray" : "array",
+		".optional .notInArray" : "array",
+		“.optional .even” : “boolean”,
+		“.optional .odd” : “boolean”
+	},
+	"org.itemscript.BooleanTypeDef" :
+	{
+		".extends" : "org.itemscript.TypeDef",
+		".description" : "A definition of a boolean type.",
+		".optional .booleanValue" : "boolean"
+	}
+}
+}}}
