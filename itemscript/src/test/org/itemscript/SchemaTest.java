@@ -1502,6 +1502,34 @@ public class SchemaTest extends ItemscriptTestBase {
     }
     
     @Test
+    public void testObjectLayers() {
+        JsonObject def = system().createObject();
+        def.put("name", "string");
+        def.put(".optional phone", "string");
+        JsonObject addressObj = system().createObject();
+        addressObj.put("street", "string");
+        addressObj.put(".optional city", "string");
+        addressObj.put("zip", "integer");
+        def.put("address", addressObj);
+        Type type = schema().resolve(def);
+        JsonObject instance = system().createObject();
+        instance.put("name", "King Strawberry");
+        JsonObject addressInst = system().createObject();
+        addressInst.put("street", "126 Lolipop Lane");
+        addressInst.put("zip", 61234);
+        instance.put("address", addressInst);
+        schema.validate(type, instance);
+        
+        addressInst.put("city", true);
+        try {
+            schema.validate(type, instance);
+        } catch (ItemscriptError e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
+    @Test
     public void testObjectPattern() {
         JsonObject def = system().createObject();
         def.put("name", "string");
