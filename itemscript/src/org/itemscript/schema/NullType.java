@@ -1,6 +1,8 @@
 
 package org.itemscript.schema;
-
+/**
+ * @author Jacob Davies
+ */
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;

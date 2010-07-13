@@ -8,7 +8,9 @@ import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 import org.itemscript.core.values.JsonArray;
-
+/**
+ * @authors Eileen Bai and Jacob Davies
+ */
 final class ArrayType extends TypeBase {
 	private static final String CONTAINS_KEY = ".contains";
 	private static final String EXACT_SIZE_KEY = ".exactSize";

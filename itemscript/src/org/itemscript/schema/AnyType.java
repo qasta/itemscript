@@ -9,7 +9,9 @@ import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonValue;
 import org.itemscript.core.values.JsonObject;
-
+/**
+ * @authors Eileen Bai and Jacob Davies
+ */
 final class AnyType extends TypeBase {
 	private static final String ARRAY_KEY = ".array";
 	private static final String BOOLEAN_KEY = ".boolean";

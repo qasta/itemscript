@@ -1,6 +1,8 @@
 
 package org.itemscript.schema;
-
+/**
+ * @author Jacob Davies
+ */
 import org.itemscript.core.values.JsonValue;
 
 public interface Type {
