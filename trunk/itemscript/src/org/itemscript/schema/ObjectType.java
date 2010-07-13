@@ -13,7 +13,9 @@ import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
-
+/**
+ * @authors Eileen Bai and Jacob Davies
+ */
 class ObjectType extends TypeBase {
     public static final String IN_ARRAY_KEY = ".inArray";
     public static final String KEY_KEY = ".key ";

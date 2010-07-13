@@ -9,7 +9,9 @@ import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
-
+/**
+ * @authors Eileen Bai and Jacob Davies
+ */
 class StringType extends TypeBase {
 	private static final String EQUALS_KEY = ".equals";
 	private static final String IS_LENGTH_KEY = ".isLength";

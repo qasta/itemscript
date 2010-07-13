@@ -7,7 +7,9 @@ import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonString;
 import org.itemscript.core.values.JsonValue;
-
+/**
+ * @authors Eileen Bai and Jacob Davies
+ */
 final class BinaryType extends TypeBase {
 	private static final String MAX_BYTES_KEY = ".maxBytes";
 	private final boolean hasDef;
