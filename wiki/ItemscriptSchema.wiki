@@ -92,9 +92,9 @@ The basic types
   * object
   * array
   * string
+   * binary
    * decimal
     * long
-   * binary
   * number
    * integer
   * boolean
