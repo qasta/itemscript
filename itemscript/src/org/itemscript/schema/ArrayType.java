@@ -9,7 +9,7 @@ import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 import org.itemscript.core.values.JsonArray;
 /**
- * @authors Eileen Bai and Jacob Davies
+ * @author Eileen Bai
  */
 final class ArrayType extends TypeBase {
 	private static final String CONTAINS_KEY = ".contains";

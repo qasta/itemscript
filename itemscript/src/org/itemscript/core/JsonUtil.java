@@ -1,5 +1,5 @@
 /*
- * Copyright © 2010, Data Base Architects, Inc. All rights reserved.
+ * Copyright ï¿½ 2010, Data Base Architects, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -32,6 +32,7 @@ package org.itemscript.core;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.url.Url;
 import org.itemscript.core.url.UrlFactory;
+import org.itemscript.schema.Schema;
 
 /**
  * An interface defining various utility methods that can't be static but aren't really part of
@@ -110,4 +111,11 @@ public interface JsonUtil {
      * @return The associated UrlFactory.
      */
     public UrlFactory urlFactory();
+    
+    /**
+     * Get this sysystem's associated schema.
+     * 
+     * @return The associated Schema.
+     */
+    public Schema schema();
 }

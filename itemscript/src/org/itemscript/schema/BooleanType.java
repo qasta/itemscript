@@ -6,7 +6,7 @@ import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 /**
- * @authors Eileen Bai and Jacob Davies
+ * @author Eileen Bai
  */
 final class BooleanType extends TypeBase {
 	private static final String BOOLEAN_VALUE_KEY = ".booleanValue";

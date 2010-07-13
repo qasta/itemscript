@@ -10,7 +10,7 @@ import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 /**
- * @authors Eileen Bai and Jacob Davies
+ * @author Eileen Bai
  */
 class StringType extends TypeBase {
 	private static final String EQUALS_KEY = ".equals";

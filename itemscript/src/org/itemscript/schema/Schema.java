@@ -1,8 +1,6 @@
 
 package org.itemscript.schema;
-/**
- * @author Jacob Davies
- */
+
 import org.itemscript.core.HasSystem;
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.Params;
@@ -183,6 +181,18 @@ public class Schema implements HasSystem {
     @Override
     public JsonSystem system() {
         return system;
+    }
+    
+    private void addAllTypes(JsonObject def) {
+    	for (String key : def.keySet()) {
+    		addType(key, def.get(key));
+    	}
+    }
+    
+    private void addType(String type, JsonValue val) {
+    	Type valType = resolve(val);
+    	types.putNative(type, valType);
+    	validate(type, val);
     }
 
     public void validate(String type, JsonValue value) {
