@@ -1,5 +1,5 @@
 /*
- * Copyright © 2010, Data Base Architects, Inc. All rights reserved.
+ * Copyright ï¿½ 2010, Data Base Architects, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -32,6 +32,7 @@ package org.itemscript.core;
 import org.itemscript.core.config.JsonConfig;
 import org.itemscript.core.url.Url;
 import org.itemscript.core.url.UrlFactory;
+import org.itemscript.schema.Schema;
 
 /**
  * The implementation class for JsonUtil.
@@ -42,6 +43,7 @@ class ItemscriptUtil implements JsonUtil, HasSystem {
     private final JsonConfig config;
     private final JsonSystem system;
     private final UrlFactory urlFactory;
+    private Schema schema;
 
     /**
      * Create a new ItemscriptUtil with the associated JsonSystem and JsonConfig.
@@ -98,5 +100,13 @@ class ItemscriptUtil implements JsonUtil, HasSystem {
     @Override
     public UrlFactory urlFactory() {
         return urlFactory;
+    }
+    
+    @Override
+    public Schema schema() {
+    	if (schema == null) {
+    		schema = new Schema(system());
+    	}
+    	return schema;
     }
 }

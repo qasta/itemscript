@@ -1,8 +1,6 @@
 
 package org.itemscript.schema;
-/**
- * @author Jacob Davies
- */
+
 import org.itemscript.core.HasSystem;
 import org.itemscript.core.JsonSystem;
 import org.itemscript.core.exceptions.ItemscriptError;

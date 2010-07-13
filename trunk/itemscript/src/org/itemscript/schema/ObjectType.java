@@ -14,7 +14,7 @@ import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 /**
- * @authors Eileen Bai and Jacob Davies
+ * @author Eileen Bai
  */
 class ObjectType extends TypeBase {
     public static final String IN_ARRAY_KEY = ".inArray";

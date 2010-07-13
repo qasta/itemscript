@@ -10,7 +10,7 @@ import org.itemscript.core.values.JsonValue;
 
 import org.itemscript.core.values.JsonArray;
 /**
- * @authors Eileen Bai and Jacob Davies
+ * @author Eileen Bai
  */
 final class IntegerType extends TypeBase {
 	private static final String EQUAL_TO_KEY = ".equalTo";
