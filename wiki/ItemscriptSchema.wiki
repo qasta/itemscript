@@ -177,7 +177,7 @@ frac
 
 No whitespace is permitted. Any string that does not match this pattern fails to match a decimal type.
 
-  * _See number type definitions for list of generic numerical parameters, all number instance values must be of type decimal._
+  * _See *number type definitions* for list of generic numerical parameters, all number instance values must be of type decimal._
   * *.fractionDigits* – with an integer value giving the maximum number of digits after the decimal point in an instance number.
 
 (Validator implementations that cannot handle very large numbers should be careful to ignore MIN and MAX specifications that are outside of their number range, and allow any decimal instance to match, rather than reject values that may be valid but uncheckable because of implementation limitations.)
@@ -192,7 +192,7 @@ Long values represent a 64-bit signed integer value with the same range as a Jav
 
 No whitespace is permitted. Any string that does not match this pattern fails to match a long type.
 
-  * _See number type definitions for list of generic numerical parameters, all number instance values must be of type long._
+  * _See *number type definitions* for list of generic numerical parameters, all number instance values must be of type long._
 
 This type is useful when you are transferring Java long values (or other 64-bit signed integers), because the JSON number type cannot represent the full range of a Java long value.
 
@@ -221,7 +221,7 @@ base-64 conversion unnecessarily.)
 
 Integers extend the number type, and are JSON numbers, but cannot have any non-zero fractional digits.
 
-  * _See number type definitions for list of generic numerical parameters, all number instance values must be of type integer._
+  * _See *number type definitions* for list of generic numerical parameters, all number instance values must be of type integer._
 
 ==Boolean type definitions==
 
