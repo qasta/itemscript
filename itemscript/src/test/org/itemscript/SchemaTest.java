@@ -1555,6 +1555,34 @@ public class SchemaTest extends ItemscriptTestBase {
     }
     
     @Test
+    public void testObjectMultiplePatterns() {
+        JsonObject def = system().createObject();
+        def.put("name", "string");
+        def.put(".pattern foo-*", "string");
+        def.put(".pattern *-bar", "decimal");
+        def.put("foo-zip", "long");
+        def.put("long-bar", "decimal");
+        def.put("foo-Number-bar", "string");
+        def.put(".optional foo-Wrong-bar", "string");
+        
+        Type type = schema().resolve(def);
+        JsonObject instance = system().createObject();
+        instance.put("name", "Bob");
+        instance.put("foo-zip", "91234");
+        instance.put("long-bar", "-5.5");
+        instance.put("foo-Number-bar", "1.2345");
+        schema.validate(type, instance);
+        
+        instance.put("foo-Wrong-bar", "1.abc");
+        try {
+        	schema.validate(type, instance);
+        } catch (ItemscriptError e) {
+        	threwException = true;
+        }
+        assertTrue(threwException);
+    }
+    
+    @Test
     public void testObjectInArray() {
         JsonObject def = system().createObject();
         def.put(".extends", "object");
