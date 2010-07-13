@@ -306,7 +306,7 @@ class DecimalType extends TypeBase {
 	 * @param string
 	 * @return true if verified, false if not
 	 */
-	private boolean isDecimal(String string) {
+	public static boolean isDecimal(String string) {
 		string = string.trim();
 		int startIndex = 0;
 		int pointIndex = -1;
@@ -338,7 +338,7 @@ class DecimalType extends TypeBase {
 	 * @param string
 	 * @return true if all digits, false if not
 	 */
-	private boolean checkDigits(String string) {
+	private static boolean checkDigits(String string) {
 		for (int i = 0; i < string.length(); i++) {
 			char digit = string.charAt(i);
 			if (!Character.isDigit(digit)) {
@@ -356,7 +356,7 @@ class DecimalType extends TypeBase {
 	 * @param dec2
 	 * @return true if the strings are equal, false if not
 	 */	
-	private boolean decimalEquals(String dec1, String dec2) {
+	public static boolean decimalEquals(String dec1, String dec2) {
 		dec1 = dec1.trim();
 		dec2 = dec2.trim();
 		int num1BeginIndex = beginIndex(dec1);
@@ -385,7 +385,7 @@ class DecimalType extends TypeBase {
 	 * @param dec2
 	 * @return true if both pos/neg, false if not
 	 */	
-	private boolean sameSign(String dec1, String dec2) {
+	private static boolean sameSign(String dec1, String dec2) {
 		if (dec1.charAt(0) == '-' && dec2.charAt(0) != '-') {
 			return false;
 		}
@@ -400,7 +400,7 @@ class DecimalType extends TypeBase {
 	 * @param dec2
 	 * @return true if both zero, false if not
 	 */
-	private boolean bothZero(String dec1, String dec2) {
+	private static boolean bothZero(String dec1, String dec2) {
 		int dec1BeginIndex = beginIndex(dec1);
 		int dec1EndIndex = endIndex(dec1);
 		int dec2BeginIndex = beginIndex(dec2);
@@ -435,7 +435,7 @@ class DecimalType extends TypeBase {
 	 * @param dec
 	 * @return index to begin comparing at
 	 */	
-	private int beginIndex(String dec) {
+	private static int beginIndex(String dec) {
 		int i = 0;
 		if (dec.charAt(i) == '+' || dec.charAt(i) == '-') {
 			i = 1;
@@ -455,7 +455,7 @@ class DecimalType extends TypeBase {
 	 * @param dec
 	 * @return index to end comparing at
 	 */	
-	private int endIndex(String dec) {
+	private static int endIndex(String dec) {
 		int i = dec.length() - 1;
 		for (; i > 0; i--) {
 			if (dec.charAt(i) != '0') {

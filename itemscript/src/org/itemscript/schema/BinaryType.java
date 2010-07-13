@@ -1,9 +1,11 @@
 
 package org.itemscript.schema;
 
+
 import org.itemscript.core.Params;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.values.JsonObject;
+import org.itemscript.core.values.JsonString;
 import org.itemscript.core.values.JsonValue;
 
 final class BinaryType extends TypeBase {
@@ -31,7 +33,7 @@ final class BinaryType extends TypeBase {
         return true;
     }
     
-	private Params pathValueParams(String path, byte[] binary) {
+	private Params pathValueParams(String path, String binary) {
 		return schema().pathParams(path).p("value", binary);
 	}
 
@@ -43,23 +45,16 @@ final class BinaryType extends TypeBase {
 					"validate.value.was.not.string", schema().pathParams(path)
 							.p("value", value.toCompactJsonString()));
 		}
-        byte[] binaryValue;
-        try {
-            binaryValue = value.binaryValue();
-        } catch (RuntimeException e) {
-            throw ItemscriptError.internalError(this, "validate.could.not.parse.as.base64", schema().pathParams(
-                    path)
-                    .p("value", value.toCompactJsonString()));
-        }
         if (hasDef) {
-			validateBinary(path, binaryValue);
+			validateBinary(path, value.asString());
         }
     }
     
-    private void validateBinary(String path, byte[] binaryValue) {
+    private void validateBinary(String path, JsonString binaryValue) {
 		if (maxBytes > 0) {
-			if (binaryValue.length > maxBytes) { throw ItemscriptError.internalError(this,
-					"validateBinary.value.has.too.many.bytes", pathValueParams(path, binaryValue)); }
+			byte[] binaryArray = binaryValue.binaryValue();
+			if (binaryArray.length > maxBytes) { throw ItemscriptError.internalError(this,
+					"validateBinary.value.has.too.many.bytes", pathValueParams(path, binaryValue+"")); }
 		}
     }
 }

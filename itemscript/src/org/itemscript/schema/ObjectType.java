@@ -4,16 +4,20 @@ package org.itemscript.schema;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.itemscript.core.Params;
 import org.itemscript.core.exceptions.ItemscriptError;
+import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 
 class ObjectType extends TypeBase {
+    public static final String IN_ARRAY_KEY = ".inArray";
     public static final String KEY_KEY = ".key ";
+    public static final String NOT_IN_ARRAY_KEY = ".notInArray";
     public static final String OPTIONAL_KEY = ".optional ";
     public static final String PATTERN_KEY = ".pattern ";
     public static final String WILDCARD_KEY = ".wildcard";
@@ -24,6 +28,8 @@ class ObjectType extends TypeBase {
     private Map<String, JsonValue> patterns;
     private Map<String, Type> resolvedOptionalKeys;
     private Map<String, Type> resolvedRequiredKeys;
+    private List<JsonObject> inArray;
+    private List<JsonObject> notInArray;
     private JsonValue wildcard;
 
     ObjectType(Schema schema, Type extendsType, JsonObject def) {
@@ -62,6 +68,18 @@ class ObjectType extends TypeBase {
                 			.copy());
                 } else if (key.startsWith(WILDCARD_KEY)) {
                 	wildcard = def.getValue(WILDCARD_KEY);
+                } else if (key.startsWith(IN_ARRAY_KEY)) {
+                	inArray = new ArrayList<JsonObject>();
+                	JsonArray array = def.getArray(IN_ARRAY_KEY);
+                	for (int i = 0; i < array.size(); ++i) {
+                		inArray.add(array.getRequiredObject(i));
+                	}
+                } else if (key.startsWith(NOT_IN_ARRAY_KEY)) {
+                	notInArray = new ArrayList<JsonObject>();
+                	JsonArray array = def.getArray(NOT_IN_ARRAY_KEY);
+                	for (int i = 0; i < array.size(); ++i) {
+                		notInArray.add(array.getRequiredObject(i));
+                	}
                 }
             }
         } else {
@@ -72,6 +90,8 @@ class ObjectType extends TypeBase {
             resolved = false;
             resolvedOptionalKeys = null;
             resolvedRequiredKeys = null;
+            inArray = null;
+            notInArray = null;
             wildcard = null;
         }
     }
@@ -167,6 +187,30 @@ class ObjectType extends TypeBase {
                 schema().validate(resolvedOptionalKeys.get(key), value);
             }   
         }
+        if (inArray != null) {
+        	boolean matched = false;
+            for (int i = 0; i < inArray.size(); ++i) {
+                JsonObject inArrayObject = inArray.get(i);
+                if (object.equals(inArrayObject)) {
+                    matched = true;
+                    break;
+                }
+            }
+            if (!matched) { throw ItemscriptError.internalError(this,
+                    "validateObject.value.did.not.match.a.valid.choice", pathValueParams(path, object)); }
+        }
+        if (notInArray != null) {
+	    	boolean matched = false;
+	        for (int i = 0; i < notInArray.size(); ++i) {
+	            JsonObject notInArrayObject = notInArray.get(i);
+	            if (object.equals(notInArrayObject)) {
+	                matched = true;
+	                break;
+	            }
+	        }
+	        if (matched) { throw ItemscriptError.internalError(this,
+	                "validateObject.value.did.matched.an.invalid.choice", pathValueParams(path, object)); }
+	    }
     }
     
     /**
