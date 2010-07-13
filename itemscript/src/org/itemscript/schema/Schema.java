@@ -33,7 +33,7 @@ public class Schema implements HasSystem {
         }
     }
 
-    public String addKey(String path, String key) {
+    String addKey(String path, String key) {
         if (path.length() == 0) {
             return Url.encode(key);
         } else {
@@ -42,9 +42,9 @@ public class Schema implements HasSystem {
     }
 
     private Type createAnyType(Type extendsType, JsonObject def) {
-    	return new AnyType(this, extendsType, def);
+        return new AnyType(this, extendsType, def);
     }
-    
+
     private Type createArrayType(Type extendsType, JsonObject def) {
         return new ArrayType(this, extendsType, def);
     }
@@ -58,9 +58,9 @@ public class Schema implements HasSystem {
     }
 
     private Type createDecimalType(Type extendsType, JsonObject def) {
-    	return new DecimalType(this, extendsType, def);
+        return new DecimalType(this, extendsType, def);
     }
-    
+
     private Type createFromArray(JsonArray array) {
         // An empty array means a generic array.
         if (array.size() == 0) { return get("array"); }
@@ -76,7 +76,7 @@ public class Schema implements HasSystem {
             // Get the actual type.
             Type extendsType = get(def.getString(".extends"));
             if (extendsType.isAny()) {
-            	return createAnyType(extendsType, def);
+                return createAnyType(extendsType, def);
             } else if (extendsType.isObject()) {
                 return createObjectType(extendsType, def);
             } else if (extendsType.isArray()) {
@@ -94,9 +94,9 @@ public class Schema implements HasSystem {
             } else if (extendsType.isNull()) {
                 return createNullType(extendsType, def);
             } else if (extendsType.isDecimal()) {
-            	return createDecimalType(extendsType, def);
+                return createDecimalType(extendsType, def);
             } else if (extendsType.isLong()) {
-            	return createLongType(extendsType, def);
+                return createLongType(extendsType, def);
             } else {
                 // This of course should never happen.
                 throw ItemscriptError.internalError(this, "createFromObject.extendsType.unknown.type", extendsType
@@ -111,7 +111,7 @@ public class Schema implements HasSystem {
     private Type createIntegerType(Type extendsType, JsonObject def) {
         return new IntegerType(this, extendsType, def);
     }
-    
+
     private Type createLongType(Type extendsType, JsonObject def) {
         return new LongType(this, extendsType, def);
     }
