@@ -272,47 +272,46 @@ Recipes
   * Use of domain name for namespaces
 
 The schema definition for a schema:
-
 {{{
 {
-	"org.itemscript.Schema" :
+	“org.itemscript.Schema” :
 	{
-		".description" : "A schema.",
-		".pattern *" : "org.itemscript.EitherTypeDef"
+		“.description” : “A schema.”,
+		“.pattern *” : “org.itemscript.EitherTypeDef”
 	},
-	"org.itemscript.EitherTypeDef" :
+	“org.itemscript.EitherTypeDef” :
 	{
-		".extends" : "any",
-		".description" : "A type definition that is either a JSON object or a JSON array.",
-		".array" : "org.itemscript.InlineArrayTypeDef",
-		".object" :"org.itemscript.TypeDef"
+		“.extends” : “any”,
+		“.description” : “A type definition that is either a JSON object or a JSON array.”
+		“.array” : “org.itemscript.InlineArrayTypeDef”,
+		“.object” : “org.itemscript.TypeDef”
 	},
-	"org.itemscript.TypeDef" :
+	“org.itemscript.TypeDef” :
 	{
-		".extends" : "object",
-		".description" : "A type definition that is a JSON object.",
-		".optional .extends" : "org.itemscript.TypeRef",
-		".optional .description" : "string"
+		“.extends” : “object”,
+		“.description” : “A type definition that is a JSON object.”,
+		“.optional .extends” : “org.itemscript.TypeRef”,
+		“.optional .description” : “string”
 	},
-	"org.itemscript.InlineArrayTypeDef" :
+	“org.itemscript.InlineArrayTypeDef” :
 	{
-		".extends" : "array",
-		".description" : "A type definition that is a JSON array.",
-		".size" : 1,
-		".optional .contains" : "org.itemscript.TypeSpec"
+		“.extends” : “array”,
+		“.description” : “A type definition that is a JSON array.”,
+		“.size” : 1,
+		“.optional .contains” : “org.itemscript.TypeSpec”
 	},
-	"org.itemscript.TypeRef" :
+	“org.itemscript.TypeRef” :
 	{
-		".extends" : "string",
-		".description" : "A reference to a type."
+		“.extends” : “string”,
+		“.description” : “A reference to a type.”
 	},
-	"org.itemscript.TypeSpec" :
+	“org.itemscript.TypeSpec” :
 	{
-		".extends" : "any",
-		".description" : "Either a type reference or a type definition.",
-		".string" : "org.itemscript.TypeRef",
-		".object" : "org.itemscript.TypeDef",
-		".array" : "org.itemscript.InlineArrayTypeDef"
+		“.extends” : “any”,
+		“.description” : “Either a type reference or a type definition.”,
+		“.string” : “org.itemscript.TypeRef”,
+		“.object” : “org.itemscript.TypeDef”,
+		“.array” : “org.itemscript.InlineArrayTypeDef”
 	},
 	“org.itemscript.NullTypeDef” :
 	{
@@ -322,7 +321,7 @@ The schema definition for a schema:
 	“org.itemscript.AnyTypeDef” :
 	{
 		“.extends” : “org.itemscript.TypeDef”,
-		“.description” : “A definition of an any type.”,
+		“.description” : “A definition of an any type.”
 		“.string” : “org.itemscript.TypeSpec”,
 		“.number” : “org.itemscript.TypeSpec”,
 		“.boolean” : “org.itemscript.TypeSpec”,
@@ -331,98 +330,98 @@ The schema definition for a schema:
 		“.optional .inArray” : “array”,
 		“.optional .notInArray” : “array”
 	},
-	"org.itemscript.ObjectTypeDef" :
+	“org.itemscript.ObjectTypeDef” :
 	{
-		".extends" : "org.itemscript.TypeDef",
-		".description" : "A definition of an object type.",
-		".pattern .optional *" : "org.itemscript.TypeSpec",
-		".pattern .key *" : "org.itemscript.TypeSpec",
-		".pattern .pattern *" : "org.itemscript.TypeSpec",
-		".optional .wildcard" : "org.itemscript.TypeSpec",
+		“.extends” : “org.itemscript.TypeDef”,
+		“.description” : “A definition of an object type.”,
+		“.pattern .optional *” : “org.itemscript.TypeSpec”,
+		“.pattern .key *” : “org.itemscript.TypeSpec”,
+		“.pattern .pattern *” : “org.itemscript.TypeSpec”,
+		“.optional .wildcard” : “org.itemscript.TypeSpec”,
 		“.optional inArray” : “array”,
 		“.optional .notInArray” : “array”
 	},
-	"org.itemscript.ArrayTypeDef" :
+	“org.itemscript.ArrayTypeDef” :
 	{
-		".extends" : "org.itemscript.TypeDef",
-		".description" : "A definition of an array type.",
-		".optional .contains" : "org.itemscript.TypeSpec",
-		".optional .exactSize" : "integer",
-		“.optional .inArray” : “array”,
-		".optional .minSize" : "integer",
-		".optional .maxSize" : "integer",
+		“.extends” : “org.itemscript.TypeDef”,
+		“.description” : “A definition of an array type.”,
+		“.optional .contains” : “org.itemscript.TypeSpec”,
+		“.optional .exactSize” : “integer”,
+		“.optional .inArray” : “array,
+		“.optional .minSize” : “integer”,
+		“.optional .maxSize” : “integer”,
 		“.optional .notInArray” : “array”
 
 	},
-	"org.itemscript.StringTypeDef" :
+	“org.itemscript.StringTypeDef” :
 	{
-		".extends" : "org.itemscript.TypeDef",
-		".description" : "A definition of a string type.",
-		".optional .equals" : "string",
-		".optional .isLength" : "integer",
-		".optional .minLength" : "integer",
-		".optional .maxLength" : "integer",
-		".optional .pattern" :
+		“.extends” : “org.itemscript.TypeDef”,
+		“.description” : “A definition of a string type.”,
+		“.optional .equals” : “string”,
+		“.optional .isLength” : “integer”,
+		“.optional .minLength” : “integer”,
+		“.optional .maxLength” : “integer”,
+		“.optional .pattern” :
 		{
-			".extends" : "any",
-			".string" : "string",
-			".array" : ["string"]
+			“.extends” : “any”,
+			“.string” : “string”,
+			“.array” : [“string”]
 		},
-		".optional .regExPattern" : "string",
-		".optional .inArray" : "array",
-		".optional .notInArray" : "array"
+		“.optional .regExPattern” : “string”,
+		“.optional .inArray” : “array”,
+		“.optional .notInArray” : “array”
 	},
-	"org.itemscript.DecimalTypeDef" :
+	“org.itemscript.DecimalTypeDef” :
 	{
-		".extends" : "org.itemscript.StringTypeDef",
-		".description" : "A definition of a decimal type.",
-		".optional .equalTo" : "decimal",
-		".optional .greaterThan" : "decimal",
-		".optional .lessThan" : "decimal",
-		".optional .greaterThanOrEqualTo" : "decimal",
-		".optional .lessThanOrEqualTo" : "decimal",
-		".optional .fractionDigits" : "integer",
+		“.extends” : “org.itemscript.StringTypeDef”,
+		“.description” : “A definition of a decimal type.”,
+		“.optional .equalTo” : “decimal”,
+		“.optional .greaterThan” : “decimal”,
+		“.optional .lessThan” : “decimal”,
+		“.optional .greaterThanOrEqualTo” : “decimal”,
+		“.optional .lessThanOrEqualTo” : “decimal”,
+		“.optional .fractionDigits” : “integer”,
 		“.optional .inArray” : “array”,
 		“.optional .notInArray” : “array”,
-		".optional .even" : "boolean",
-		".optional .odd" : "boolean"
+		“.optional .even” : “boolean”,
+		“.optional .odd” : “boolean”
 	},
-	"org.itemscript.LongTypeDef" :
+	“org.itemscript.LongTypeDef” :
 	{
-		".extends" : "org.itemscript.DecimalTypeDef",
-		".description" : "A definition of a long type.",
-		".optional .equalTo" : "long",
-		".optional .greaterThan" : "long",
-		".optional .lessThan" : "long",
-		".optional .greaterThanOrEqualTo" : "long",
-		".optional .lessThanOrEqualTo" : "long",
+		“.extends” : “org.itemscript.DecimalTypeDef”,
+		“.description” : “A definition of a long type.”,
+		“.optional .equalTo” : “long”,
+		“.optional .greaterThan” : “long”,
+		“.optional .lessThan” : “long”,
+		“.optional .greaterThanOrEqualTo” : “long”,
+		“.optional .lessThanOrEqualTo” : “long”,
 		“.optional .inArray” : “array”,
 		“.optional .notInArray” : “array”,
-		".optional .even" : "boolean",
-		".optional .odd" : "boolean"
+		“.optional .even” : “boolean”,
+		“.optional .odd” : “boolean”
 	},
-	"org.itemscript.BinaryTypeDef" :
+	“org.itemscript.BinaryTypeDef” :
 	{
-		".extends" : "org.itemscript.StringTypeDef",
-		".description" : "A definition of a binary type.",
-		".optional .maxBytes" :
+		“.extends” : “org.itemscript.StringTypeDef”,
+		“.description” : “A definition of a binary type.”,
+		“.optional .maxBytes” :
 		{
-			".extends" : "any",
-			".number" : "integer",
-			".string" : "decimal"
+			“.extends” : “any”,
+			“.number” : “integer”,
+			“.string” : “decimal”
 		}
 	},
-	"org.itemscript.NumberTypeDef" :
+	“org.itemscript.NumberTypeDef” :
 	{
-		".extends" : "org.itemscript.TypeDef",
-		".description" : "A definition of a number type.",
-		".optional .greaterThan" : "number",
-		".optional .lessThan" : "number",
-		".optional .greaterThanOrEqualTo" : "number",
-		".optional .lessThanOrEqualTo" : "number",
-		".optional .equalTo" : "number",
-		".optional .inArray" : "array",
-		".optional .notInArray" : "array",
+		“.extends” : “org.itemscript.TypeDef”,
+		“.description” : “A definition of a number type.”,
+		“.optional .greaterThan” : “number”,
+		“.optional .lessThan” : “number”,
+		“.optional .greaterThanOrEqualTo” : “number”,
+		“.optional .lessThanOrEqualTo” : “number”,
+		“.optional .equalTo” : “number”,
+		“.optional .inArray” : “array”,
+		“.optional .notInArray” : “array”,
 		“.optional .even” : “boolean”,
 		“.optional .odd” : “boolean”
 	},
@@ -430,21 +429,21 @@ The schema definition for a schema:
 	{
 		“.extends” : “org.itemscript.NumberTypeDef”,
 		“.description” : “A definition of an integer type.”,
-		".optional .greaterThan" : "integer",
-		".optional .lessThan" : "integer",
-		".optional .greaterThanOrEqualTo" : "integer",
-		".optional .lessThanOrEqualTo" : "integer",
-		".optional .equalTo" : "integer",
-		".optional .inArray" : "array",
-		".optional .notInArray" : "array",
+		“.optional .greaterThan” : “integer”,
+		“.optional .lessThan” : “integer”,
+		“.optional .greaterThanOrEqualTo” : “integer”,
+		“.optional .lessThanOrEqualTo” : “integer”,
+		“.optional .equalTo” : “integer”,
+		“.optional .inArray” : “array”,
+		“.optional .notInArray” : “array”,
 		“.optional .even” : “boolean”,
 		“.optional .odd” : “boolean”
 	},
-	"org.itemscript.BooleanTypeDef" :
+	“org.itemscript.BooleanTypeDef” :
 	{
-		".extends" : "org.itemscript.TypeDef",
-		".description" : "A definition of a boolean type.",
-		".optional .booleanValue" : "boolean"
+		“.extends” : “org.itemscript.TypeDef”,
+		“.description” : “A definition of a boolean type.”,
+		“.optional .booleanValue” : “boolean”
 	}
 }
 }}}
