@@ -58,10 +58,12 @@ public class StringAnalyzer implements HasSystem {
     private final JsonSystem system;
     private final Scanner scanner;
     private final Analyzer analyzer;
+    private final String string;
 
     public StringAnalyzer(JsonSystem system, Analyzer analyzer, String string) {
         this.system = system;
         this.analyzer = analyzer;
+        this.string = string;
         this.scanner = new Scanner(string);
     }
 
@@ -167,9 +169,12 @@ public class StringAnalyzer implements HasSystem {
             // If it starts with a number, it's a numeric literal.
             return analyzeNumber();
         } else {
+            System.err.println("text: " + system().createString(string));
             // Anything else is an error.
-            throw ItemscriptError.internalError(this, "analyzeExpressionToken.unexpected.token",
-                    new Params().p("expressionToken", peekExpressionToken + "").p("text", system().createString(scanner.text())) + "");
+            throw ItemscriptError.internalError(this, "analyzeExpressionToken.unexpected.token", new Params().p(
+                    "expressionToken", peekExpressionToken + "")
+                    .p("text", system().createString(scanner.text()))
+                    + "");
         }
     }
 

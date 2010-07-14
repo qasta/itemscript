@@ -57,14 +57,14 @@ public class PostEncapServlet extends HttpServlet {
                 value = system.parse(valueJson);
             }
             fragment = req.getParameter("fragment");
+        } else {
+            JsonValue input = system.parseReader(req.getReader());
+            if (!input.isObject()) { throw new RuntimeException("input must be an object"); }
         }
         resp.setContentType("application/json");
         if (value != null) {
             Writer writer = resp.getWriter();
             writer.write(ItemscriptCreator.quotedString(method + " " + value + " " + fragment));
-            System.err.println("method: " + method);
-            System.err.println("value: " + value);
-            System.err.println("fragment: " + fragment);
         }
     }
 
@@ -73,10 +73,8 @@ public class PostEncapServlet extends HttpServlet {
         JsonSystem system = MinimalConfig.createSystem();
         JsonValue value = system.parseReader(req.getReader());
         resp.setContentType("application/json");
-        JsonValue retValue1 = value.copy();
-        JsonValue retValue = retValue1;
         resp.getWriter()
-                .write(retValue.toCompactJsonString());
+                .write(value.toCompactJsonString());
     }
 
     private JsonValue putValue(JsonValue value) {

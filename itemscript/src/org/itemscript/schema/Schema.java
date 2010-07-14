@@ -18,17 +18,19 @@ import org.itemscript.core.values.JsonValue;
  */
 public class Schema implements HasSystem {
     private static final String ASTERISK = "*";
-    private static final String TYPES_URL = "mem:/itemscript/schema/types";
+    public static final String TYPES_URL = "mem:/itemscript/schema/types";
+    public static final String SCHEMA_URL = "mem:/itemscript/schema/Schema";
     private final JsonSystem system;
     private final JsonObject types;
 
     /**
-     * Create a new Schema.
+     * Create a new Schema, and store it in the associated JsonSystem.
      * 
      * @param system
      */
     public Schema(JsonSystem system) {
         this.system = system;
+        system.putNative(SCHEMA_URL, this);
         JsonObject typesObject = system.getObject(TYPES_URL);
         boolean initialized = true;
         if (typesObject == null) {
@@ -87,35 +89,35 @@ public class Schema implements HasSystem {
             // Get the actual type.
             Type extendsType = get(def.getString(".extends"));
             if (extendsType != null) {
-	            if (extendsType.isAny()) {
-	                return createAnyType(extendsType, def);
-	            } else if (extendsType.isObject()) {
-	                return createObjectType(extendsType, def);
-	            } else if (extendsType.isArray()) {
-	                return createArrayType(extendsType, def);
-	            } else if (extendsType.isString()) {
-	                return createStringType(extendsType, def);
-	            } else if (extendsType.isBinary()) {
-	                return createBinaryType(extendsType, def);
-	            } else if (extendsType.isNumber()) {
-	                return createNumberType(extendsType, def);
-	            } else if (extendsType.isInteger()) {
-	                return createIntegerType(extendsType, def);
-	            } else if (extendsType.isBoolean()) {
-	                return createBooleanType(extendsType, def);
-	            } else if (extendsType.isNull()) {
-	                return createNullType(extendsType, def);
-	            } else if (extendsType.isDecimal()) {
-	                return createDecimalType(extendsType, def);
-	            } else if (extendsType.isLong()) {
-	                return createLongType(extendsType, def);
-	            } else {
-	                // This of course should never happen.
-	                throw ItemscriptError.internalError(this, "createFromObject.extendsType.unknown.type", extendsType
-	                        + "");
-	            }
+                if (extendsType.isAny()) {
+                    return createAnyType(extendsType, def);
+                } else if (extendsType.isObject()) {
+                    return createObjectType(extendsType, def);
+                } else if (extendsType.isArray()) {
+                    return createArrayType(extendsType, def);
+                } else if (extendsType.isString()) {
+                    return createStringType(extendsType, def);
+                } else if (extendsType.isBinary()) {
+                    return createBinaryType(extendsType, def);
+                } else if (extendsType.isNumber()) {
+                    return createNumberType(extendsType, def);
+                } else if (extendsType.isInteger()) {
+                    return createIntegerType(extendsType, def);
+                } else if (extendsType.isBoolean()) {
+                    return createBooleanType(extendsType, def);
+                } else if (extendsType.isNull()) {
+                    return createNullType(extendsType, def);
+                } else if (extendsType.isDecimal()) {
+                    return createDecimalType(extendsType, def);
+                } else if (extendsType.isLong()) {
+                    return createLongType(extendsType, def);
+                } else {
+                    // This of course should never happen.
+                    throw ItemscriptError.internalError(this, "createFromObject.extendsType.unknown.type",
+                            extendsType + "");
+                }
             } else {
-            	throw ItemscriptError.internalError(this, "createFromObject.extendsType.was.null", extendsType
+                throw ItemscriptError.internalError(this, "createFromObject.extendsType.was.null", extendsType
                         + "");
             }
         } else {
@@ -172,7 +174,7 @@ public class Schema implements HasSystem {
         typesObject.putNative("decimal", new DecimalType(this, anyType, null));
         typesObject.putNative("long", new LongType(this, anyType, null));
     }
-    
+
     /**
      * Test whether or not the specified string matches the given pattern.
      * 
@@ -218,7 +220,7 @@ public class Schema implements HasSystem {
     public JsonSystem system() {
         return system;
     }
-    
+
     /**
      * Adds all of the types and their corresponding keys contained within the object into
      * the schema.
@@ -226,11 +228,11 @@ public class Schema implements HasSystem {
      * @param def
      */
     public void addAllTypes(JsonObject def) {
-    	for (String key : def.keySet()) {
-    		addType(key, def.get(key));
-    	}
+        for (String key : def.keySet()) {
+            addType(key, def.get(key));
+        }
     }
-    
+
     /**
      * Adds one type with its corresponding key into the schema.
      * 
@@ -238,8 +240,8 @@ public class Schema implements HasSystem {
      * @param val
      */
     public void addType(String key, JsonValue val) {
-    	Type valType = resolve(val);
-    	types.putNative(key, valType);
+        Type valType = resolve(val);
+        types.putNative(key, valType);
     }
 
     /**
