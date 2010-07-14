@@ -101,12 +101,4 @@ class ItemscriptUtil implements JsonUtil, HasSystem {
     public UrlFactory urlFactory() {
         return urlFactory;
     }
-    
-    @Override
-    public Schema schema() {
-    	if (schema == null) {
-    		schema = new Schema(system());
-    	}
-    	return schema;
-    }
 }
