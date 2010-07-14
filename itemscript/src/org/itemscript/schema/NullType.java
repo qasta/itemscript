@@ -5,7 +5,20 @@ import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 
+/**
+ * Type class for the Null Type.
+ * 
+ * @author Jacob Davies
+ */
 final class NullType extends TypeBase {
+	
+	/**
+	 * Create a new NullType.
+	 * 
+	 * @param schema
+	 * @param extendsType
+	 * @param def
+	 */
     NullType(Schema schema, Type extendsType, JsonObject def) {
         super(schema, extendsType, def);
     }

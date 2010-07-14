@@ -5,9 +5,10 @@ package org.itemscript.schema;
 import org.itemscript.core.Params;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.values.JsonObject;
-import org.itemscript.core.values.JsonString;
 import org.itemscript.core.values.JsonValue;
 /**
+ * Type class for Binary Type. All BinaryTypes base64 encoded and are represented by strings.
+ * 
  * @author Eileen Bai
  */
 final class BinaryType extends TypeBase {
@@ -15,6 +16,13 @@ final class BinaryType extends TypeBase {
 	private final boolean hasDef;
 	private final int maxBytes;
 	
+	/**
+	 * Create a new BinaryType. Sets all associated ".keys" that are specified.
+	 * 
+	 * @param schema
+	 * @param extendsType
+	 * @param def
+	 */
     BinaryType(Schema schema, Type extendsType, JsonObject def) {
         super(schema, extendsType, def);
     	if (def != null) {
@@ -35,28 +43,35 @@ final class BinaryType extends TypeBase {
         return true;
     }
     
-	private Params pathValueParams(String path, String binary) {
+	private Params pathValueParams(String path, byte[] binary) {
 		return schema().pathParams(path).p("value", binary);
 	}
 
     @Override
     public void validate(String path, JsonValue value) {
         super.validate(path, value);
+        byte[] binaryValue;
 		if (!value.isString()) {
 			throw ItemscriptError.internalError(this,
 					"validate.value.was.not.string", schema().pathParams(path)
 							.p("value", value.toCompactJsonString()));
 		}
+        try {
+			binaryValue = value.binaryValue();
+        } catch (ItemscriptError e) {
+        	throw ItemscriptError.internalError(this,
+        			"validate.value.could.not.be.parse.as.base.64", schema().pathParams(path)
+        				.put("value", value.toCompactJsonString()));
+        }
         if (hasDef) {
-			validateBinary(path, value.asString());
+			validateBinary(path, binaryValue);
         }
     }
     
-    private void validateBinary(String path, JsonString binaryValue) {
+    private void validateBinary(String path, byte[] binaryValue) {
 		if (maxBytes > 0) {
-			byte[] binaryArray = binaryValue.binaryValue();
-			if (binaryArray.length > maxBytes) { throw ItemscriptError.internalError(this,
-					"validateBinary.value.has.too.many.bytes", pathValueParams(path, binaryValue+"")); }
+			if (binaryValue.length > maxBytes) { throw ItemscriptError.internalError(this,
+					"validateBinary.value.has.too.many.bytes", pathValueParams(path, binaryValue)); }
 		}
     }
 }

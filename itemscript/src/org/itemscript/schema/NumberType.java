@@ -11,6 +11,8 @@ import org.itemscript.core.values.JsonValue;
 import org.itemscript.core.Params;
 import org.itemscript.core.values.JsonArray;
 /**
+ * Type class for the Number Type.
+ * 
  * @author Eileen Bai
  */
 final class NumberType extends TypeBase {
@@ -40,7 +42,14 @@ final class NumberType extends TypeBase {
 	private final double lessThanOrEqualTo;
     private final List<Double> inArray;
     private final List<Double> notInArray;
-
+    
+    /**
+     * Create a new NumberType. Sets all associated ".keys" that are specified.
+     * 
+     * @param schema
+     * @param extendsType
+     * @param def
+     */
     NumberType(Schema schema, Type extendsType, JsonObject def) {
         super(schema, extendsType, def);
         if (def != null) {

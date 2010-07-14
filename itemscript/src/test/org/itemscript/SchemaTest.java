@@ -1645,6 +1645,7 @@ public class SchemaTest extends ItemscriptTestBase {
     @Test
     public void testObjectWildcard() {
         JsonObject def = system().createObject();
+        def.put(".extends", "object");
         def.put("name", "string");
         def.put(".wildcard", "integer");
         Type type = schema().resolve(def);
@@ -1694,6 +1695,135 @@ public class SchemaTest extends ItemscriptTestBase {
         }
         assertTrue(threwException);
     }
+    
+    @Test
+    public void testNoAddType() {
+    	JsonObject def = system().createObject();
+    	def.put("name", "string");
+    	def.put("address", "object");
+    	
+    	JsonObject test = system().createObject();
+    	test.put(".extends", "address");
+    	test.put("street", "string");
+    	test.put(".optional zipcode", "number");
+    	try {
+    	   	 Type testType = schema().resolve(test);
+    	} catch (ItemscriptError e) {
+    		threwException = true;
+    	}
+    	assertTrue(threwException);
+    }
+    
+    @Test
+    public void testAddTypeObjectWithoutDefinitions() {
+    	JsonObject def = system().createObject();
+    	def.put("name", "string");
+    	def.put("address", "object");
+    	schema.addAllTypes(def);
+    	
+    	JsonObject addressDef = system().createObject();
+    	addressDef.put(".extends", "address");
+    	addressDef.put("street", "string");
+    	addressDef.put(".optional zipcode", "number");
+    	Type addressType = schema().resolve(addressDef);
+    	JsonObject addressInst = system().createObject();
+    	addressInst.put("street", "First Ave");
+    	schema.validate(addressType, addressInst);
+    	addressInst.put("zipcode", "91234");
+    	try {
+    		schema.validate(addressType, addressInst);
+    	} catch (ItemscriptError e) {
+    		threwException = true;
+    	}
+    	assertTrue(threwException);
+    }
+    
+    @Test
+    public void testAddTypeObjectWithDefinitions() {
+    	JsonObject def = system().createObject();
+    	JsonObject addressDef = system().createObject();
+    	addressDef.put(".extends", "object");
+    	addressDef.put("street", "string");
+    	addressDef.put(".optional zipcode", "number");
+    	def.put("name", "string");
+    	def.put("address", addressDef);
+    	schema.addAllTypes(def);
+    	Type addressType = schema.resolve(addressDef);
+    	JsonObject addressInst = system().createObject();
+    	addressInst.put("street", "First Ave");
+    	schema.validate(addressType, addressInst);
+    	addressInst.put("zipcode", "91234");
+    	try {
+    		schema.validate(addressType, addressInst);
+    	} catch (ItemscriptError e) {
+    		threwException = true;
+    	}
+    	assertTrue(threwException);
+    }
+    
+    @Test
+    public void testAddTypeSingleWithoutDefinitions() {
+    	schema.addType("phone", system().createString("string"));
+    	
+    	JsonObject phoneDef = system().createObject();
+    	phoneDef.put(".extends", "phone");
+    	phoneDef.put(".isLength", 3);
+    	phoneDef.put(".regExPattern", "[0-9]+");
+    	Type areaCodeType = schema().resolve(phoneDef);
+    	schema.validate(areaCodeType, system().createString("510"));
+    	try {
+    		schema.validate(areaCodeType, system().createString("1234"));
+    	} catch (ItemscriptError e) {
+    		threwException = true;
+    	}
+    	assertTrue(threwException);
+    	threwException = false;
+    	try {
+    		schema.validate(areaCodeType, system().createString("abc"));
+    	} catch (ItemscriptError e) {
+    		threwException = true;
+    	}
+    	assertTrue(threwException);
+    	threwException = false;
+    	try {
+    		schema.validate(areaCodeType, system().createString("51o"));
+    	} catch (ItemscriptError e) {
+    		threwException = true;
+    	}
+    	assertTrue(threwException);
+    }
+    
+    @Test
+    public void testAddTypeSingleWithDefinitions() {    	
+    	JsonObject zipDef = system().createObject();
+    	zipDef.put(".extends", "string");
+    	zipDef.put(".isLength", 5);
+    	zipDef.put(".regExPattern", "[0-9]+");
+    	schema.addType("zipcode", zipDef);
+    	Type zipType = schema.resolve(zipDef);
+    	schema.validate(zipType, system().createString("91234"));
+    	try {
+    		schema.validate(zipType, system().createString("123456"));
+    	} catch (ItemscriptError e) {
+    		threwException = true;
+    	}
+    	assertTrue(threwException);
+    	threwException = false;
+    	try {
+    		schema.validate(zipType, system().createString("abcde"));
+    	} catch (ItemscriptError e) {
+    		threwException = true;
+    	}
+    	assertTrue(threwException);
+    	threwException = false;
+    	try {
+    		schema.validate(zipType, system().createString("9123a"));
+    	} catch (ItemscriptError e) {
+    		threwException = true;
+    	}
+    	assertTrue(threwException);
+    }
+    
 
     @Test
     public void testString() {

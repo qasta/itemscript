@@ -10,6 +10,8 @@ import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 /**
+ * Type class for the String Type.
+ * 
  * @author Eileen Bai
  */
 class StringType extends TypeBase {
@@ -31,6 +33,13 @@ class StringType extends TypeBase {
     private final List<String> notInArray;
     private final List<String> pattern;
 
+    /**
+     * Create a new StringType. Sets all associated ".keys" that are specified.
+     * 
+     * @param schema
+     * @param extendsType
+     * @param def
+     */
     public StringType(Schema schema, Type extendsType, JsonObject def) {
         super(schema, extendsType, def);
         if (def != null) {
