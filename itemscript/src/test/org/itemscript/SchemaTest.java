@@ -1824,6 +1824,37 @@ public class SchemaTest extends ItemscriptTestBase {
     	assertTrue(threwException);
     }
     
+    @Test
+    public void testAddTypeParentRestriction() {    	
+    	JsonObject dataDef = system().createObject();
+    	dataDef.put(".extends", "number");
+    	dataDef.put(".greaterThan", 0);
+    	dataDef.put(".lessThan", 10);
+    	schema.addType("data", dataDef);
+    	Type dataType = schema.resolve(dataDef);
+    	
+    	JsonObject childDataDef = system().createObject();
+    	childDataDef.put(".extends", "data");
+    	childDataDef.put(".greaterThan", 5);
+    	childDataDef.put("lessThan", 15);
+    	Type childDataType = schema.resolve(childDataDef);
+    	
+    	schema.validate(dataType, system().createNumber(3));
+    	schema.validate(childDataType, system().createNumber(9));
+    	try {
+    		schema.validate(dataType, system().createNumber(13));
+    	} catch (ItemscriptError e) {
+    		threwException = true;
+    	}
+    	assertTrue(threwException);
+    	threwException = false;
+    	try {
+    		schema.validate(childDataType, system().createNumber(13));
+    	} catch (ItemscriptError e) {
+    		threwException = true;
+    	}
+    	assertTrue(threwException);
+    }
 
     @Test
     public void testString() {
