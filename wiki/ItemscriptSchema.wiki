@@ -283,7 +283,7 @@ The schema definition for a schema:
 	"org.itemscript.EitherTypeDef" :
 	{
 		".extends" : "any",
-		".description" : "A type definition that is either a JSON object or a JSON array."
+		".description" : "A type definition that is either a JSON object or a JSON array.",
 		".array" : "org.itemscript.InlineArrayTypeDef",
 		".object" :"org.itemscript.TypeDef"
 	},
@@ -322,7 +322,7 @@ The schema definition for a schema:
 	“org.itemscript.AnyTypeDef” :
 	{
 		“.extends” : “org.itemscript.TypeDef”,
-		“.description” : “A definition of an any type.”
+		“.description” : “A definition of an any type.”,
 		“.string” : “org.itemscript.TypeSpec”,
 		“.number” : “org.itemscript.TypeSpec”,
 		“.boolean” : “org.itemscript.TypeSpec”,
