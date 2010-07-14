@@ -9,6 +9,8 @@ import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 import org.itemscript.core.values.JsonArray;
 /**
+ * Type class for the Array Type. All ArrayTypes are represented by JsonArrays.
+ * 
  * @author Eileen Bai
  */
 final class ArrayType extends TypeBase {
@@ -26,7 +28,14 @@ final class ArrayType extends TypeBase {
 	private final int minSize;
     private final List<JsonArray> inArray;
     private final List<JsonArray> notInArray;
-
+    
+    /**
+     * Create a new ArrayType. Sets all associated ".keys" that are specified.
+     * 
+     * @param schema
+     * @param extendsType
+     * @param def
+     */
 	ArrayType(Schema schema, Type extendsType, JsonObject def) {
 		super(schema, extendsType, def);
 		if (def != null) {

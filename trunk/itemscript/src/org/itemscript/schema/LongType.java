@@ -9,6 +9,8 @@ import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 /**
+ * Type class for the Long Type. All LongTypes are represented by strings.
+ * 
  * @author Eileen Bai
  */
 class LongType extends TypeBase {
@@ -34,7 +36,13 @@ class LongType extends TypeBase {
 	private final List<String> inArray;
 	private final List<String> notInArray;
 
-
+	/**
+	 * Create a new LongType. Sets all associated ".keys" that are specified.
+	 * 
+	 * @param schema
+	 * @param extendsType
+	 * @param def
+	 */
 	public LongType(Schema schema, Type extendsType, JsonObject def) {
 		super(schema, extendsType, def);
 		if (def != null) {

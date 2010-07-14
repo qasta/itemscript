@@ -10,12 +10,23 @@ import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 
+/**
+ * Represents a Schema
+ * 
+ * @author eileen
+ *
+ */
 public class Schema implements HasSystem {
     private static final String ASTERISK = "*";
     private static final String TYPES_URL = "mem:/itemscript/schema/types";
     private final JsonSystem system;
     private final JsonObject types;
 
+    /**
+     * Create a new Schema.
+     * 
+     * @param system
+     */
     public Schema(JsonSystem system) {
         this.system = system;
         JsonObject typesObject = system.getObject(TYPES_URL);
@@ -75,31 +86,36 @@ public class Schema implements HasSystem {
         if (def.hasString(".extends")) {
             // Get the actual type.
             Type extendsType = get(def.getString(".extends"));
-            if (extendsType.isAny()) {
-                return createAnyType(extendsType, def);
-            } else if (extendsType.isObject()) {
-                return createObjectType(extendsType, def);
-            } else if (extendsType.isArray()) {
-                return createArrayType(extendsType, def);
-            } else if (extendsType.isString()) {
-                return createStringType(extendsType, def);
-            } else if (extendsType.isBinary()) {
-                return createBinaryType(extendsType, def);
-            } else if (extendsType.isNumber()) {
-                return createNumberType(extendsType, def);
-            } else if (extendsType.isInteger()) {
-                return createIntegerType(extendsType, def);
-            } else if (extendsType.isBoolean()) {
-                return createBooleanType(extendsType, def);
-            } else if (extendsType.isNull()) {
-                return createNullType(extendsType, def);
-            } else if (extendsType.isDecimal()) {
-                return createDecimalType(extendsType, def);
-            } else if (extendsType.isLong()) {
-                return createLongType(extendsType, def);
+            if (extendsType != null) {
+	            if (extendsType.isAny()) {
+	                return createAnyType(extendsType, def);
+	            } else if (extendsType.isObject()) {
+	                return createObjectType(extendsType, def);
+	            } else if (extendsType.isArray()) {
+	                return createArrayType(extendsType, def);
+	            } else if (extendsType.isString()) {
+	                return createStringType(extendsType, def);
+	            } else if (extendsType.isBinary()) {
+	                return createBinaryType(extendsType, def);
+	            } else if (extendsType.isNumber()) {
+	                return createNumberType(extendsType, def);
+	            } else if (extendsType.isInteger()) {
+	                return createIntegerType(extendsType, def);
+	            } else if (extendsType.isBoolean()) {
+	                return createBooleanType(extendsType, def);
+	            } else if (extendsType.isNull()) {
+	                return createNullType(extendsType, def);
+	            } else if (extendsType.isDecimal()) {
+	                return createDecimalType(extendsType, def);
+	            } else if (extendsType.isLong()) {
+	                return createLongType(extendsType, def);
+	            } else {
+	                // This of course should never happen.
+	                throw ItemscriptError.internalError(this, "createFromObject.extendsType.unknown.type", extendsType
+	                        + "");
+	            }
             } else {
-                // This of course should never happen.
-                throw ItemscriptError.internalError(this, "createFromObject.extendsType.unknown.type", extendsType
+            	throw ItemscriptError.internalError(this, "createFromObject.extendsType.was.null", extendsType
                         + "");
             }
         } else {
@@ -132,6 +148,12 @@ public class Schema implements HasSystem {
         return new StringType(this, extendsType, def);
     }
 
+    /**
+     * Returns the Type associated with the string.
+     * 
+     * @param type
+     * @return Type associated with the string.
+     */
     public Type get(String type) {
         return (Type) types.getNative(type);
     }
@@ -150,7 +172,14 @@ public class Schema implements HasSystem {
         typesObject.putNative("decimal", new DecimalType(this, anyType, null));
         typesObject.putNative("long", new LongType(this, anyType, null));
     }
-
+    
+    /**
+     * Test whether or not the specified string matches the given pattern.
+     * 
+     * @param pattern
+     * @param string
+     * @return True if matched, false otherwise.
+     */
     public boolean match(String pattern, String string) {
         if (pattern.endsWith(ASTERISK)) {
             return string.startsWith(pattern.substring(0, pattern.length() - 1));
@@ -165,6 +194,13 @@ public class Schema implements HasSystem {
         return new Params().p("path", path);
     }
 
+    /**
+     * Returns the Type associated with the JsonValue.
+     * 
+     * @param def
+     * @return The Type associated with the JsonValue.
+     * @throws ItemscriptError if JsonValue was not object, string, or array.
+     */
     public Type resolve(JsonValue def) {
         if (def.isString()) {
             return get(def.stringValue());
@@ -183,24 +219,50 @@ public class Schema implements HasSystem {
         return system;
     }
     
-    private void addAllTypes(JsonObject def) {
+    /**
+     * Adds all of the types and their corresponding keys contained within the object into
+     * the schema.
+     * 
+     * @param def
+     */
+    public void addAllTypes(JsonObject def) {
     	for (String key : def.keySet()) {
     		addType(key, def.get(key));
     	}
     }
     
-    private void addType(String type, JsonValue val) {
+    /**
+     * Adds one type with its corresponding key into the schema.
+     * 
+     * @param key
+     * @param val
+     */
+    public void addType(String key, JsonValue val) {
     	Type valType = resolve(val);
-    	types.putNative(type, valType);
-    	validate(type, val);
+    	types.putNative(key, valType);
     }
 
+    /**
+     * Validates that the specified JsonValue is valid according to its type.
+     * 
+     * @param type
+     * @param value
+     * @throws ItemscriptError if the type was not found.
+     */
     public void validate(String type, JsonValue value) {
         Type typeObj = get(type);
         if (typeObj == null) { throw ItemscriptError.internalError(this, "validate.type.not.found", type); }
         validate(typeObj, value);
     }
 
+    /**
+     * Validates that the specified JsonValue is valid according to its type.
+     * 
+     * @param path
+     * @param type
+     * @param value
+     * @throws ItemscriptError if the type is null.
+     */
     public void validate(String path, Type type, JsonValue value) {
         if (type == null) { throw ItemscriptError.internalError(this, "validate.type.was.null", new Params().p(
                 "path", path)
@@ -208,6 +270,12 @@ public class Schema implements HasSystem {
         type.validate(path, value);
     }
 
+    /**
+     * Validates that the specified JsonValue is valid according to its type.
+     * 
+     * @param type
+     * @param value
+     */
     public void validate(Type type, JsonValue value) {
         validate("", type, value);
     }

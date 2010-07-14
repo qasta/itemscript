@@ -10,6 +10,7 @@ import org.itemscript.core.values.JsonValue;
 
 import org.itemscript.core.values.JsonArray;
 /**
+ * Type class for the Integer Type. All IntegerTypes are represented by numbers.
  * @author Eileen Bai
  */
 final class IntegerType extends TypeBase {
@@ -40,6 +41,13 @@ final class IntegerType extends TypeBase {
 	private final ArrayList<Integer> inArray;
 	private final ArrayList<Integer> notInArray;
 	
+	/**
+	 * Create a new IntegerType. Sets all associated ".keys" that are specified.
+	 * 
+	 * @param schema
+	 * @param extendsType
+	 * @param def
+	 */
     IntegerType(Schema schema, Type extendsType, JsonObject def) {
         super(schema, extendsType, def);
         if (def != null) {

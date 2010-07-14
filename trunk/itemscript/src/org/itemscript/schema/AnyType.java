@@ -10,6 +10,8 @@ import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonValue;
 import org.itemscript.core.values.JsonObject;
 /**
+ * Type class for the base type Any. All other types are extensions of this type.
+ * 
  * @author Eileen Bai
  */
 final class AnyType extends TypeBase {
@@ -29,6 +31,11 @@ final class AnyType extends TypeBase {
     private final List<JsonValue> inArray;
     private final List<JsonValue> notInArray;
 	
+    /**
+     * Create a new AnyType. Only used to create the empty AnyType to extend other types with.
+     * 
+     * @param schema
+     */
     AnyType(Schema schema) {
         super(schema);
         array = null;
@@ -41,6 +48,13 @@ final class AnyType extends TypeBase {
         hasDef = false;
     }
     
+    /**
+     * Create a new AnyType. Sets all associated ".keys" that are specified.
+     *
+     * @param schema
+     * @param extendsType
+     * @param def
+     */
     AnyType(Schema schema, Type extendsType, JsonObject def) {
         super(schema, extendsType, def);
 		if (def != null) {

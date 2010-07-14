@@ -9,6 +9,8 @@ import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 /**
+ * Type class for the Decimal Type. All DecimalTypes are represented by strings.
+ * 
  * @author Eileen Bai
  */
 class DecimalType extends TypeBase {
@@ -35,9 +37,14 @@ class DecimalType extends TypeBase {
 	private final String lessThanOrEqualTo;
 	private final List<String> inArray;
 	private final List<String> notInArray;
-
-
-
+	
+	/**
+	 * Create a new DecimalType. Sets all associated ".keys" that are specified.
+	 * 
+	 * @param schema
+	 * @param extendsType
+	 * @param def
+	 */
 	public DecimalType(Schema schema, Type extendsType, JsonObject def) {
 		super(schema, extendsType, def);
 		if (def != null) {
@@ -301,12 +308,10 @@ class DecimalType extends TypeBase {
 	}
 
 	/**
-	 * Splits string into two parts if there where there is a decimal point.
-	 * Then calls checkDigits to verify that both parts are digits. If there is
-	 * no decimal point, then checkDigits verifies the entire string.
+	 * Verfies that the string is a decimal according to the valid decimal format.
 	 * 
 	 * @param string
-	 * @return true if verified, false if not
+	 * @return True if verified, false if not.
 	 */
 	public static boolean isDecimal(String string) {
 		string = string.trim();
@@ -356,7 +361,7 @@ class DecimalType extends TypeBase {
 	 * 
 	 * @param dec1
 	 * @param dec2
-	 * @return true if the strings are equal, false if not
+	 * @return True if the strings are equal, false if not.
 	 */	
 	public static boolean decimalEquals(String dec1, String dec2) {
 		dec1 = dec1.trim();

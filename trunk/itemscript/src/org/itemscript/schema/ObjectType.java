@@ -14,6 +14,8 @@ import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 /**
+ * Type class for the Object Type. All ObjectTypes are represented by JsonObjects.
+ * 
  * @author Eileen Bai
  */
 class ObjectType extends TypeBase {
@@ -33,7 +35,14 @@ class ObjectType extends TypeBase {
     private List<JsonObject> inArray;
     private List<JsonObject> notInArray;
     private JsonValue wildcard;
-
+    
+    /**
+     * Create a new ObjectType. Sets all associated ".keys" that are specified.
+     * 
+     * @param schema
+     * @param extendsType
+     * @param def
+     */
     ObjectType(Schema schema, Type extendsType, JsonObject def) {
         super(schema, extendsType, def);
         if (def != null) {

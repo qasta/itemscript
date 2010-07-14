@@ -6,6 +6,8 @@ import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 /**
+ * Type class for the Boolean Type.
+ * 
  * @author Eileen Bai
  */
 final class BooleanType extends TypeBase {
@@ -13,7 +15,14 @@ final class BooleanType extends TypeBase {
 	private boolean hasDef;
     private final boolean booleanValue;
 	private final boolean hasBooleanValue;	
-
+	
+	/**
+	 * Create a new BooleanType. Sets all associated ".keys" that are specified.
+	 * 
+	 * @param schema
+	 * @param extendsType
+	 * @param def
+	 */
     BooleanType(Schema schema, Type extendsType, JsonObject def) {
         super(schema, extendsType, def);
         if (def != null) {
