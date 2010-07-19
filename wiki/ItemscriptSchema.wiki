@@ -146,6 +146,8 @@ Object type definitions are a JSON object whose keys are the names of keys that 
   * *.key* [key name] – a key starting with the string ".key" has a value that is a type specification. The remainder of the key after ".key" is used as the name of a key that must occur in the instance object and match the type specification. This is useful when you have an all-caps key you wish to specify as being required.
   * *.pattern* [key pattern] – a key starting with the string ".pattern" has a value that is a type specification. The remainder of the key after ".pattern" is used as the pattern that will be used to match against keys in the instance object; any matching keys must match the type specification. If more than one .pattern key exists and a key in the instance object matches more than one of the patterns, it must match the type specifications of all the patterns it matches.
   * *.wildcard* – a key named .wildcard means that any instance value identified by a key not matching another key specification in the type (a fixed key or a pattern) must match the corresponding type. This can be used to specify something like a Java Map. It's most useful without any other keys, but can be useful for a more compact syntax by allowing a mixture of special fixed keys and other keys (as for instance in an object definition in this schema language), although care should be taken that the two (or more) interpretations of keys do not overlap one another.
+  * *.inArray* – with an array value providing an enumerable array of object values that the instance object can be equal to.
+  * *.notInArray* – with an array value providing an enumerable array of object values that the instance object can not be equal to.
 
 ==String type definitions==
 
@@ -239,6 +241,8 @@ When they're a JSON object, they can contain the following keys:
   * *.minSize* – with an integer value giving the minimum number of elements that an instance array can contain.
   * *.maxSize* – with an integer value giving the maximum number of elements that an instance array can contain.
   * *.contains* – with a value that is a type specification giving the type of value that an instance array can contain. If you need them to be able to contain more than one type of value, specify an "any" type reference.
+  * *.inArray* – with an array value providing an enumerable array of array values that the instance array can be equal to.
+  * *.notInArray* – with an array value providing an enumerable array of array values that the instance array can not be equal to.
 
 When they're a JSON array, they can either be empty, or contain a single value that is a type specification giving the type of value that an instance array can contain. So, ["string"] defines an array
 type that can only contain strings and is exactly equivalent to a type definition of:
@@ -260,6 +264,8 @@ treated differently.
   * *.boolean* – With a value that is a type reference to a boolean type, specifies the type to match if the value is a JSON boolean.
   * *.array* – With a value that is a type specification of an array type, specifies the type to match if the value is a JSON array.
   * *.object* – With a value that is a type specification of an object type, specifies the type to match if the value is a JSON object.
+  * *.inArray* – with an array value providing an enumerable array of "Any" values that the instance Any Type can be equal to.
+  * *.notInArray* – with an array value providing an enumerable array of "Any" values that the instance Any Type can not be equal to.
 
 If any of these keys is present in a type extending "any", an instance value must be of one of the types that is specified. For instance, if .number and .array are present, an instance value must be a JSON number or JSON array.
 
