@@ -11,9 +11,10 @@ import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 
 /**
- * Represents a Schema
+ * Represents a Schema. A schema is a JSON object whose keys are the names of types,
+ * and whose values are the type definitions. 
  * 
- * @author eileen
+ * @author Jacob Davies <br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  *
  */
 public class Schema implements HasSystem {
@@ -21,7 +22,7 @@ public class Schema implements HasSystem {
     public static final String TYPES_URL = "mem:/itemscript/schema/types";
     public static final String SCHEMA_URL = "mem:/itemscript/schema/Schema";
     private final JsonSystem system;
-    private final JsonObject types;
+    public final JsonObject types;
 
     /**
      * Create a new Schema, and store it in the associated JsonSystem.
@@ -228,9 +229,9 @@ public class Schema implements HasSystem {
      * @param def
      */
     public void addAllTypes(JsonObject def) {
-        for (String key : def.keySet()) {
-            addType(key, def.get(key));
-        }
+    	for (String key : def.keySet()) {
+			addType(key, def.get(key));
+    	}
     }
 
     /**

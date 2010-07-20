@@ -1,5 +1,5 @@
 /*
- * Copyright © 2010, Data Base Architects, Inc. All rights reserved.
+ * Copyright ï¿½ 2010, Data Base Architects, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -32,7 +32,9 @@ package test.org.itemscript;
 import org.itemscript.core.exceptions.ItemscriptError;
 import org.itemscript.core.values.JsonArray;
 import org.itemscript.core.values.JsonObject;
+import org.itemscript.core.values.JsonString;
 import org.itemscript.core.values.JsonValue;
+import org.itemscript.schema.Schema;
 import org.itemscript.template.Template;
 import org.junit.Test;
 
@@ -79,14 +81,14 @@ public class TemplateTest extends ItemscriptTestBase {
         String after = processTemplate(text);
         assertEquals("a H2eBRN-55bZsRzM6xCdU6Q c".length(), after.length());
     }
-
+    
     @Test
     public void testBinaryInclude() {
         String text = "{@http://itemscript.org/test.png dataUrl}";
         String after = processTemplate(text);
         assertTrue(after.startsWith("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAABDCAYAAACCyxXxAAAABmJ"));
     }
-
+    
     @Test
     public void testCoerceFail() {
         String text = "a {@mem:/TemplateTest/context} c";
@@ -160,21 +162,21 @@ public class TemplateTest extends ItemscriptTestBase {
         String after = processTemplate(text);
         assertEquals("a &lt;&gt;&quot;&amp; c", after);
     }
-
+    
     @Test
     public void testHttpForeach() {
         String text = "a {.foreach @http://itemscript.org/test.json#test-object/foo}{:}{.end} c";
         String after = processTemplate(text);
         assertEquals("a xyz c", after);
     }
-
+	
     @Test
     public void testHttpReference() {
         String text = "a {@http://itemscript.org/test.json#test-object/abc} c";
         String after = processTemplate(text);
         assertEquals("a def c", after);
     }
-
+	
     @Test
     public void testIf() {
         String text = "a {.if :flag}yes{.else}no{.end} c";
@@ -441,7 +443,396 @@ public class TemplateTest extends ItemscriptTestBase {
         val = processTemplateToValue(text);
         assertFalse(val.booleanValue());
     }
+    
+    @Test
+    public void testFunctionValidateStringType() {
+    	String text = "{:x validate('string')}";
+    	context.asObject()
+    			.put("x", "Bob");
+    	JsonValue val = processTemplateToValue(text);
+    	assertTrue(val.asObject().get("valid").booleanValue());
+    	context.asObject()
+    			.put("x", 123);
+    	val = processTemplateToValue(text);
+    	assertFalse(val.asObject().get("valid").booleanValue());
+    }
+    
+    @Test
+    public void testFunctionValidateDecimalType() {
+    	String text = "{:x validate('decimal')}";
+    	context.asObject()
+    			.put("x", "-12.5");
+    	JsonValue val = processTemplateToValue(text);
+    	assertTrue(val.asObject().get("valid").booleanValue());
+    	context.asObject()
+    			.put("x", 123);
+    	val = processTemplateToValue(text);
+    	assertFalse(val.asObject().get("valid").booleanValue());
+    }
+    
+    @Test
+    public void testFunctionValidateLongType() {
+    	String text = "{:x validate('long')}";
+    	context.asObject()
+    			.put("x", "1990");
+    	JsonValue val = processTemplateToValue(text);
+    	assertTrue(val.asObject().get("valid").booleanValue());
+    	context.asObject()
+    			.put("x", 123);
+    	val = processTemplateToValue(text);
+    	assertFalse(val.asObject().get("valid").booleanValue());
+    }
+    
+    @Test
+    public void testFunctionValidateBinaryType() {
+    	String text = "{:x validate('binary')}";
+    	String hiInput = "hi";
+    	byte[] hiBytes = hiInput.getBytes();
+    	JsonString hiEncoded = system().createString(hiBytes);
+    	context.asObject()
+    			.put("x", hiEncoded);
+    	JsonValue val = processTemplateToValue(text);
+    	assertTrue(val.asObject().get("valid").booleanValue());
+    	context.asObject()
+    			.put("x", "al!@");
+    	val = processTemplateToValue(text);
+    	assertFalse(val.asObject().get("valid").booleanValue());
+    }
+    
+    @Test
+    public void testFunctionValidateNumberType() {
+    	String text = "{:x validate('number')}";
+    	context.asObject()
+    			.put("x", 1990.1);
+    	JsonValue val = processTemplateToValue(text);
+    	assertTrue(val.asObject().get("valid").booleanValue());
+    	context.asObject()
+    			.put("x", true);
+    	val = processTemplateToValue(text);
+    	assertFalse(val.asObject().get("valid").booleanValue());
+    }
+    
+    @Test
+    public void testFunctionValidateIntegerType() {
+    	String text = "{:x validate('integer')}";
+    	context.asObject()
+    			.put("x", 1990);
+    	JsonValue val = processTemplateToValue(text);
+    	assertTrue(val.asObject().get("valid").booleanValue());
+    	context.asObject()
+    			.put("x", 1990.1);
+    	val = processTemplateToValue(text);
+    	assertFalse(val.asObject().get("valid").booleanValue());
+    }
+    
+    @Test
+    public void testFunctionValidateArrayType() {
+    	String text = "{:x validate('array')}";
+    	context.asObject()
+    			.put("x", system().createArray());
+    	JsonValue val = processTemplateToValue(text);
+    	assertTrue(val.asObject().get("valid").booleanValue());
+    	context.asObject()
+    			.put("x", true);
+    	val = processTemplateToValue(text);
+    	assertFalse(val.asObject().get("valid").booleanValue());
+    }
+    
+    @Test
+    public void testFunctionValidateNullType() {
+    	String text = "{:x validate('null')}";
+    	context.asObject()
+    			.put("x", system().createNull());
+    	JsonValue val = processTemplateToValue(text);
+    	assertTrue(val.asObject().get("valid").booleanValue());
+    	context.asObject()
+    			.put("x", true);
+    	val = processTemplateToValue(text);
+    	assertFalse(val.asObject().get("valid").booleanValue());
+    }
+    
+    @Test
+    public void testFunctionValidateBooleanType() {
+    	String text = "{:x validate('boolean')}";
+    	context.asObject()
+    			.put("x", true);
+    	JsonValue val = processTemplateToValue(text);
+    	assertTrue(val.asObject().get("valid").booleanValue());
+    	context.asObject()
+    			.put("x", 123);
+    	val = processTemplateToValue(text);
+    	assertFalse(val.asObject().get("valid").booleanValue());
+    }
+    
+    @Test
+    public void testFunctionValidateObjectType() {
+    	String text = "{:x validate('object')}";
+    	context.asObject()
+    			.put("x", system().createObject());
+    	JsonValue val = processTemplateToValue(text);
+    	assertTrue(val.asObject().get("valid").booleanValue());
+    	context.asObject()
+    			.put("x", 123);
+    	val = processTemplateToValue(text);
+    	assertFalse(val.asObject().get("valid").booleanValue());
+    }
+   
+    @Test
+    public void testFunctionValidateUrl() {
+    	JsonObject phoneDef = system().createObject();
+    	phoneDef.put(".extends", "string");
+    	phoneDef.put(".isLength", 10);
+    	phoneDef.put(".regExPattern", "[0-9]+");
+    	
+        system().put("mem:/TemplateTest/type/phone", phoneDef);
+        
+    	String text = "{:x validate(@mem:/TemplateTest/type/phone)}";
+    	context.asObject()
+    			.put("x", "5105551234");
 
+    	JsonValue val = processTemplateToValue(text);
+    	assertTrue(val.asObject().get("valid").booleanValue());
+    	context.asObject()
+    			.put("x", "510555123");
+    	val = processTemplateToValue(text);
+    	assertFalse(val.asObject().get("valid").booleanValue());
+    }
+    
+    
+    @Test
+    public void testFunctionValidateFieldRef() {
+    	String text = "{:x validate(:y)}";
+    	context.asObject()
+    			.put("x", 123);
+    	context.asObject()
+    			.put("y", "number");
+    	JsonValue val = processTemplateToValue(text);
+    	assertTrue(val.asObject().get("valid").booleanValue());
+    	context.asObject()
+    			.put("y", "string");
+    	val = processTemplateToValue(text);
+    	assertFalse(val.asObject().get("valid").booleanValue());
+    }
+    
+    @Test
+    public void testFunctionValidateSimpleDef() {
+    	String text = "{:x validate(:y)}";
+    	context.asObject()
+    			.put("x", "Bob");
+    	JsonObject objDef = system().createObject();
+    	objDef.put(".extends", "string");
+    	objDef.put(".minLength", 2);
+    	context.asObject()
+    			.put("y", objDef);
+    	JsonValue val = processTemplateToValue(text);
+    	assertTrue(val.asObject().get("valid").booleanValue());
+    	context.asObject()
+    			.put("x", "A");
+    	val = processTemplateToValue(text);
+    	assertFalse(val.asObject().get("valid").booleanValue());
+    }
+    
+    @Test
+    public void testFunctionValidateAdd() {
+    	Schema schema = new Schema(system());
+    	JsonObject schemaDef = system().createObject();
+    	schemaDef.put("name", "string");
+    	schemaDef.put("address", "object");
+    	schema.addAllTypes(schemaDef);
+    	String text = "{:x validate(:y)}";
+    	
+    	JsonObject objDef = system().createObject();
+    	objDef.put(".extends", "address");
+    	objDef.put("streetName", "string");
+    	objDef.put("zipcode", "integer");
+    	objDef.put(".optional city", "string");
+    	context.asObject()
+    			.put("y", objDef);    	
+
+    	JsonObject objInst = system().createObject();
+    	objInst.put("streetName", "First Ave");
+    	objInst.put("zipcode", 91234);
+    	context.asObject()
+    			.put("x", objInst);
+    	
+    	JsonValue val = processTemplateToValue(text);
+    	assertTrue(val.asObject().get("valid").booleanValue());
+    	objInst.put("city", true);
+    	context.asObject().remove("x");
+    	context.asObject()
+    			.put("x", objInst);
+    	val = processTemplateToValue(text);
+    	assertFalse(val.asObject().get("valid").booleanValue());
+    }
+    
+    @Test
+    public void testFunctionValidateAddWithDef() {
+    	Schema schema = new Schema(system());
+    	JsonObject schemaDef = system().createObject();
+    	schemaDef.put("name", "string");
+    	JsonObject addressDef = system().createObject();
+    	addressDef.put(".extends", "object");
+    	addressDef.put("streetName", "string");
+    	addressDef.put("zipcode", "integer");
+    	addressDef.put(".optional city", "string");
+    	schemaDef.put("address", addressDef);
+    	schema.addAllTypes(schemaDef);
+    	String text = "{:x validate(:y)}";  	
+    	context.asObject()
+				.put("y", "address");
+    	
+    	JsonObject objInst = system().createObject();
+    	objInst.put("streetName", "First Ave");
+    	objInst.put("zipcode", 91234);
+    	context.asObject()
+    			.put("x", objInst);
+    	
+    	JsonValue val = processTemplateToValue(text);
+    	assertTrue(val.asObject().get("valid").booleanValue());
+    	objInst.put("city", true);
+    	context.asObject().remove("x");
+    	context.asObject()
+    			.put("x", objInst);
+    	val = processTemplateToValue(text);
+    	assertFalse(val.asObject().get("valid").booleanValue());
+    }
+
+    @Test
+    public void testSetErrorMessageAny() {
+    	String text = "{:x validate(:y)}";
+    	JsonObject anyDef = system().createObject();
+    	anyDef.put(".extends", "any");
+    	anyDef.put(".string", "decimal");
+    	context.asObject()
+    			.put("x", 123);
+    	context.asObject()
+    			.put("y", anyDef);
+    	JsonValue val = processTemplateToValue(text);
+    	String error = Template.setErrorMessage(val.asObject());
+    	assertEquals(error, "Your value '123' was not one of the types specified.");
+	}
+    
+    @Test
+    public void testSetErrorMessageArraySize() {
+    	String text = "{:x validate(:y)}";
+    	JsonObject anyDef = system().createObject();
+    	anyDef.put(".extends", "array");
+    	anyDef.put(".exactSize", 1);
+    	context.asObject()
+    			.put("x", system().createArray());
+    	context.asObject()
+    			.put("y", anyDef);
+    	JsonValue val = processTemplateToValue(text);
+    	String error = Template.setErrorMessage(val.asObject());
+    	assertEquals(error, "Your array has the wrong number of items. Your size is 0. The correct size is 1.");
+	}
+
+    @Test
+    public void testSetErrorMessagesEmptyKey() {
+    	String text = "{:x validate(:y)}";
+    	JsonObject schemaDef = system().createObject();
+    	schemaDef.put("name", "string");
+    	JsonObject inst = system().createObject();
+    	inst.put("name", "Bob");
+    	inst.put("", "foo");
+    	context.asObject()
+    			.put("x", inst);
+    	context.asObject()
+    			.put("y", schemaDef);
+    	JsonValue val = processTemplateToValue(text);
+    	String error = Template.setErrorMessage(val.asObject());
+    	assertEquals(error, "Cannot have an empty key in your instance object.");    	
+    }    
+    
+    @Test
+    public void testSetErrorMessageFractionDigits() {
+    	String text = "{:x validate(:y)}";
+    	JsonObject decDef = system().createObject();
+    	decDef.put(".extends", "decimal");
+    	decDef.put(".fractionDigits", 2);
+    	context.asObject()
+    			.put("x", "12.223");
+    	context.asObject()
+    			.put("y", decDef);
+    	JsonValue val = processTemplateToValue(text);
+    	String error = Template.setErrorMessage(val.asObject());
+    	assertEquals(error, "Your value '12.223' has 3 fractional digits. The maximum number of fractional digits is 2.");
+	}
+    
+    @Test
+    public void testSetErrorMessagesInArray() {
+    	String text = "{:x validate(:y)}";
+    	JsonObject intDef = system().createObject();
+    	intDef.put(".extends", "integer");
+    	JsonArray inArray = system().createArray();
+    	inArray.add(123);
+    	intDef.put(".inArray", inArray);
+    	context.asObject()
+    			.put("x", 125);
+    	context.asObject()
+    			.put("y", intDef);
+    	JsonValue val = processTemplateToValue(text);
+    	String error = Template.setErrorMessage(val.asObject());
+    	assertEquals(error, "Your value '125' did not match any of the choices in your array.");
+    }
+    
+    @Test
+    public void testSetErrorMessageInteger() {
+    	String text = "{:x validate(:y)}";
+    	JsonObject anyDef = system().createObject();
+    	anyDef.put(".extends", "integer");
+    	anyDef.put(".even", true);
+    	context.asObject()
+    			.put("x", "abc");
+    	context.asObject()
+    			.put("y", anyDef);
+    	JsonValue val = processTemplateToValue(text);
+    	String error = Template.setErrorMessage(val.asObject());
+    	assertEquals(error, "Value '\"abc\"' was not a number.");
+	}
+
+    @Test
+    public void testSetErrorMessageMissingValue() {
+    	String text = "{:x validate(:y)}";
+    	JsonObject schemaDef = system().createObject();
+    	schemaDef.put("foo", "string");
+    	JsonObject inst = system().createObject();
+    	context.asObject()
+    			.put("x", inst);
+    	context.asObject()
+    			.put("y", schemaDef);
+    	JsonValue val = processTemplateToValue(text);
+    	String error = Template.setErrorMessage(val.asObject());
+    	assertEquals(error, "Missing value for key: foo.");
+    }
+    
+    @Test
+    public void testSetErrorMessageNull() {
+    	String text = "{:x validate(:y)}";
+    	context.asObject()
+    			.put("x", 123);
+    	context.asObject()
+    			.put("y", "null");
+    	JsonValue val = processTemplateToValue(text);
+    	String error = Template.setErrorMessage(val.asObject());
+    	assertEquals(error, "Value '123' was not null.");
+    }
+    
+    @Test
+    public void testSetErrorMessageStringLength() {
+    	String text = "{:x validate(:y)}";
+    	JsonObject stringDef = system().createObject();
+    	stringDef.put(".extends", "string");
+    	stringDef.put(".isLength", 5);
+    	context.asObject()
+    			.put("x", "123");
+    	context.asObject()
+    			.put("y", stringDef);
+    	JsonValue val = processTemplateToValue(text);
+    	String error = Template.setErrorMessage(val.asObject());
+    	assertEquals(error, "Your value is the wrong length. Your value is 3 characters long. The correct length is 5 characters.");
+    }
+  
     @Test
     public void testFunctionSubstring() {
         String text = "{'abcdef' substring(1)}";
@@ -466,5 +857,5 @@ public class TemplateTest extends ItemscriptTestBase {
         system().setConstant("Test.PI", 3 + "");
         String after = processTemplate(text);
         assertEquals("a 3 c", after);
-    }
+    }    
 }

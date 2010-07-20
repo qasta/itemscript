@@ -16,9 +16,9 @@ import org.itemscript.core.values.JsonArray;
 final class ArrayType extends TypeBase {
 	private static final String CONTAINS_KEY = ".contains";
 	private static final String EXACT_SIZE_KEY = ".exactSize";
-	private static final String IN_ARRAY_KEY = ".inArray";
 	private static final String MAX_SIZE_KEY = ".maxSize";
 	private static final String MIN_SIZE_KEY = ".minSize";
+	private static final String IN_ARRAY_KEY = ".inArray";
 	private static final String NOT_IN_ARRAY_KEY = ".notInArray";
 	private final boolean hasDef;
 	private final JsonValue contains;
@@ -41,39 +41,39 @@ final class ArrayType extends TypeBase {
 		if (def != null) {
 			hasDef = true;
 			if (def.containsKey(CONTAINS_KEY)) {
-				contains = def.getValue(CONTAINS_KEY);
+				contains = def.getRequiredValue(CONTAINS_KEY);
 				containsType = schema().resolve(contains);
 			} else {
 				contains = null;
 				containsType = null;
 			}
-			if (def.hasNumber(EXACT_SIZE_KEY)) {
-				exactSize = def.getInt(EXACT_SIZE_KEY);
+			if (def.containsKey(EXACT_SIZE_KEY)) {
+				exactSize = def.getRequiredInt(EXACT_SIZE_KEY);
 			} else {
 				exactSize = -1;
 			}
-            if (def.hasArray(IN_ARRAY_KEY)) {
+			if (def.containsKey(MAX_SIZE_KEY)) {
+				maxSize = def.getRequiredInt(MAX_SIZE_KEY);
+			} else {
+				maxSize = -1;
+			}
+			if (def.containsKey(MIN_SIZE_KEY)) {
+				minSize = def.getRequiredInt(MIN_SIZE_KEY);
+			} else {
+				minSize = -1;
+			}
+            if (def.containsKey(IN_ARRAY_KEY)) {
             	inArray = new ArrayList<JsonArray>();
-            	JsonArray array = def.getArray(IN_ARRAY_KEY);
+            	JsonArray array = def.getRequiredArray(IN_ARRAY_KEY);
             	for (int i = 0; i < array.size(); ++i) {
             		inArray.add(array.getRequiredArray(i));
             	}
             } else {
             	inArray = null;
             }
-			if (def.hasNumber(MAX_SIZE_KEY)) {
-				maxSize = def.getInt(MAX_SIZE_KEY);
-			} else {
-				maxSize = -1;
-			}
-			if (def.hasNumber(MIN_SIZE_KEY)) {
-				minSize = def.getInt(MIN_SIZE_KEY);
-			} else {
-				minSize = -1;
-			}
-            if (def.hasArray(NOT_IN_ARRAY_KEY)) {
+            if (def.containsKey(NOT_IN_ARRAY_KEY)) {
             	notInArray = new ArrayList<JsonArray>();
-            	JsonArray array = def.getArray(NOT_IN_ARRAY_KEY);
+            	JsonArray array = def.getRequiredArray(NOT_IN_ARRAY_KEY);
             	for (int i = 0; i < array.size(); ++i) {
             		notInArray.add(array.getRequiredArray(i));
             	}
@@ -85,9 +85,9 @@ final class ArrayType extends TypeBase {
 			contains = null;
 			containsType = null;
 			exactSize = -1;
-			inArray = null;
 			maxSize = -1;
 			minSize = -1;
+			inArray = null;
 			notInArray = null;
 		}
 	}
@@ -116,17 +116,43 @@ final class ArrayType extends TypeBase {
 
 	private void validateArray(String path, JsonArray array) {
 		if (contains != null) {
-			boolean useSlash = path.length() > 0;
-			for (int i = 0; i < array.size(); i++) {
-				containsType.validate(path + (useSlash ? "/" : "") + i, array
-						.get(i));
+			if (containsType != null) {
+				boolean useSlash = path.length() > 0;
+				for (int i = 0; i < array.size(); i++) {
+					containsType.validate(path + (useSlash ? "/" : "") + i, array
+							.get(i));
+				}
+			} else {
+				throw ItemscriptError.internalError(this,
+						"validateArray.value.resolved.containsType.was.null",
+						pathValueParams(path, array));
 			}
 		}
 		if (exactSize > 0) {
 			if (array.size() != exactSize) {
 				throw ItemscriptError.internalError(this,
-						"validateArray.array.is.the.wrong.size",
-						pathValueParams(path, array));
+						"validateArray.value.array.is.the.wrong.size",
+						pathValueParams(path, array)
+							.p("correctValue", exactSize)
+							.p("incorrectValue", array.size()));
+			}
+		}
+		if (maxSize > 0) {
+			if (array.size() > maxSize) {
+				throw ItemscriptError.internalError(this,
+						"validateArray.value.array.size.is.bigger.than.max",
+						pathValueParams(path, array)
+							.p("correctValue", maxSize)
+							.p("incorrectValue", array.size()));
+			}
+		}
+		if (minSize > 0) {
+			if (array.size() < minSize) {
+				throw ItemscriptError.internalError(this,
+						"validateArray.value.array.size.is.smaller.than.min",
+						pathValueParams(path, array)
+							.p("correctValue", minSize)
+							.p("incorrectValue", array.size()));
 			}
 		}
         if (inArray != null) {
@@ -141,20 +167,6 @@ final class ArrayType extends TypeBase {
             if (!matched) { throw ItemscriptError.internalError(this,
                     "validateArray.value.did.not.match.a.valid.choice", pathValueParams(path, array)); }
         }
-		if (maxSize > 0) {
-			if (array.size() > maxSize) {
-				throw ItemscriptError.internalError(this,
-						"validateArray.array.size.is.bigger.than.max",
-						pathValueParams(path, array));
-			}
-		}
-		if (minSize > 0) {
-			if (array.size() < minSize) {
-				throw ItemscriptError.internalError(this,
-						"validateArray.array.size.is.smaller.than.min",
-						pathValueParams(path, array));
-			}
-		}
         if (notInArray != null) {
             boolean matched = false;
             for (int i = 0; i < notInArray.size(); ++i) {

@@ -108,6 +108,12 @@ public class FunctionFoundry {
                 return new ParseTsvWithHeaderLineFunction(system);
             }
         });
+        factories.put("validate", new FunctionFactory() {
+        	@Override
+        	public Function create(JsonSystem system, List<Expression> args) {
+        		return new ValidateFunction(system, args);
+        	}
+        });
     }
 
     public static Function create(JsonSystem system, String functionName, List<Expression> args) {

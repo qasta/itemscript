@@ -15,15 +15,15 @@ import org.itemscript.core.values.JsonValue;
  */
 class DecimalType extends TypeBase {
 	private static final String EQUAL_TO_KEY = ".equalTo";
-	private static final String EVEN_KEY = ".even";
 	private static final String FRACTION_DIGITS_KEY = ".fractionDigits";
 	private static final String GREATER_THAN_KEY = ".greaterThan";
 	private static final String GREATER_THAN_OR_EQUAL_TO_KEY = ".greaterThanOrEqualTo";
-	private static final String IN_ARRAY_KEY = ".inArray";
 	private static final String LESS_THAN_KEY = ".lessThan";
 	private static final String LESS_THAN_OR_EQUAL_TO_KEY = ".lessThanOrEqualTo";
-	private static final String NOT_IN_ARRAY_KEY = ".notInArray";
+	private static final String EVEN_KEY = ".even";
 	private static final String ODD_KEY = ".odd";
+	private static final String IN_ARRAY_KEY = ".inArray";
+	private static final String NOT_IN_ARRAY_KEY = ".notInArray";
 	private final boolean hasDef;
 	private final boolean even;
 	private final boolean hasEven;
@@ -49,83 +49,112 @@ class DecimalType extends TypeBase {
 		super(schema, extendsType, def);
 		if (def != null) {
 			hasDef = true;
-			if (def.hasString(EQUAL_TO_KEY)) {
-				equalTo = def.getString(EQUAL_TO_KEY);
+			if (def.containsKey(EQUAL_TO_KEY)) {
+				equalTo = def.getRequiredString(EQUAL_TO_KEY);
+				if (!isDecimal(equalTo)) {
+					throw ItemscriptError.internalError(this,
+							"DecimalType.value.equalTo.was.not.a.decimal", def.toCompactJsonString());
+				}
 			} else {
 				equalTo = null;
 			}
-			if (def.hasBoolean(EVEN_KEY)) {
+			if (def.containsKey(FRACTION_DIGITS_KEY)) {
+				fractionDigits = def.getRequiredInt(FRACTION_DIGITS_KEY);
+			} else {
+				fractionDigits = -1;
+			}			
+			if (def.containsKey(GREATER_THAN_KEY)) {
+				greaterThan = def.getRequiredString(GREATER_THAN_KEY);
+				if (!isDecimal(greaterThan)) {
+					throw ItemscriptError.internalError(this,
+							"DecimalType.value.greaterThan.was.not.a.decimal", def.toCompactJsonString());
+				}
+			} else {
+				greaterThan = null;
+			}
+			if (def.containsKey(GREATER_THAN_OR_EQUAL_TO_KEY)) {
+				greaterThanOrEqualTo = def.getRequiredString(GREATER_THAN_OR_EQUAL_TO_KEY);
+				if (!isDecimal(greaterThanOrEqualTo)) {
+					throw ItemscriptError.internalError(this,
+							"DecimalType.value.greaterThanOrEqualTo.was.not.a.decimal", def.toCompactJsonString());
+				}
+			} else {
+				greaterThanOrEqualTo = null;
+			}
+			if (def.containsKey(LESS_THAN_KEY)) {
+				lessThan = def.getRequiredString(LESS_THAN_KEY);
+				if (!isDecimal(lessThan)) {
+					throw ItemscriptError.internalError(this,
+							"DecimalType.value.lessThan.was.not.a.decimal", def.toCompactJsonString());
+				}
+			} else {
+				lessThan = null;
+			}
+			if (def.containsKey(LESS_THAN_OR_EQUAL_TO_KEY)) {
+				lessThanOrEqualTo = def.getRequiredString(LESS_THAN_OR_EQUAL_TO_KEY);
+				if (!isDecimal(lessThanOrEqualTo)) {
+					throw ItemscriptError.internalError(this,
+							"DecimalType.value.lessThanOrEqualTo.was.not.a.decimal", def.toCompactJsonString());
+				}
+			} else {
+				lessThanOrEqualTo = null;
+			}
+			if (def.containsKey(EVEN_KEY)) {
 				hasEven = true;
-				even = def.getBoolean(EVEN_KEY);
+				even = def.getRequiredBoolean(EVEN_KEY);
 			} else {
 				hasEven = false;
 				even = false;
 			}
-			if (def.hasNumber(FRACTION_DIGITS_KEY)) {
-				fractionDigits = def.getInt(FRACTION_DIGITS_KEY);
+			if (def.containsKey(ODD_KEY)) {
+				hasOdd = true;
+				odd = def.getRequiredBoolean(ODD_KEY);
 			} else {
-				fractionDigits = -1;
-			}			
-			if (def.hasString(GREATER_THAN_KEY)) {
-				greaterThan = def.getString(GREATER_THAN_KEY);
-			} else {
-				greaterThan = null;
+				hasOdd = false;
+				odd = false;
 			}
-			if (def.hasString(GREATER_THAN_OR_EQUAL_TO_KEY)) {
-				greaterThanOrEqualTo = def
-						.getString(GREATER_THAN_OR_EQUAL_TO_KEY);
-			} else {
-				greaterThanOrEqualTo = null;
-			}
-			if (def.hasArray(IN_ARRAY_KEY)) {
+			if (def.containsKey(IN_ARRAY_KEY)) {
 				inArray = new ArrayList<String>();
-				JsonArray array = def.getArray(IN_ARRAY_KEY);
+				JsonArray array = def.getRequiredArray(IN_ARRAY_KEY);
 				for (int i = 0; i < array.size(); ++i) {
+					String inArrayString = array.getRequiredString(i);
+					if (!isDecimal(inArrayString)) {
+						throw ItemscriptError.internalError(this,
+								"DecimalType.value.inArray.was.not.a.decimal", def.toCompactJsonString());
+					}
 					inArray.add(array.getRequiredString(i));
 				}
 			} else {
 				inArray = null;
 			}
-			if (def.hasString(LESS_THAN_KEY)) {
-				lessThan = def.getString(LESS_THAN_KEY);
-			} else {
-				lessThan = null;
-			}
-			if (def.hasString(LESS_THAN_OR_EQUAL_TO_KEY)) {
-				lessThanOrEqualTo = def.getString(LESS_THAN_OR_EQUAL_TO_KEY);
-			} else {
-				lessThanOrEqualTo = null;
-			}
-			if (def.hasArray(NOT_IN_ARRAY_KEY)) {
+			if (def.containsKey(NOT_IN_ARRAY_KEY)) {
 				notInArray = new ArrayList<String>();
-				JsonArray array = def.getArray(NOT_IN_ARRAY_KEY);
+				JsonArray array = def.getRequiredArray(NOT_IN_ARRAY_KEY);
 				for (int i = 0; i < array.size(); ++i) {
+					String notInArrayString = array.getRequiredString(i);
+					if (!isDecimal(notInArrayString)) {
+						throw ItemscriptError.internalError(this,
+								"DecimalType.value.noInArray.was.not.a.decimal", def.toCompactJsonString());
+					}
 					notInArray.add(array.getRequiredString(i));
 				}
 			} else {
 				notInArray = null;
 			}
-			if (def.hasBoolean(ODD_KEY)) {
-				hasOdd = true;
-				odd = def.getBoolean(ODD_KEY);
-			} else {
-				hasOdd = false;
-				odd = false;
-			}
 		} else {
 			hasDef = false;
 			equalTo = null;
-			even = false;
 			fractionDigits = -1;
 			greaterThan = null;
 			greaterThanOrEqualTo = null;
-			hasEven = false;
-			hasOdd = false;
-			inArray = null;
 			lessThan = null;
 			lessThanOrEqualTo = null;
-			notInArray = null;
+			even = false;
+			hasEven = false;
 			odd = false;
+			hasOdd = false;
+			inArray = null;
+			notInArray = null;
 		}
 	}
 
@@ -173,31 +202,35 @@ class DecimalType extends TypeBase {
 		if (equalTo != null) {
 			if (!decimalEquals(dec, equalTo)) {
 				throw ItemscriptError.internalError(this,
-						"validateDecimal.value.is.not.equal.to.equalTo",
-						pathValueParams(path, dec));
+						"validateDecimal.value.is.not.equal.to.equal.to",
+						pathValueParams(path, dec)
+							.p("correctValue", equalTo)
+							.p("incorrectValue", dec.trim()));
 			}
 		}
 		if (fractionDigits > 0) {
 			if (numFractionDigits(dec) > fractionDigits) {
 				throw ItemscriptError.internalError(this,
 						"validateDecimal.value.has.wrong.number.of.fraction.digits",
-						pathValueParams(path, dec));
+						pathValueParams(path, dec)
+							.p("correctValue", fractionDigits)
+							.p("incorrectValue", numFractionDigits(dec)));
 			}
 		}
 		if (greaterThan != null) {;
 			try {
 				greaterThanValue = Double.parseDouble(greaterThan);
 			} catch (NumberFormatException e) {
-				throw ItemscriptError
-						.internalError(
-								this,
-								"validateDecimal.greaterThan.could.not.be.parsed.into.double",
-								pathValueParams(path, dec));
+				throw ItemscriptError.internalError(this,
+						"validateDecimal.value.greaterThan.could.not.be.parsed.into.double",
+						pathValueParams(path, dec));
 			}
 			if (decValue <= greaterThanValue) {
 				throw ItemscriptError.internalError(this,
 						"validateDecimal.value.is.less.than.or.equal.to.min",
-						pathValueParams(path, dec));
+						pathValueParams(path, dec)
+							.p("correctValue", greaterThanValue)
+							.p("incorrectValue", decValue));
 			}
 		}
 		if (greaterThanOrEqualTo != null) {
@@ -205,22 +238,54 @@ class DecimalType extends TypeBase {
 				greaterThanOrEqualToValue = Double
 						.parseDouble(greaterThanOrEqualTo);
 			} catch (NumberFormatException e) {
-				throw ItemscriptError
-						.internalError(
-								this,
-								"validateDecimal.greaterThanOrEqualTo.could.not.be.parsed.into.double",
-								pathValueParams(path, dec));
+				throw ItemscriptError.internalError(this,
+						"validateDecimal.value.greaterThanOrEqualTo.could.not.be.parsed.into.double",
+						pathValueParams(path, dec));
 			}
 			if (decValue <= greaterThanOrEqualToValue && !decimalEquals(dec, greaterThanOrEqualTo)) {
 				throw ItemscriptError.internalError(this,
 						"validateDecimal.value.is.less.than.min",
+						pathValueParams(path, dec)
+							.p("correctValue", greaterThanOrEqualToValue)
+							.p("incorrectValue", decValue));
+			}
+		}
+		if (lessThan != null) {
+			try {
+				lessThanValue = Double.parseDouble(lessThan);
+			} catch (NumberFormatException e) {
+				throw ItemscriptError.internalError(this,
+						"validateDecimal.value.lessThan.could.not.be.parsed.into.double",
 						pathValueParams(path, dec));
+			}
+			if (decValue >= lessThanValue) {
+				throw ItemscriptError.internalError(this,
+						"validateDecimal.value.is.greater.than.or.equal.to.max",
+						pathValueParams(path, dec)
+							.p("correctValue", lessThanValue)
+							.p("incorrectValue", decValue));
+			}
+		}
+		if (lessThanOrEqualTo != null) {
+			try {
+				lessThanOrEqualToValue = Double.parseDouble(lessThanOrEqualTo);
+			} catch (NumberFormatException e) {
+				throw ItemscriptError.internalError(this,
+						"validateDecimal.value.lessThanOrEqualTo.could.not.be.parsed.into.double",
+						pathValueParams(path, dec));
+			}
+			if (decValue >= lessThanOrEqualToValue && !decimalEquals(dec, lessThanOrEqualTo)) {
+				throw ItemscriptError.internalError(this,
+						"validateDecimal.value.is.greater.than.max",
+						pathValueParams(path, dec)
+							.p("correctValue", lessThanOrEqualTo)
+							.p("incorrectValue", decValue));
 			}
 		}
 		if (hasEven) {
 			if (!isInteger(dec)) {
 				throw ItemscriptError.internalError(this,
-						"validateDecimal.cannot.test.parity.value.is.not.an.integer",
+						"validateDecimal.value.cannot.test.parity.value.is.not.an.integer",
 						pathValueParams(path, dec));
 			}
 			if (even) {
@@ -234,7 +299,7 @@ class DecimalType extends TypeBase {
         if (hasOdd) {
         	if (!isInteger(dec)) {
 				throw ItemscriptError.internalError(this,
-						"validateDecimal.cannot.test.parity.value.is.not.an.integer",
+						"validateDecimal.value.cannot.test.parity.value.is.not.an.integer",
 						pathValueParams(path, dec));
 			}
         	if (odd) {
@@ -256,38 +321,6 @@ class DecimalType extends TypeBase {
 			if (!matched) {
 				throw ItemscriptError.internalError(this,
 						"validateDecimal.value.did.not.match.a.valid.choice",
-						pathValueParams(path, dec));
-			}
-		}
-		if (lessThan != null) {
-			try {
-				lessThanValue = Double.parseDouble(lessThan);
-			} catch (NumberFormatException e) {
-				throw ItemscriptError
-						.internalError(
-								this,
-								"validateDecimal.lessThan.could.not.be.parsed.into.double",
-								pathValueParams(path, dec));
-			}
-			if (decValue >= lessThanValue) {
-				throw ItemscriptError.internalError(this,
-						"validateDecimal.value.is.greater.than.or.equal.to.max",
-						pathValueParams(path, dec));
-			}
-		}
-		if (lessThanOrEqualTo != null) {
-			try {
-				lessThanOrEqualToValue = Double.parseDouble(lessThanOrEqualTo);
-			} catch (NumberFormatException e) {
-				throw ItemscriptError
-						.internalError(
-								this,
-								"validateDecimal.lessThanOrEqualTo.could.not.be.parsed.into.double",
-								pathValueParams(path, dec));
-			}
-			if (decValue >= lessThanOrEqualToValue && !decimalEquals(dec, lessThanOrEqualTo)) {
-				throw ItemscriptError.internalError(this,
-						"validateDecimal.value.is.greater.than.max",
 						pathValueParams(path, dec));
 			}
 		}

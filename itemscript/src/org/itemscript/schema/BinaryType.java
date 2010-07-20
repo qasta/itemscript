@@ -27,8 +27,8 @@ final class BinaryType extends TypeBase {
         super(schema, extendsType, def);
     	if (def != null) {
 			hasDef = true;
-			if (def.hasNumber(MAX_BYTES_KEY)) {
-				maxBytes = def.getInt(MAX_BYTES_KEY);
+			if (def.containsKey(MAX_BYTES_KEY)) {
+				maxBytes = def.getRequiredInt(MAX_BYTES_KEY);
 			} else {
 				maxBytes = -1;
 			}
@@ -61,7 +61,11 @@ final class BinaryType extends TypeBase {
         } catch (ItemscriptError e) {
         	throw ItemscriptError.internalError(this,
         			"validate.value.could.not.be.parse.as.base.64", schema().pathParams(path)
-        				.put("value", value.toCompactJsonString()));
+        				.p("value", value.toCompactJsonString()));
+        } catch (IllegalArgumentException e) {
+        	throw ItemscriptError.internalError(this,
+        			"validate.value.illegal.character.in.base.64.encoded.data", schema().pathParams(path)
+        				.p("value", value.toCompactJsonString()));
         }
         if (hasDef) {
 			validateBinary(path, binaryValue);
@@ -71,7 +75,9 @@ final class BinaryType extends TypeBase {
     private void validateBinary(String path, byte[] binaryValue) {
 		if (maxBytes > 0) {
 			if (binaryValue.length > maxBytes) { throw ItemscriptError.internalError(this,
-					"validateBinary.value.has.too.many.bytes", pathValueParams(path, binaryValue)); }
+					"validateBinary.value.has.too.many.bytes", pathValueParams(path, binaryValue)
+							.p("correctValue", maxBytes)
+							.p("incorrectValue", binaryValue.length)); }
 		}
     }
 }

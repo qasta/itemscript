@@ -19,12 +19,13 @@ import org.itemscript.core.values.JsonValue;
  * @author Eileen Bai
  */
 class ObjectType extends TypeBase {
-    public static final String IN_ARRAY_KEY = ".inArray";
+
     public static final String KEY_KEY = ".key ";
-    public static final String NOT_IN_ARRAY_KEY = ".notInArray";
     public static final String OPTIONAL_KEY = ".optional ";
     public static final String PATTERN_KEY = ".pattern ";
     public static final String WILDCARD_KEY = ".wildcard";
+    public static final String IN_ARRAY_KEY = ".inArray";
+    public static final String NOT_IN_ARRAY_KEY = ".notInArray";
     private final boolean hasDef;
     private boolean resolved;
     private Map<String, JsonValue> optionalKeys;
@@ -52,7 +53,7 @@ class ObjectType extends TypeBase {
             Set<String> schemaKeys = new HashSet<String>();
             for (String key : def.keySet()) {
                 if (key.length() == 0) { throw ItemscriptError.internalError(this,
-                        "constructor.object.type.had.empty.key", def.toCompactJsonString()); }
+                        "ObjectType.value.constructor.object.type.had.empty.key", def.toCompactJsonString()); }
                 String[] split = key.split("\\s+", 2);
                 String first = split[0];
                 if (first.startsWith(".")) {
@@ -78,16 +79,16 @@ class ObjectType extends TypeBase {
                 	patterns.put(remainder, def.get(key)
                 			.copy());
                 } else if (key.startsWith(WILDCARD_KEY)) {
-                	wildcard = def.getValue(WILDCARD_KEY);
+                	wildcard = def.getRequiredValue(WILDCARD_KEY);
                 } else if (key.startsWith(IN_ARRAY_KEY)) {
                 	inArray = new ArrayList<JsonObject>();
-                	JsonArray array = def.getArray(IN_ARRAY_KEY);
+                	JsonArray array = def.getRequiredArray(IN_ARRAY_KEY);
                 	for (int i = 0; i < array.size(); ++i) {
                 		inArray.add(array.getRequiredObject(i));
                 	}
                 } else if (key.startsWith(NOT_IN_ARRAY_KEY)) {
                 	notInArray = new ArrayList<JsonObject>();
-                	JsonArray array = def.getArray(NOT_IN_ARRAY_KEY);
+                	JsonArray array = def.getRequiredArray(NOT_IN_ARRAY_KEY);
                 	for (int i = 0; i < array.size(); ++i) {
                 		notInArray.add(array.getRequiredObject(i));
                 	}
@@ -95,15 +96,16 @@ class ObjectType extends TypeBase {
             }
         } else {
             hasDef = false;
-            optionalKeys = null;
-            patterns = null;
-            requiredKeys = null;
             resolved = false;
+            patterns = null;
+            optionalKeys = null;
+            requiredKeys = null;
             resolvedOptionalKeys = null;
             resolvedRequiredKeys = null;
+            wildcard = null;
             inArray = null;
             notInArray = null;
-            wildcard = null;
+
         }
     }
 
@@ -122,9 +124,6 @@ class ObjectType extends TypeBase {
             for (String key : optionalKeys.keySet()) {
                 resolvedOptionalKeys.put(key, schema().resolve(optionalKeys.get(key)));
             }
-            // We don't need these any more...
-            //requiredKeys = null;
-            //optionalKeys = null;
             resolved = true;
         }
     }
@@ -150,6 +149,31 @@ class ObjectType extends TypeBase {
     private void validateObject(String path, JsonObject object) {  
     	ArrayList<JsonValue> checkWildcardList = new ArrayList<JsonValue>();
     	
+    	//this first for loop is to make sure none of the instance keys are empty strings.
+    	for (String instanceKey : object.keySet()) {
+    		if (instanceKey.isEmpty()) {
+    			throw ItemscriptError.internalError(this,
+	            		"validateObject.value.instance.key.was.empty",
+	            		pathValueParams(path, object));
+    		}
+    	}
+    	if (!patterns.isEmpty()) {
+    		for (String patternKey : patterns.keySet()) {
+    			for (String key : object.keySet()) {
+    				JsonValue value = object.get(key);
+    				if (schema().match(patternKey, key)) {
+    					Type resolvedPatternValue = schema().resolve(patterns.get(patternKey));
+    					if (resolvedPatternValue != null) {
+    						schema().validate(schema().addKey(path, key), resolvedPatternValue, value);
+    					} else {
+    						throw ItemscriptError.internalError(this,
+    			            		"validateObject.value.resolvedPatternValue.was.null",
+    			            		pathValueParams(path, object));
+    					}
+    				}
+    			}
+    		}
+    	}
     	if (wildcard != null) {
     		for (String instanceKey : object.keySet()) {
 	    		if (!requiredKeys.containsKey(instanceKey)) {
@@ -158,9 +182,9 @@ class ObjectType extends TypeBase {
 	    			}
 	    		}
     		}
-	    	if (!validWildcardTypes(checkWildcardList, path)) {
+	    	if (!validWildcardTypes(checkWildcardList, path, object)) {
 	    		throw ItemscriptError.internalError(this,
-	            		"validateObject.extra.instance.keys.did.not.all.match.wildcard.type",
+	            		"validateObject.value.extra.instance.keys.did.not.all.match.wildcard.type",
 	            		pathValueParams(path, object));
 	    	}
     	}
@@ -168,18 +192,9 @@ class ObjectType extends TypeBase {
             // Required and must conform to the type.
             JsonValue value = object.get(key);
             if (value == null) { throw ItemscriptError.internalError(this,
-            		"validate.missing.value.for.key",
-                    new Params().p("key", key)
-                    .p("object", object.toCompactJsonString()));
-            }
-
-            if (!patterns.isEmpty()) {
-            	for (String patternKey : patterns.keySet()) {
-                    if (schema().match(patternKey, key)) {
-                    	Type resolvedPatternValue = schema().resolve(patterns.get(patternKey));
-                		schema().validate(schema().addKey(path, key), resolvedPatternValue, value);
-                    }
-                }
+            		"validateObject.value.missing.value.for.key",
+            			pathValueParams(path, object)
+            				.p("key", key));
             }
             schema().validate(schema().addKey(path, key), resolvedRequiredKeys.get(key), value);
         }
@@ -187,14 +202,6 @@ class ObjectType extends TypeBase {
             JsonValue value = object.get(key);
             // Optional, but if present, must conform to the type.
             if (value != null) {
-            	if (!patterns.isEmpty()) {
-            		for (String patternKey : patterns.keySet()) {
-	            		if (schema().match(patternKey, key)) {
-	                    	Type resolvedPatternValue = schema().resolve(patterns.get(patternKey));
-                    		schema().validate(schema().addKey(path, key), resolvedPatternValue, value);
-                    	}
-            		}
-            	}
                 schema().validate(resolvedOptionalKeys.get(key), value);
             }   
         }
@@ -220,7 +227,7 @@ class ObjectType extends TypeBase {
 	            }
 	        }
 	        if (matched) { throw ItemscriptError.internalError(this,
-	                "validateObject.value.did.matched.an.invalid.choice", pathValueParams(path, object)); }
+	                "validateObject.value.matched.an.invalid.choice", pathValueParams(path, object)); }
 	    }
     }
     
@@ -230,18 +237,24 @@ class ObjectType extends TypeBase {
      * @param path
      * @return true if all are valid, false if not
      */
-    private boolean validWildcardTypes(ArrayList<JsonValue> wildcardList, String path) {
+    private boolean validWildcardTypes(ArrayList<JsonValue> wildcardList, String path, JsonObject obj) {
 		boolean useSlash = path.length() > 0;
     	
     	if (!wildcardList.isEmpty()) {
     		Type wildcardType = schema().resolve(wildcard);
-    		for (int i = 0; i < wildcardList.size(); i++) {
-	    		JsonValue listValue = wildcardList.get(i);
-	    		try {
-	    			wildcardType.validate(path + (useSlash ? "/" : ""), listValue);
-	    		} catch (ItemscriptError e) {
-	    			return false;
+    		if (wildcardType != null) {
+	    		for (int i = 0; i < wildcardList.size(); i++) {
+		    		JsonValue listValue = wildcardList.get(i);
+		    		try {
+		    			wildcardType.validate(path + (useSlash ? "/" : ""), listValue);
+		    		} catch (ItemscriptError e) {
+		    			return false;
+		    		}
 	    		}
+    		} else {
+    			throw ItemscriptError.internalError(this,
+	            		"validateObject.resolved.wildcardType.was.null",
+	            		pathValueParams(path, obj));
     		}
     	}
 	    return true;
