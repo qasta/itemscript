@@ -15,14 +15,14 @@ import org.itemscript.core.values.JsonValue;
  */
 class LongType extends TypeBase {
 	private static final String EQUAL_TO_KEY = ".equalTo";
-	private static final String EVEN_KEY = ".even";
 	private static final String GREATER_THAN_KEY = ".greaterThan";
 	private static final String GREATER_THAN_OR_EQUAL_TO_KEY = ".greaterThanOrEqualTo";
-	private static final String IN_ARRAY_KEY = ".inArray";
 	private static final String LESS_THAN_KEY = ".lessThan";
 	private static final String LESS_THAN_OR_EQUAL_TO_KEY = ".lessThanOrEqualTo";
-	private static final String NOT_IN_ARRAY_KEY = ".notInArray";
+	private static final String EVEN_KEY = ".even";
 	private static final String ODD_KEY = ".odd";
+	private static final String IN_ARRAY_KEY = ".inArray";
+	private static final String NOT_IN_ARRAY_KEY = ".notInArray";
 	private final boolean hasDef;
 	private final boolean even;
 	private final boolean hasEven;
@@ -35,6 +35,11 @@ class LongType extends TypeBase {
 	private final String lessThanOrEqualTo;
 	private final List<String> inArray;
 	private final List<String> notInArray;
+	private final long equalToValue;
+	private final long greaterThanValue;
+	private final long greaterThanOrEqualToValue;
+	private final long lessThanValue;
+	private final long lessThanOrEqualToValue;
 
 	/**
 	 * Create a new LongType. Sets all associated ".keys" that are specified.
@@ -47,77 +52,138 @@ class LongType extends TypeBase {
 		super(schema, extendsType, def);
 		if (def != null) {
 			hasDef = true;
-			if (def.hasString(EQUAL_TO_KEY)) {
-				equalTo = def.getString(EQUAL_TO_KEY);
+			if (def.containsKey(EQUAL_TO_KEY)) {
+				equalTo = def.getRequiredString(EQUAL_TO_KEY);
+				try {
+					equalToValue = Long.parseLong(equalTo);
+				} catch (NumberFormatException e) {
+					throw ItemscriptError.internalError(this,
+							"validateLong.value.equalTo.could.not.be.parsed.into.long",
+										def.toCompactJsonString());
+				}
 			} else {
 				equalTo = null;
+				equalToValue = -1;
 			}
-			if (def.hasBoolean(EVEN_KEY)) {
+			if (def.containsKey(GREATER_THAN_KEY)) {
+				greaterThan = def.getRequiredString(GREATER_THAN_KEY);
+				try {
+					greaterThanValue = Long.parseLong(greaterThan);
+				} catch (NumberFormatException e) {
+					throw ItemscriptError.internalError(this,
+							"validateLong.value.greaterThan.could.not.be.parsed.into.long",
+									def.toCompactJsonString());
+				}
+			} else {
+				greaterThan = null;
+				greaterThanValue = -1;
+			}
+			if (def.containsKey(GREATER_THAN_OR_EQUAL_TO_KEY)) {
+				greaterThanOrEqualTo = def.getRequiredString(GREATER_THAN_OR_EQUAL_TO_KEY);
+				try {
+					greaterThanOrEqualToValue = Long
+							.parseLong(greaterThanOrEqualTo);
+				} catch (NumberFormatException e) {
+					throw ItemscriptError.internalError(this,
+							"validateLong.value.greaterThanOrEqualTo.could.not.be.parsed.into.long",
+									def.toCompactJsonString());
+				}
+			} else {
+				greaterThanOrEqualTo = null;
+				greaterThanOrEqualToValue = -1;
+			}
+			if (def.containsKey(LESS_THAN_KEY)) {
+				lessThan = def.getRequiredString(LESS_THAN_KEY);
+				try {
+					lessThanValue = Long.parseLong(lessThan);
+				} catch (NumberFormatException e) {
+					throw ItemscriptError.internalError(this,
+							"validateLong.value.lessThan.could.not.be.parsed.into.long",
+								def.toCompactJsonString());
+				}
+			} else {
+				lessThan = null;
+				lessThanValue = -1;
+			}
+			if (def.containsKey(LESS_THAN_OR_EQUAL_TO_KEY)) {
+				lessThanOrEqualTo = def.getRequiredString(LESS_THAN_OR_EQUAL_TO_KEY);
+				try {
+					lessThanOrEqualToValue = Long.parseLong(lessThanOrEqualTo);
+				} catch (NumberFormatException e) {
+					throw ItemscriptError.internalError(this,
+							"validateLong.value.lessThanOrEqualTo.could.not.be.parsed.into.long",
+								def.toCompactJsonString());
+				}
+			} else {
+				lessThanOrEqualTo = null;
+				lessThanOrEqualToValue = -1;
+			}
+			if (def.containsKey(EVEN_KEY)) {
 				hasEven = true;
-				even = def.getBoolean(EVEN_KEY);
+				even = def.getRequiredBoolean(EVEN_KEY);
 			} else {
 				hasEven = false;
 				even = false;
 			}
-			if (def.hasString(GREATER_THAN_KEY)) {
-				greaterThan = def.getString(GREATER_THAN_KEY);
+			if (def.containsKey(ODD_KEY)) {
+				hasOdd = true;
+				odd = def.getRequiredBoolean(ODD_KEY);
 			} else {
-				greaterThan = null;
+				hasOdd = false;
+				odd = false;
 			}
-			if (def.hasArray(IN_ARRAY_KEY)) {
+			if (def.containsKey(IN_ARRAY_KEY)) {
 				inArray = new ArrayList<String>();
-				JsonArray array = def.getArray(IN_ARRAY_KEY);
+				JsonArray array = def.getRequiredArray(IN_ARRAY_KEY);
 				for (int i = 0; i < array.size(); ++i) {
+					String inArrayString = array.getRequiredString(i);
+					try {
+						Long.parseLong(inArrayString);
+					} catch (NumberFormatException e) {
+						throw ItemscriptError.internalError(this,
+								"validateLong.value.inArray.value.could.not.be.parsed.into.long",
+								def.toCompactJsonString());
+					}
 					inArray.add(array.getRequiredString(i));
 				}
 			} else {
 				inArray = null;
 			}
-			if (def.hasString(GREATER_THAN_OR_EQUAL_TO_KEY)) {
-				greaterThanOrEqualTo = def
-						.getString(GREATER_THAN_OR_EQUAL_TO_KEY);
-			} else {
-				greaterThanOrEqualTo = null;
-			}
-			if (def.hasString(LESS_THAN_KEY)) {
-				lessThan = def.getString(LESS_THAN_KEY);
-			} else {
-				lessThan = null;
-			}
-			if (def.hasString(LESS_THAN_OR_EQUAL_TO_KEY)) {
-				lessThanOrEqualTo = def.getString(LESS_THAN_OR_EQUAL_TO_KEY);
-			} else {
-				lessThanOrEqualTo = null;
-			}
-			if (def.hasArray(NOT_IN_ARRAY_KEY)) {
+			if (def.containsKey(NOT_IN_ARRAY_KEY)) {
 				notInArray = new ArrayList<String>();
-				JsonArray array = def.getArray(NOT_IN_ARRAY_KEY);
+				JsonArray array = def.getRequiredArray(NOT_IN_ARRAY_KEY);
 				for (int i = 0; i < array.size(); ++i) {
+					String inArrayString = array.getRequiredString(i);
+					try {
+						Long.parseLong(inArrayString);
+					} catch (NumberFormatException e) {
+						throw ItemscriptError.internalError(this,
+								"validateLong.value.notInArray.value.could.not.be.parsed.into.long",
+								def.toCompactJsonString());
+					}
 					notInArray.add(array.getRequiredString(i));
 				}
 			} else {
 				notInArray = null;
 			}
-			if (def.hasBoolean(ODD_KEY)) {
-				hasOdd = true;
-				odd = def.getBoolean(ODD_KEY);
-			} else {
-				hasOdd = false;
-				odd = false;
-			}
 		} else {
 			hasDef = false;
 			equalTo = null;
-			even = false;
+			equalToValue = -1;
 			greaterThan = null;
+			greaterThanValue = -1;
 			greaterThanOrEqualTo = null;
+			greaterThanOrEqualToValue = -1;
+			lessThan = null;
+			lessThanValue = -1;
+			lessThanOrEqualTo = null;
+			lessThanOrEqualToValue = -1;
+			even = false;
+			odd = false;
 			hasEven = false;
 			hasOdd = false;
 			inArray = null;
-			lessThan = null;
-			lessThanOrEqualTo = null;
 			notInArray = null;
-			odd = false;
 		}
 	}
 
@@ -152,56 +218,50 @@ class LongType extends TypeBase {
 	}
 
 	private void validateLong(String path, Long longVal) {
-		long equalToValue;
-		long greaterThanValue;
-		long greaterThanOrEqualToValue;
-		long inArrayValue;
-		long lessThanValue;
-		long lessThanOrEqualToValue;
-		long notInArrayValue;
 		
 		if (equalTo != null) {
-			try {
-				equalToValue = Long.parseLong(equalTo);
-			} catch (NumberFormatException e) {
-				throw ItemscriptError
-						.internalError(this, "validateLong.equalTo.could.not.be.parsed.into.long",
-								pathValueParams(path, longVal));
-			}
 			if (longVal != equalToValue) {
 				throw ItemscriptError.internalError(this,
-						"validateLong.value.is.not.equal.to.equalTo",
-						pathValueParams(path, longVal));
+						"validateLong.value.is.not.equal.to.equal.to",
+						pathValueParams(path, longVal)
+							.p("correctValue", equalToValue)
+							.p("incorrectValue", longVal.toString()));
 			}
 		}
-		if (greaterThan != null) {;
-			try {
-				greaterThanValue = Long.parseLong(greaterThan);
-			} catch (NumberFormatException e) {
-				throw ItemscriptError
-						.internalError(this, "validateLong.greaterThan.could.not.be.parsed.into.long",
-								pathValueParams(path, longVal));
-			}
+		if (greaterThan != null) {
 			if (longVal <= greaterThanValue) {
 				throw ItemscriptError.internalError(this,
 						"validateLong.value.is.less.than.or.equal.to.min",
-						pathValueParams(path, longVal));
+						pathValueParams(path, longVal)
+							.p("correctValue", greaterThanValue)
+							.p("incorrectValue", longVal.toString()));
 			}
 		}
 		if (greaterThanOrEqualTo != null) {
-			try {
-				greaterThanOrEqualToValue = Long
-						.parseLong(greaterThanOrEqualTo);
-			} catch (NumberFormatException e) {
-				throw ItemscriptError
-						.internalError(this,
-								"validateLong.greaterThanOrEqualTo.could.not.be.parsed.into.long",
-								pathValueParams(path, longVal));
-			}
 			if (longVal < greaterThanOrEqualToValue) {
 				throw ItemscriptError.internalError(this,
 						"validateLong.value.is.less.than.min",
-						pathValueParams(path, longVal));
+						pathValueParams(path, longVal)
+							.p("correctValue", greaterThanOrEqualToValue)
+							.p("incorrectValue", longVal.toString()));
+			}
+		}
+		if (lessThan != null) {
+			if (longVal >= lessThanValue) {
+				throw ItemscriptError.internalError(this,
+						"validateLong.value.is.greater.than.or.equal.to.max",
+						pathValueParams(path, longVal)
+							.p("correctValue", lessThanValue)
+							.p("incorrectValue", longVal.toString()));
+			}
+		}
+		if (lessThanOrEqualTo != null) {
+			if (longVal > lessThanOrEqualToValue) {
+				throw ItemscriptError.internalError(this,
+						"validateLong.value.is.greater.than.max",
+						pathValueParams(path, longVal)
+							.p("correctValue", lessThanOrEqualToValue)
+							.p("incorrectValue", longVal.toString()));
 			}
 		}
 		if (hasEven) {
@@ -224,17 +284,11 @@ class LongType extends TypeBase {
         }
 		if (inArray != null) {
 			boolean matched = false;
-			for (int i = 0; i < inArray.size(); ++i) {
-				String inArrayString = inArray.get(i);
-				try {
-					inArrayValue = Long.parseLong(inArrayString);
-				} catch (NumberFormatException e) {
-					throw ItemscriptError.internalError(this,
-						"validateLong.inArrayString.could.not.be.parsed.into.long",
-						pathValueParams(path, longVal));
-				}
+			for (int i = 0; i < inArray.size(); i++) {
+				long inArrayValue = Long.parseLong(inArray.get(i));
 				if (longVal == inArrayValue) {
 					matched = true;
+					break;
 				}
 			}
 			if (!matched) {
@@ -243,48 +297,13 @@ class LongType extends TypeBase {
 						pathValueParams(path, longVal));
 			}
 		}
-		if (lessThan != null) {
-			try {
-				lessThanValue = Long.parseLong(lessThan);
-			} catch (NumberFormatException e) {
-				throw ItemscriptError
-						.internalError(this, "validateLong.lessThan.could.not.be.parsed.into.long",
-								pathValueParams(path, longVal));
-			}
-			if (longVal >= lessThanValue) {
-				throw ItemscriptError.internalError(this,
-						"validateLong.value.is.greater.than.or.equal.to.max",
-						pathValueParams(path, longVal));
-			}
-		}
-		if (lessThanOrEqualTo != null) {
-			try {
-				lessThanOrEqualToValue = Long.parseLong(lessThanOrEqualTo);
-			} catch (NumberFormatException e) {
-				throw ItemscriptError
-						.internalError(this,
-								"validateLong.lessThanOrEqualTo.could.not.be.parsed.into.long",
-								pathValueParams(path, longVal));
-			}
-			if (longVal > lessThanOrEqualToValue) {
-				throw ItemscriptError.internalError(this,
-						"validateLong.value.is.greater.than.max",
-						pathValueParams(path, longVal));
-			}
-		}
 		if (notInArray != null) {
 			boolean matched = false;
-			for (int i = 0; i < notInArray.size(); ++i) {
-				String notInArrayString = notInArray.get(i);
-				try {
-					notInArrayValue = Long.parseLong(notInArrayString);
-				} catch (NumberFormatException e) {
-					throw ItemscriptError.internalError(this,
-						"validateLong.notInArrayString.could.not.be.parsed.into.long",
-						pathValueParams(path, longVal));
-				}
-				if (longVal == notInArrayValue) {
+			for (int i = 0; i < notInArray.size(); i++) {
+				long inArrayValue = Long.parseLong(notInArray.get(i));
+				if (longVal == inArrayValue) {
 					matched = true;
+					break;
 				}
 			}
 			if (matched) {

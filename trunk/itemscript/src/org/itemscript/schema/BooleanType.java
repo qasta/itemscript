@@ -27,9 +27,9 @@ final class BooleanType extends TypeBase {
         super(schema, extendsType, def);
         if (def != null) {
             hasDef = true;
-            if (def.hasBoolean(BOOLEAN_VALUE_KEY)) {
+            if (def.containsKey(BOOLEAN_VALUE_KEY)) {
             	hasBooleanValue = true;
-                booleanValue = def.getBoolean(BOOLEAN_VALUE_KEY);
+                booleanValue = def.getRequiredBoolean(BOOLEAN_VALUE_KEY);
             } else {
             	hasBooleanValue = false;
             	booleanValue = false;
@@ -54,8 +54,9 @@ final class BooleanType extends TypeBase {
     @Override
     public void validate(String path, JsonValue value) {
         super.validate(path, value);
-        if (!value.isBoolean()) { throw ItemscriptError.internalError(this, "validateBoolean.value.was.not.boolean",
-                schema().pathParams(path)
+        if (!value.isBoolean()) { throw ItemscriptError.internalError(this,
+        		"validateBoolean.value.was.not.boolean",
+        			schema().pathParams(path)
                         .p("value", value.toCompactJsonString())); }
         if (hasDef) {
             validateBoolean(path, value.booleanValue());
@@ -65,7 +66,8 @@ final class BooleanType extends TypeBase {
     private void validateBoolean(String path, Boolean bool) {
         if (hasBooleanValue) {
             if (bool != booleanValue) { throw ItemscriptError.internalError(this,
-                    "validateBoolean.value.does.not.equal.required.boolean.value", pathValueParams(path, bool)); }
+                    "validateBoolean.value.does.not.equal.required.boolean.value",
+                    	pathValueParams(path, bool)); }
         }
     }
 }

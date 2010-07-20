@@ -38,7 +38,7 @@ abstract class TypeBase implements Type, HasSystem {
         this.system = schema.system();
         this.schema = schema;
         this.extendsType = extendsType;
-        if (extendsType == null) { throw ItemscriptError.internalError(this, "constructor.extendsType.was.null"); }
+        if (extendsType == null) { throw ItemscriptError.internalError(this, "TypeBase.constructor.extendsType.was.null"); }
         this.isBaseAnyType = false;
         if (def != null) {
             this.description = def.getString(".description");

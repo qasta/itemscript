@@ -1,5 +1,5 @@
 /*
- * Copyright © 2010, Data Base Architects, Inc. All rights reserved.
+ * Copyright ï¿½ 2010, Data Base Architects, Inc. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -216,5 +216,196 @@ public class Template implements HasSystem, Element {
     @Override
     public String toString() {
         return "[Template element=" + element + "]";
+    }
+    
+    /**
+     * Sets the user-friendly error message retrieved from the returned errorObject after it's been
+     * validated. Only deals with error messages seen by the user at runtime.
+     * 
+     * @param returnedObject
+     * @return the error message if the validate failed, a null string otherwise
+     */
+    public static String setErrorMessage(JsonObject returnedObject) {
+    	String displayError = null;
+    	if (returnedObject.get("valid").booleanValue() == false) {
+    		String incorrectValue = returnedObject.get("incorrectValue").stringValue();
+        	String correctValue = returnedObject.get("correctValue").stringValue();
+        	String value = returnedObject.get("value").stringValue();
+    		String errorMessage = returnedObject.get("message").stringValue();
+    		
+    		String[] split = errorMessage.split("\\s+");
+    		int begin = split[0].indexOf("value");
+    		if (begin >= 0) {
+	    		String error = split[0].substring(begin);
+	    		
+	    		//General Type errors
+	    		if (error.equals("value.was.null")) {
+	    			displayError = "Value cannot be null.";
+	    		}
+	    		if (error.equals("value.was.not.null")) {
+	    			displayError = "Value '" + value + "' was not null.";
+	    		}
+	    		if (error.equals("value.was.not.object")) {
+	    			displayError = "Value '" + value + "' was not an object.";
+	    		}
+	    		if (error.equals("value.was.not.string")) {
+	    			displayError = "Value '" + value + "' was not a string.";
+	    		}
+	    		if (error.equals("value.was.not.array")) {
+	    			displayError = "Value '" + value + "' was not an array.";
+	    		}
+	    		if (error.equals("value.was.not.boolean")) {
+	        		displayError = "Value '" + value + "' was not a boolean.";
+	    		}
+	    		if (error.equals("value.was.not.number")) {
+	    			displayError = "Value '" + value + "' was not a number.";
+	    		}
+	    		if (error.equals("value.was.not.proper.decimal")) {
+	    			displayError = "Value '" + value + "' was not a decimal.";
+	    		}
+	    		if (error.equals("value.could.not.be.parsed.into.long")) {
+	    			displayError = "Value '" + value + "' was not a long.";
+	    		}
+	    		if (error.equals("value.had.fractional.digits")) {
+	    			displayError = "Value '" + value + "' was not an integer.";
+	    		}
+	    		
+	    		//AnyType errors
+	    		if (error.equals("value.was.not.of.specified.type")) {
+	    			displayError = "Your value '" + value +
+	    				"' was not one of the types specified.";
+	    		}
+	    			    		
+	    		//ArrayType errors
+	    		if (error.equals("value.array.is.the.wrong.size")) {
+	    			displayError = "Your array has the wrong number of items." +
+    					" Your size is " + incorrectValue + "." +
+    					" The correct size is " + correctValue + ".";
+	    		}
+	    		if (error.equals("value.array.size.is.bigger.than.max")) {
+	    			displayError = "Your array has too many items." +
+	    				" Your size is " + incorrectValue + "." +
+	    				" The maximum size is " + correctValue + ".";
+	    		}
+	    		if (error.equals("value.array.size.is.smaller.than.min")) {
+	    			displayError = "Your array does not have enough items." +
+	    				" Your size is " + incorrectValue + "." +
+	    				" The minimum size is " + correctValue + ".";
+	    		}
+	    		
+	    		//BinaryType errors
+	    		if (error.equals("value.could.not.be.parse.as.base.64")) {
+	    			displayError = "Your value '" + value +
+	    				"' could not be parsed as base64.";
+	    		}
+	    		if (error.equals("value.illegal.character.in.base.64.encoded.data")) {
+	    			displayError = "Your value '" + value +
+	    				"' contains an illegal character that cannot be parsed into base64.";
+	    		}
+	    		if (error.equals("value.has.too.many.bytes")) {
+	    			displayError = "Your value has more than the max number of bytes allowed." +
+	    				" Your byte size is " + incorrectValue + "." +
+	    				" The maximum byte size is " + correctValue + ".";
+	    		}
+	    		
+	    		//BooleanType errors
+	    		if (error.equals("value.does.not.equal.required.boolean.value")) {
+	    			displayError = "Your value does not match the required boolean value.";
+	    		}
+	    		
+	    		//DecimalType errors
+	    		if (error.equals("value.could.not.be.parsed.into.double")) {
+	    			displayError = "Your value '" + value + "' could not be parsed into a Java Double.";
+	    		}
+	    		if (error.equals("value.has.wrong.number.of.fraction.digits")) {
+	    			displayError = "Your value '" + value + "' has " + incorrectValue + " fractional digits." +
+	    				" The maximum number of fractional digits is " + correctValue + ".";
+	    		}
+	    		
+	    		//ObjectType errors
+	        	String keyValue = returnedObject.get("keyValue").stringValue();
+	    		if (error.equals("value.extra.instance.keys.did.not.all.match.wildcard.type")) {
+	    			displayError = "Some of your key-values failed to match the wildcard type.";
+	    		}
+	    		if (error.equals("value.missing.value.for.key")) {
+	    			displayError = "Missing value for key: " + keyValue + ".";
+	    		}
+	    		if (error.equals("value.instance.key.was.empty")) {
+	    			displayError = "Cannot have an empty key in your instance object.";
+	    		}
+	    		
+	    		//StringType errors
+	    		if (error.equals("value.does.not.equal.equals")) {
+	    			displayError = "Your value " + value + " does not equal the specified value.";
+	    		}
+	    		if (error.equals("value.does.not.equal.is.length")) {
+	    			displayError = "Your value is the wrong length." +
+	    				" Your value is " + incorrectValue + " characters long." +
+	    				" The correct length is " + correctValue + " characters.";
+	    		}
+	    		if (error.equals("value.longer.than.max.length")) {
+	    			displayError = "Your value is too long." +
+	    				" Your value is " + incorrectValue + " characters long." +
+	    				" The max length is " + correctValue + " characters.";
+	    		}
+	    		if (error.equals("value.shorter.than.min.length")) {
+	    			displayError = "Your value is too short." +
+	    				" Your value is " + incorrectValue + " characters long." +
+	    				" The minimum length is " + correctValue + " characters.";
+	    		}
+	    		if (error.equals("value.does.not.match.reg.ex.pattern")) {
+	    			displayError = "Your value '" + value + "' did not match the regular expression pattern.";    			;
+	    		}
+	    		if (error.equals("value.did.not.match.any.pattern")) {
+	    			displayError = "Your value '" + value + "' did not match any of the patterns that were specified.";
+	    		}
+	    		
+	    		//Numericality errors (applies to decimal, long, number, integer)
+	    		if (error.equals("value.is.not.equal.to.equal.to")) {
+	    			displayError = "Your number '" + value + "' is not equal to the specified value.";
+	    		}
+	    		if (error.equals("value.is.less.than.or.equal.to.min")) {
+	    			displayError = "Your number must be greater than the minimum value provided." +
+	    				" Your number is '" + incorrectValue + "'." +
+	    				" The minimum value is '" + correctValue + "'.";
+	    		}
+	    		if (error.equals("value.is.less.than.min")) {
+	    			displayError = "Your number must be greater than or equal to the minimum value provided." +
+	    				" Your number is '" + incorrectValue + "'." +
+	    				" The minimum value is '" + correctValue + "'.";
+	    		}
+	    		if (error.equals("value.is.greater.than.or.equal.to.max")) {
+	    			displayError = "Your number must be less than the maximum value provided." +
+	    				" Your number is '" + incorrectValue + "'." +
+	    				" The maximum value is '" + correctValue + "'.";
+	    		}
+	    		if (error.equals("value.is.greater.than.max")) {
+	    			displayError = "Your number must be less than or equal to the maximum value provided." +
+	    				" Your number is '" + incorrectValue + "'." +
+	    				" The maximum value is '" + correctValue + "'.";
+	    		}
+	    		if (error.equals("value.cannot.test.parity.value.is.not.an.integer")) {
+	    			displayError = "Your number '" + value + "' cannot be tested for even/odd because it is not an integer.";
+	    		}
+	    		if (error.equals("value.is.not.even")) {
+	    			displayError = "Your number '" + value + "' is not even." ;
+	    		}
+	    		if (error.equals("value.is.not.odd")) {
+	    			displayError = "Your number '" + value + "' is not odd.";
+	    		}
+	    		
+	    		//Inclusion + Exclusion errors
+	    		if (error.equals("value.did.not.match.a.valid.choice")) {
+	    			displayError = "Your value '" + value + "' did not match any of the choices in your array.";
+	    		}
+	    		if (error.equals("value.matched.an.invalid.choice")) {
+	    			displayError = "Your value '" + value + "' matched one of the invalid choices in your array.";
+	    		}
+    		} else {
+    			throw new ItemscriptError(
+                        "error.itemscript.Template.error.message.parsed.wrong", split[0]);
+    		}
+    	}
+    	return displayError;
     }
 }

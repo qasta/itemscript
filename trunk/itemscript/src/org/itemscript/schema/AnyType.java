@@ -60,56 +60,56 @@ final class AnyType extends TypeBase {
 		if (def != null) {
 			hasDef = true;
 	    	if (def.containsKey(ARRAY_KEY)) {
-	    		array = def.getValue(ARRAY_KEY);
+	    		array = def.getRequiredValue(ARRAY_KEY);
 	    	} else {
 	    		array = null;
 	    	}
 	    	if (def.containsKey(BOOLEAN_KEY)) {
-	    		bool = def.getValue(BOOLEAN_KEY);
+	    		bool = def.getRequiredValue(BOOLEAN_KEY);
 	    	} else {
 	    		bool = null;
 	    	}
-            if (def.hasArray(IN_ARRAY_KEY)) {
-            	inArray = new ArrayList<JsonValue>();
-            	JsonArray array = def.getArray(IN_ARRAY_KEY);
-            	for (int i = 0; i < array.size(); ++i) {
-            		inArray.add(array.getRequiredValue(i));
-            	}
-            } else {
-            	inArray = null;
-            }
-            if (def.hasArray(NOT_IN_ARRAY_KEY)) {
-            	notInArray = new ArrayList<JsonValue>();
-            	JsonArray array = def.getArray(NOT_IN_ARRAY_KEY);
-            	for (int i = 0; i < array.size(); ++i) {
-            		notInArray.add(array.getRequiredValue(i));
-            	}
-            } else {
-            	notInArray = null;
-            }
 	    	if (def.containsKey(NUMBER_KEY)) {
-	    		number = def.getValue(NUMBER_KEY);
+	    		number = def.getRequiredValue(NUMBER_KEY);
 	    	} else {
 	    		number = null;
 	    	}
 	    	if (def.containsKey(OBJECT_KEY)) {
-	    		object = def.getValue(OBJECT_KEY);
+	    		object = def.getRequiredValue(OBJECT_KEY);
 	    	} else {
 	    		object = null;
 	    	}
 	    	if (def.containsKey(STRING_KEY)) {
-	    		string = def.getValue(STRING_KEY);
+	    		string = def.getRequiredValue(STRING_KEY);
 			} else {
 				string = null;
 	    	}
+            if (def.containsKey(IN_ARRAY_KEY)) {
+            	inArray = new ArrayList<JsonValue>();
+            	JsonArray array = def.getRequiredArray(IN_ARRAY_KEY);
+            	for (int i = 0; i < array.size(); ++i) {
+        			inArray.add(array.getRequiredValue(i));
+            	}
+            } else {
+            	inArray = null;
+            }
+            if (def.containsKey(NOT_IN_ARRAY_KEY)) {
+            	notInArray = new ArrayList<JsonValue>();
+            	JsonArray array = def.getRequiredArray(NOT_IN_ARRAY_KEY);
+            	for (int i = 0; i < array.size(); ++i) {
+        			notInArray.add(array.getRequiredValue(i));
+            	}
+            } else {
+            	notInArray = null;
+            }
 		} else {
 			array = null;
 			bool = null;
-			inArray = null;
-			notInArray = null;
 			number = null;
 			object = null;
 			string = null;
+			inArray = null;
+			notInArray = null;
 			hasDef = false;
 		}
     }
@@ -134,7 +134,7 @@ final class AnyType extends TypeBase {
     		validateAny(path, value);
     	}      
     }
-    
+       
     private void validateAny(String path, JsonValue value) {
 		boolean useSlash = path.length() > 0;
 		boolean validValue = false;
@@ -144,39 +144,67 @@ final class AnyType extends TypeBase {
 		Type objectType;
 		Type stringType;
 		
-		if (string != null) {
-    		stringType = schema().resolve(string);
-    		if (value.isString()) {
-    			stringType.validate(path + (useSlash ? "/" : ""), value);
-    			validValue = true;
+		if (string == null && number == null && bool == null && array == null && object == null) {
+			validValue = true;
+		}
+		if (array != null) {
+    		arrayType = schema().resolve(array);
+    		if (arrayType != null) {
+	    		if (value.isArray()) {
+	    			arrayType.validate(path + (useSlash ? "/" : ""), value);
+	    			validValue = true;
+	    		}
+    		} else {
+    			throw ItemscriptError.internalError(this,
+                        "validateAny.value.resolved.arrayType.was.null", pathValueParams(path, object));
+    		}    		
+		}
+		if (bool != null) {
+    		boolType = schema().resolve(bool);
+    		if (boolType != null) {
+    			if (value.isBoolean()) {
+    				boolType.validate(path + (useSlash ? "/" : ""), value);
+    				validValue = true;
+    			}
+    		} else {
+    			throw ItemscriptError.internalError(this,
+                        "validateAny.value.resolved.boolType.was.null", pathValueParams(path, object));
     		}
 		}
 		if (number != null) {
 			numberType = schema().resolve(number);
-			if (value.isNumber()) {
-				numberType.validate(path + (useSlash ? "/" : ""), value);
-				validValue = true;
-			}
-		}
-		if (bool != null) {
-    		boolType = schema().resolve(bool);
-    		if (value.isBoolean()) {
-    			boolType.validate(path + (useSlash ? "/" : ""), value);
-    			validValue = true;
-    		}
-    	}
-		if (array != null) {
-    		arrayType = schema().resolve(array);
-    		if (value.isArray()) {
-    			arrayType.validate(path + (useSlash ? "/" : ""), value);
-    			validValue = true;
+			if (numberType != null) {
+				if (value.isNumber()) {
+					numberType.validate(path + (useSlash ? "/" : ""), value);
+					validValue = true;
+				}
+			} else {
+    			throw ItemscriptError.internalError(this,
+                        "validateAny.value.resolved.numberType.was.null", pathValueParams(path, object));
     		}
 		}
 		if (object != null) {
     		objectType = schema().resolve(object);
-    		if (value.isObject()) {
-    			objectType.validate(path + (useSlash ? "/" : ""), value);
-    			validValue = true;
+    		if (objectType != null) {
+	    		if (value.isObject()) {
+	    			objectType.validate(path + (useSlash ? "/" : ""), value);
+	    			validValue = true;
+	    		}
+    		} else {
+    			throw ItemscriptError.internalError(this,
+                        "validateAny.value.resolved.objectType.was.null", pathValueParams(path, object));
+    		}
+		}
+		if (string != null) {
+    		stringType = schema().resolve(string);
+    		if (stringType != null) {
+	    		if (value.isString()) {
+	    			stringType.validate(path + (useSlash ? "/" : ""), value);
+	    			validValue = true;
+	    		}
+    		} else {
+    			throw ItemscriptError.internalError(this,
+                        "validateAny.value.resolved.stringType.was.null", pathValueParams(path, object));
     		}
 		}
 		if (inArray != null) {
