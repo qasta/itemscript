@@ -32,7 +32,6 @@ package org.itemscript.core;
 import org.itemscript.core.config.JsonConfig;
 import org.itemscript.core.url.Url;
 import org.itemscript.core.url.UrlFactory;
-import org.itemscript.schema.Schema;
 
 /**
  * The implementation class for JsonUtil.
@@ -43,7 +42,6 @@ class ItemscriptUtil implements JsonUtil, HasSystem {
     private final JsonConfig config;
     private final JsonSystem system;
     private final UrlFactory urlFactory;
-    private Schema schema;
 
     /**
      * Create a new ItemscriptUtil with the associated JsonSystem and JsonConfig.
