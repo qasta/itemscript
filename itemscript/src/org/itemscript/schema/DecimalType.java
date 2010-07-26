@@ -204,8 +204,8 @@ class DecimalType extends TypeBase {
 				throw ItemscriptError.internalError(this,
 						"validateDecimal.value.is.not.equal.to.equal.to",
 						pathValueParams(path, dec)
-							.p("correctValue", equalTo)
-							.p("incorrectValue", dec.trim()));
+							.p("specified", equalTo)
+							.p("input", dec.trim()));
 			}
 		}
 		if (fractionDigits > 0) {
@@ -213,8 +213,8 @@ class DecimalType extends TypeBase {
 				throw ItemscriptError.internalError(this,
 						"validateDecimal.value.has.wrong.number.of.fraction.digits",
 						pathValueParams(path, dec)
-							.p("correctValue", fractionDigits)
-							.p("incorrectValue", numFractionDigits(dec)));
+							.p("specified", fractionDigits)
+							.p("input", numFractionDigits(dec)));
 			}
 		}
 		if (greaterThan != null) {;
@@ -229,8 +229,8 @@ class DecimalType extends TypeBase {
 				throw ItemscriptError.internalError(this,
 						"validateDecimal.value.is.less.than.or.equal.to.min",
 						pathValueParams(path, dec)
-							.p("correctValue", greaterThanValue)
-							.p("incorrectValue", decValue));
+							.p("specified", greaterThanValue)
+							.p("input", decValue));
 			}
 		}
 		if (greaterThanOrEqualTo != null) {
@@ -246,8 +246,8 @@ class DecimalType extends TypeBase {
 				throw ItemscriptError.internalError(this,
 						"validateDecimal.value.is.less.than.min",
 						pathValueParams(path, dec)
-							.p("correctValue", greaterThanOrEqualToValue)
-							.p("incorrectValue", decValue));
+							.p("specified", greaterThanOrEqualToValue)
+							.p("input", decValue));
 			}
 		}
 		if (lessThan != null) {
@@ -262,8 +262,8 @@ class DecimalType extends TypeBase {
 				throw ItemscriptError.internalError(this,
 						"validateDecimal.value.is.greater.than.or.equal.to.max",
 						pathValueParams(path, dec)
-							.p("correctValue", lessThanValue)
-							.p("incorrectValue", decValue));
+							.p("specified", lessThanValue)
+							.p("input", decValue));
 			}
 		}
 		if (lessThanOrEqualTo != null) {
@@ -278,8 +278,8 @@ class DecimalType extends TypeBase {
 				throw ItemscriptError.internalError(this,
 						"validateDecimal.value.is.greater.than.max",
 						pathValueParams(path, dec)
-							.p("correctValue", lessThanOrEqualTo)
-							.p("incorrectValue", decValue));
+							.p("specified", lessThanOrEqualTo)
+							.p("input", decValue));
 			}
 		}
 		if (hasEven) {

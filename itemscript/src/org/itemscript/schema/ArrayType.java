@@ -133,8 +133,8 @@ final class ArrayType extends TypeBase {
 				throw ItemscriptError.internalError(this,
 						"validateArray.value.array.is.the.wrong.size",
 						pathValueParams(path, array)
-							.p("correctValue", exactSize)
-							.p("incorrectValue", array.size()));
+							.p("specified", exactSize)
+							.p("input", array.size()));
 			}
 		}
 		if (maxSize > 0) {
@@ -142,8 +142,8 @@ final class ArrayType extends TypeBase {
 				throw ItemscriptError.internalError(this,
 						"validateArray.value.array.size.is.bigger.than.max",
 						pathValueParams(path, array)
-							.p("correctValue", maxSize)
-							.p("incorrectValue", array.size()));
+							.p("specified", maxSize)
+							.p("input", array.size()));
 			}
 		}
 		if (minSize > 0) {
@@ -151,8 +151,8 @@ final class ArrayType extends TypeBase {
 				throw ItemscriptError.internalError(this,
 						"validateArray.value.array.size.is.smaller.than.min",
 						pathValueParams(path, array)
-							.p("correctValue", minSize)
-							.p("incorrectValue", array.size()));
+							.p("specified", minSize)
+							.p("input", array.size()));
 			}
 		}
         if (inArray != null) {

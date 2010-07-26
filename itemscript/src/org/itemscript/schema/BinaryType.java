@@ -76,8 +76,8 @@ final class BinaryType extends TypeBase {
 		if (maxBytes > 0) {
 			if (binaryValue.length > maxBytes) { throw ItemscriptError.internalError(this,
 					"validateBinary.value.has.too.many.bytes", pathValueParams(path, binaryValue)
-							.p("correctValue", maxBytes)
-							.p("incorrectValue", binaryValue.length)); }
+							.p("specified", maxBytes)
+							.p("input", binaryValue.length)); }
 		}
     }
 }

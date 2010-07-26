@@ -175,26 +175,26 @@ final class NumberType extends TypeBase {
         if (hasGreaterThan) {
             if (num <= greaterThan) { throw ItemscriptError.internalError(this,
                     "validateNumber.value.is.less.than.or.equal.to.min", pathValueParams(path, num)
-                    	.p("correctValue", greaterThan)
-                    	.p("incorrectValue", num.toString())); }
+                    	.p("specified", greaterThan)
+                    	.p("input", num.toString())); }
         }
         if (hasGreaterThanOrEqualTo) {
         	if (num < greaterThanOrEqualTo) { throw ItemscriptError.internalError(this,
                     "validateNumber.value.is.less.than.min", pathValueParams(path, num)
-                		.p("correctValue", greaterThanOrEqualTo)
-                		.p("incorrectValue", num.toString())); }
+                		.p("specified", greaterThanOrEqualTo)
+                		.p("input", num.toString())); }
         }
         if (hasLessThan) {
         	if (num >= lessThan) { throw ItemscriptError.internalError(this,
                     "validateNumber.value.is.greater.than.or.equal.to.max", pathValueParams(path, num)
-            			.p("correctValue", lessThan)
-            			.p("incorrectValue", num.toString())); }
+            			.p("specified", lessThan)
+            			.p("input", num.toString())); }
         }
         if (hasLessThanOrEqualTo) {
         	if (num > lessThanOrEqualTo) { throw ItemscriptError.internalError(this,
                     "validateNumber.value.is.greater.than.max", pathValueParams(path, num)
-                    	.p("correctValue", lessThanOrEqualTo)
-            			.p("incorrectValue", num.toString())); }
+                    	.p("specified", lessThanOrEqualTo)
+            			.p("input", num.toString())); }
         }
         if (hasEven) {
         	if (num.doubleValue() != Math.round(num.doubleValue())) { throw ItemscriptError.internalError(
