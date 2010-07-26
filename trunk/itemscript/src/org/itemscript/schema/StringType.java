@@ -144,20 +144,20 @@ class StringType extends TypeBase {
         if (isLength > 0) {
         	if (string.length() != isLength) { throw ItemscriptError.internalError(this,
         			"validateString.value.does.not.equal.is.length", pathValueParams(path, string)
-        				.p("correctValue", isLength)
-        				.p("incorrectValue", string.length())); }
+        				.p("specified", isLength)
+        				.p("input", string.length())); }
         }
         if (maxLength > 0) {
             if (string.length() > maxLength) { throw ItemscriptError.internalError(this,
                     "validateString.value.longer.than.max.length", pathValueParams(path, string)
-                    	.p("correctValue", maxLength)
-                    	.p("incorrectValue", string.length())); }
+                    	.p("specified", maxLength)
+                    	.p("input", string.length())); }
         }
         if (minLength > 0) {
             if (string.length() < minLength) { throw ItemscriptError.internalError(this,
                     "validateString.value.shorter.than.min.length", pathValueParams(path, string)
-                    	.p("correctValue", minLength)
-                    	.p("incorrectValue", string.length())); }
+                    	.p("specified", minLength)
+                    	.p("input", string.length())); }
         }
         if (regExPattern != null) {
         	if (!string.matches(regExPattern)) { throw ItemscriptError.internalError(this,

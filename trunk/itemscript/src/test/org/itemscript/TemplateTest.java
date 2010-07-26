@@ -35,6 +35,9 @@ import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonString;
 import org.itemscript.core.values.JsonValue;
 import org.itemscript.schema.Schema;
+import org.itemscript.schema.ValidateAsBooleanFunction;
+import org.itemscript.schema.ValidateFunction;
+import org.itemscript.schema.ValidateAsNumberFunction;
 import org.itemscript.template.Template;
 import org.junit.Test;
 
@@ -59,6 +62,9 @@ public class TemplateTest extends ItemscriptTestBase {
     @Override
     protected void setUp() {
         super.setUp();
+        ValidateFunction.init();
+        ValidateAsNumberFunction.init();
+        ValidateAsBooleanFunction.init();
         context = system().createObject()
                 .p("name", "Jacob");
         system().put("mem:/TemplateTest/context", context);
@@ -708,7 +714,7 @@ public class TemplateTest extends ItemscriptTestBase {
     	context.asObject()
     			.put("y", anyDef);
     	JsonValue val = processTemplateToValue(text);
-    	String error = Template.setErrorMessage(val.asObject());
+    	String error = val.asObject().getString("message");
     	assertEquals(error, "Your value '123' was not one of the types specified.");
 	}
     
@@ -723,7 +729,7 @@ public class TemplateTest extends ItemscriptTestBase {
     	context.asObject()
     			.put("y", anyDef);
     	JsonValue val = processTemplateToValue(text);
-    	String error = Template.setErrorMessage(val.asObject());
+    	String error = val.asObject().getString("message");
     	assertEquals(error, "Your array has the wrong number of items. Your size is 0. The correct size is 1.");
 	}
 
@@ -740,7 +746,7 @@ public class TemplateTest extends ItemscriptTestBase {
     	context.asObject()
     			.put("y", schemaDef);
     	JsonValue val = processTemplateToValue(text);
-    	String error = Template.setErrorMessage(val.asObject());
+    	String error = val.asObject().getString("message");
     	assertEquals(error, "Cannot have an empty key in your instance object.");    	
     }    
     
@@ -755,7 +761,7 @@ public class TemplateTest extends ItemscriptTestBase {
     	context.asObject()
     			.put("y", decDef);
     	JsonValue val = processTemplateToValue(text);
-    	String error = Template.setErrorMessage(val.asObject());
+    	String error = val.asObject().getString("message");
     	assertEquals(error, "Your value '12.223' has 3 fractional digits. The maximum number of fractional digits is 2.");
 	}
     
@@ -772,8 +778,8 @@ public class TemplateTest extends ItemscriptTestBase {
     	context.asObject()
     			.put("y", intDef);
     	JsonValue val = processTemplateToValue(text);
-    	String error = Template.setErrorMessage(val.asObject());
-    	assertEquals(error, "Your value '125' did not match any of the choices in your array.");
+    	String error = val.asObject().getString("message");
+    	assertEquals(error, "Your value '125' is not allowed.");
     }
     
     @Test
@@ -787,7 +793,7 @@ public class TemplateTest extends ItemscriptTestBase {
     	context.asObject()
     			.put("y", anyDef);
     	JsonValue val = processTemplateToValue(text);
-    	String error = Template.setErrorMessage(val.asObject());
+    	String error = val.asObject().getString("message");
     	assertEquals(error, "Value '\"abc\"' was not a number.");
 	}
 
@@ -802,7 +808,7 @@ public class TemplateTest extends ItemscriptTestBase {
     	context.asObject()
     			.put("y", schemaDef);
     	JsonValue val = processTemplateToValue(text);
-    	String error = Template.setErrorMessage(val.asObject());
+    	String error = val.asObject().getString("message");
     	assertEquals(error, "Missing value for key: foo.");
     }
     
@@ -814,7 +820,7 @@ public class TemplateTest extends ItemscriptTestBase {
     	context.asObject()
     			.put("y", "null");
     	JsonValue val = processTemplateToValue(text);
-    	String error = Template.setErrorMessage(val.asObject());
+    	String error = val.asObject().getString("message");
     	assertEquals(error, "Value '123' was not null.");
     }
     
@@ -829,8 +835,118 @@ public class TemplateTest extends ItemscriptTestBase {
     	context.asObject()
     			.put("y", stringDef);
     	JsonValue val = processTemplateToValue(text);
-    	String error = Template.setErrorMessage(val.asObject());
+    	String error = val.asObject().getString("message");
     	assertEquals(error, "Your value is the wrong length. Your value is 3 characters long. The correct length is 5 characters.");
+    }
+    
+    @Test
+    public void testFunctionValidateAsNumberSimple() {
+    	String text = "{:x validateAsNumber('number')}";
+    	context.asObject()
+    		.put("x", 123);
+    	JsonValue val = processTemplateToValue(text);
+    	assertTrue(val.asObject().get("valid").booleanValue());
+    	context.asObject().remove("x");
+    	context.asObject()
+    			.put("x", "+123");
+    	val = processTemplateToValue(text);
+    	assertTrue(val.asObject().get("valid").booleanValue());
+    	context.asObject().remove("x");
+    	context.asObject()
+    			.put("x", "abc123");
+    	val = processTemplateToValue(text);
+    	String error = val.asObject().getString("message");
+    	assertEquals(error, "Your value '\"abc123\"' does not represent a number.");
+    }
+    
+    @Test
+    public void testFunctionValidateAsNumberDef() {
+    	String text = "{:x validateAsNumber(:y)}";
+    	JsonObject def = system().createObject();
+    	def.put(".extends", "integer");
+    	context.asObject()
+    		.put("y", def);
+    	context.asObject()
+    		.put("x", 123);
+    	JsonValue val = processTemplateToValue(text);
+    	assertTrue(val.asObject().get("valid").booleanValue());
+    	context.asObject().remove("x");
+    	context.asObject()
+    			.put("x", "-123");
+    	val = processTemplateToValue(text);
+    	assertTrue(val.asObject().get("valid").booleanValue());
+    	context.asObject().remove("x");
+    	context.asObject()
+    			.put("x", "1.2");
+    	val = processTemplateToValue(text);
+    	String error = val.asObject().getString("message");
+    	assertEquals(error, "Value '1.2' was not an integer.");
+    }
+    
+    @Test
+    public void testFunctionValidateAsNumberWrongType() {
+    	String text = "{:x validateAsNumber('string')}";
+    	context.asObject()
+    		.put("x", 123);
+    	try {
+    		processTemplateToValue(text);
+    	} catch (ItemscriptError e) {
+    		threwException = true;
+    	}
+    	assertTrue(threwException);
+    }
+    
+    @Test
+    public void testFunctionValidateAsBooleanSimple() {
+    	String text = "{:x validateAsBoolean('boolean')}";
+    	context.asObject()
+    		.put("x", true);
+    	JsonValue val = processTemplateToValue(text);
+    	assertTrue(val.asObject().get("valid").booleanValue());
+    	context.asObject().remove("x");
+    	context.asObject()
+    			.put("x", "false");
+    	val = processTemplateToValue(text);
+    	assertTrue(val.asObject().get("valid").booleanValue());
+    	context.asObject().remove("x");
+    	context.asObject()
+    			.put("x", "abc123");
+    	val = processTemplateToValue(text);
+    	String error = val.asObject().getString("message");
+    	assertEquals(error, "Your value '\"abc123\"' does not represent a boolean.");
+    }
+    
+    @Test
+    public void testFunctionValidateAsBooleanDef() {
+    	String text = "{:x validateAsBoolean(:y)}";
+    	JsonObject def = system().createObject();
+    	def.put(".extends", "boolean");
+    	def.put(".booleanValue", true);
+    	context.asObject()
+    		.put("y", def);
+    	context.asObject()
+    		.put("x", true);
+    	JsonValue val = processTemplateToValue(text);
+    	assertTrue(val.asObject().get("valid").booleanValue());
+    	context.asObject().remove("x")	;
+    	context.asObject()
+    			.put("x", false);
+    	val = processTemplateToValue(text);
+    	String error = val.asObject().getString("message");
+    	assertEquals(error, "Your value does not match the required boolean value.");
+    }
+    
+    @Test
+    public void testFunctionValidateAsBooleanWrongType() {
+    	String text = "{:x validateAsBoolean('string')}";
+    	context.asObject()
+    		.put("x", "true");
+    	try {
+    		processTemplateToValue(text);
+    	} catch (ItemscriptError e) {
+    		threwException = true;
+    	}
+    	assertTrue(threwException);
     }
   
     @Test

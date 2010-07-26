@@ -224,8 +224,8 @@ class LongType extends TypeBase {
 				throw ItemscriptError.internalError(this,
 						"validateLong.value.is.not.equal.to.equal.to",
 						pathValueParams(path, longVal)
-							.p("correctValue", equalToValue)
-							.p("incorrectValue", longVal.toString()));
+							.p("specified", equalToValue)
+							.p("input", longVal.toString()));
 			}
 		}
 		if (greaterThan != null) {
@@ -233,8 +233,8 @@ class LongType extends TypeBase {
 				throw ItemscriptError.internalError(this,
 						"validateLong.value.is.less.than.or.equal.to.min",
 						pathValueParams(path, longVal)
-							.p("correctValue", greaterThanValue)
-							.p("incorrectValue", longVal.toString()));
+							.p("specified", greaterThanValue)
+							.p("input", longVal.toString()));
 			}
 		}
 		if (greaterThanOrEqualTo != null) {
@@ -242,8 +242,8 @@ class LongType extends TypeBase {
 				throw ItemscriptError.internalError(this,
 						"validateLong.value.is.less.than.min",
 						pathValueParams(path, longVal)
-							.p("correctValue", greaterThanOrEqualToValue)
-							.p("incorrectValue", longVal.toString()));
+							.p("specified", greaterThanOrEqualToValue)
+							.p("input", longVal.toString()));
 			}
 		}
 		if (lessThan != null) {
@@ -251,8 +251,8 @@ class LongType extends TypeBase {
 				throw ItemscriptError.internalError(this,
 						"validateLong.value.is.greater.than.or.equal.to.max",
 						pathValueParams(path, longVal)
-							.p("correctValue", lessThanValue)
-							.p("incorrectValue", longVal.toString()));
+							.p("specified", lessThanValue)
+							.p("input", longVal.toString()));
 			}
 		}
 		if (lessThanOrEqualTo != null) {
@@ -260,8 +260,8 @@ class LongType extends TypeBase {
 				throw ItemscriptError.internalError(this,
 						"validateLong.value.is.greater.than.max",
 						pathValueParams(path, longVal)
-							.p("correctValue", lessThanOrEqualToValue)
-							.p("incorrectValue", longVal.toString()));
+							.p("specified", lessThanOrEqualToValue)
+							.p("input", longVal.toString()));
 			}
 		}
 		if (hasEven) {
