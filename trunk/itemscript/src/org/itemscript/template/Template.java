@@ -39,8 +39,6 @@ import org.itemscript.core.values.JsonValue;
 
 /**
  * A compiled template that can produce either text or a JSON value.
- * <p>
- * NOTE: At present all Template interfaces are still experimental and subject to change.
  * 
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
