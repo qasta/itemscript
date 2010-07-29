@@ -151,3 +151,6 @@ This mechanism is probably going to change; a general way of detecting whether t
                     }
                 });
 }}}
+
+
+Itemscript is a registered trademark of Data Base Architects, Inc. The Itemscript specification, the Itemstore API specification and the JAM template language specification are open source works published under the new BSD license.
