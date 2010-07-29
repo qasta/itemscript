@@ -1,4 +1,4 @@
-#summary introducing Itemscript
+#summary Introducing Itemscript
 #labels Phase-Requirements,Featured,Phase-Implementation
 =What is Itemscript?=
 
