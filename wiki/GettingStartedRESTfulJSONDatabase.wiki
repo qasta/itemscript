@@ -1,4 +1,4 @@
-#summary How to get started using the in-memory RESTful JSON database in the Itemscript library.
+#summary Using the Itemstore API and the in-memory RESTful JSON database.
 #labels Featured,Phase-Implementation
 
 =The Itemstore API specification=
