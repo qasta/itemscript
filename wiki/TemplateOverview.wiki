@@ -10,16 +10,19 @@ This document describes JAM templates and the JAM template language.
 The JAM language can be used directly to describe data, events and interfaces, or you can use a simple notation to build re-usable templates.  
 
 This is a simple JAM declaration that displays an image:
+
 {
     "widget" : "Image",
     "url" : "PetBase.png"
 }
 
 Using JAM template notation, you can bind the "url" value from a configuration file:
+
 {
     "widget" : "Image",
     "url" : ":image",
 }
+
 At runtime, the :image resolves to the object at that location.  
 
 JAM templates make it easy to write JAM applications from building blocks.  This enables easier customization of interfaces and reduces the amount of new code needed to build applications that share a basic design.  
