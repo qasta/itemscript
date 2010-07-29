@@ -1,7 +1,7 @@
 #summary An overview of JAM templates for Itemscript.
 #labels Featured,Phase-Implementation
 
-JAM (JSON Application Markup) is an application development language based on itemscript (http://itemscript.org).  JAM extends Itemscript to express data, events and interfaces using a common language based on name:value pairs expressed as JSON data.  
+*JAM* (JSON Application Markup) is an application development language based on itemscript (http://itemscript.org).  *JAM* extends *Itemscript* to express data, events and interfaces using a common language based on name:value pairs expressed as JSON data.  
 
 This document describes JAM templates and the JAM template language.
 
@@ -428,3 +428,6 @@ Planned but not scheduled for the near future:
   * Substring parameter for string values
   * Restartable interpretation for asynchronous inclusion of values in GWT/JavaScript
   * Automatic caching of compiled templates
+
+
+Itemscript and JAM are trademarks of Data Base Architects, Inc.  The Itemcript and JAM specifications are published as open source under the new BSD license.
