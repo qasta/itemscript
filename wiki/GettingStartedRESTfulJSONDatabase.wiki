@@ -1,9 +1,11 @@
 #summary How to get started using the in-memory RESTful JSON database in the Itemscript library.
 #labels Featured,Phase-Implementation
 
-= Introduction =
+=The Itemstore API specification=
 
-The Itemscript JSON library provides an in-memory database for JSON values with a REST-style interface. Items in the database are accessed using hierarchical URLs, as are queries.
+The Itemstore specification provides a simple RESTful API to JSON values stored in memory or persisted to a data source.  Read [http://code.google.com/p/itemscript/wiki/CreateAConnector this] for information on writing a connector.
+
+The Itemscript JSON library provides an in-memory database that implements the Itemstore API with a REST-style interface. Items in the database are accessed using hierarchical URLs, as are queries.
 
 The API supports three basic operations:
 
@@ -408,3 +410,6 @@ barDump: {
     "value" : {}
 }
 }}}
+
+
+Itemscript is a registered trademark of Data Base Architects, Inc.  The Itemscript and Itemstore specifications are open source works published under the new BSD license.
