@@ -1,4 +1,5 @@
 #labels Phase-Requirements,Featured,Phase-Implementation
+#introducing Itemscript
 =What is Itemscript?=
 
 The *Itemscript project* intends to provide a set of technologies and standard conventions for building applications from simple name:value pairs that direct Itemscript components. 
@@ -109,3 +110,5 @@ Relational databases are not going away.  Legacy data is not going away.  Messag
 The Itemstore API provides a simple agnostic interface to data sources that hides the complex technical details. This gives the interface designer the ability to mash disparate data into intelligent interfaces without need to master a separate API for each data source.
 
 Software developers publish data sources that expose the Itemstore API that can wrap a database query, url, SOAP service or message queue, then support that interface for application development.  This reduces support costs, but more importantly it gives the publisher of the API the ability to remodel internals without affecting applications.
+
+Itemscript is a registered trademark of Data Base Architects, Inc. The Itemscript specification is an open source work published under the new BSD license.
