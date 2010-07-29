@@ -1,4 +1,6 @@
+#summary Introducing the Itemscript schema specification
 #labels Featured,Phase-Design
+
 =Itemscript Schema=
 
 Itemscript Schema is a very simple schema language for describing JSON values.
