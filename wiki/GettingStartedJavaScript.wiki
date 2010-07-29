@@ -64,3 +64,6 @@ Takes two arguments. The first is the URL to retrieve; the second is a JavaScrip
 ----
 
 See also the README.txt file included in the JavaScript ZIP file, and for some examples: [http://code.google.com/p/itemscript/source/browse/trunk/itemscript/war/javascript-example.html javascript-example.html]
+
+
+Itemscript is a registered trademark of Data Base Architects, Inc. The Itemscript specification, the Itemstore API specification and the JAM template language specification are open source works published under the new BSD license.
