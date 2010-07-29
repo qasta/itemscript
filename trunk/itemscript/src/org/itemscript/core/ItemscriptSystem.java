@@ -115,6 +115,13 @@ public final class ItemscriptSystem implements JsonSystem {
     }
 
     @Override
+    public String constant(String name) {
+        String value = constants.get(name);
+        if (value == null) { throw ItemscriptError.internalError(this, "getConstant.name.was.not.found", name); }
+        return value;
+    }
+
+    @Override
     public PutResponse copy(JsonValue value, String toUrl) {
         return put(toUrl, parse(value.toCompactJsonString()));
     }
@@ -240,30 +247,7 @@ public final class ItemscriptSystem implements JsonSystem {
         JsonValue value = null;
         Connector connector = getConnector(withoutFragmentUrl);
         if (withoutFragmentUrl.hasQuery()) {
-            Query query = withoutFragmentUrl.query();
-            if (query.isDumpQuery() && connector instanceof SyncDumpConnector) {
-                value = ((SyncDumpConnector) connector).dump(withoutFragmentUrl);
-            } else if (connector instanceof SyncBrowseConnector
-                    && (query.isCountItemsQuery() || query.isPagedItemsQuery() || query.isPagedKeysQuery() || query.isKeysQuery())) {
-                SyncBrowseConnector browseConnector = (SyncBrowseConnector) connector;
-                if (query.isCountItemsQuery()) {
-                    value = browseConnector.countItems(withoutFragmentUrl);
-                } else if (query.isPagedItemsQuery()) {
-                    value = browseConnector.pagedItems(withoutFragmentUrl);
-                } else if (query.isPagedKeysQuery()) {
-                    value = browseConnector.pagedKeys(withoutFragmentUrl);
-                } else if (query.isKeysQuery()) {
-                    value = browseConnector.getKeys(withoutFragmentUrl);
-                } else {
-                    // Should never happen.
-                    throw ItemscriptError.internalError(this,
-                            "get.had.query.and.SyncBrowseConnector.but.did.not.know.query.type");
-                }
-            } else {
-                if (!(connector instanceof SyncQueryConnector)) { throw ItemscriptError.internalError(this,
-                        "get.had.query.but.connector.did.not.implement.query.connector.type"); }
-                value = ((SyncQueryConnector) connector).query(withoutFragmentUrl);
-            }
+            value = getQuery(withoutFragmentUrl, value, connector);
         } else {
             // Otherwise just use the regular SyncGetConnector interface.
             if (!(connector instanceof SyncGetConnector)) { throw ItemscriptError.internalError(this,
@@ -314,6 +298,24 @@ public final class ItemscriptSystem implements JsonSystem {
         return JsonAccessHelper.asBoolean(get(url));
     }
 
+    private JsonValue getBrowseQuery(Url withoutFragmentUrl, JsonValue value, Connector connector, Query query) {
+        SyncBrowseConnector browseConnector = (SyncBrowseConnector) connector;
+        if (query.isCountItemsQuery()) {
+            value = browseConnector.countItems(withoutFragmentUrl);
+        } else if (query.isPagedItemsQuery()) {
+            value = browseConnector.pagedItems(withoutFragmentUrl);
+        } else if (query.isPagedKeysQuery()) {
+            value = browseConnector.pagedKeys(withoutFragmentUrl);
+        } else if (query.isKeysQuery()) {
+            value = browseConnector.getKeys(withoutFragmentUrl);
+        } else {
+            // Should never happen.
+            throw ItemscriptError.internalError(this,
+                    "get.had.query.and.SyncBrowseConnector.but.did.not.know.query.type");
+        }
+        return value;
+    }
+
     /**
      * Get the connector for the scheme of the supplied URL.
      * 
@@ -361,6 +363,21 @@ public final class ItemscriptSystem implements JsonSystem {
     @Override
     public JsonObject getObject(String url) {
         return JsonAccessHelper.asObject(get(url));
+    }
+
+    private JsonValue getQuery(Url withoutFragmentUrl, JsonValue value, Connector connector) {
+        Query query = withoutFragmentUrl.query();
+        if (query.isDumpQuery() && connector instanceof SyncDumpConnector) {
+            value = ((SyncDumpConnector) connector).dump(withoutFragmentUrl);
+        } else if (connector instanceof SyncBrowseConnector
+                && (query.isCountItemsQuery() || query.isPagedItemsQuery() || query.isPagedKeysQuery() || query.isKeysQuery())) {
+            value = getBrowseQuery(withoutFragmentUrl, value, connector, query);
+        } else {
+            if (!(connector instanceof SyncQueryConnector)) { throw ItemscriptError.internalError(this,
+                    "get.had.query.but.connector.did.not.implement.query.connector.type"); }
+            value = ((SyncQueryConnector) connector).query(withoutFragmentUrl);
+        }
+        return value;
     }
 
     @Override
@@ -563,6 +580,13 @@ public final class ItemscriptSystem implements JsonSystem {
     }
 
     @Override
+    public void setConstant(String name, String value) {
+        if (constants.containsKey(name)) { throw ItemscriptError.internalError(this,
+                "setConstant.name.already.exists", name); }
+        constants.put(name, value);
+    }
+
+    @Override
     public JsonSystem system() {
         return this;
     }
@@ -575,19 +599,5 @@ public final class ItemscriptSystem implements JsonSystem {
     @Override
     public JsonUtil util() {
         return util;
-    }
-
-    @Override
-    public void setConstant(String name, String value) {
-        if (constants.containsKey(name)) { throw ItemscriptError.internalError(this,
-                "setConstant.name.already.exists", name); }
-        constants.put(name, value);
-    }
-
-    @Override
-    public String constant(String name) {
-        String value = constants.get(name);
-        if (value == null) { throw ItemscriptError.internalError(this, "getConstant.name.was.not.found", name); }
-        return value;
     }
 }
