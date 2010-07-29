@@ -1,4 +1,5 @@
 <module>
 	<source path="schema" />
 	<inherits name="org.itemscript.Itemscript" />
+    <inherits name="org.itemscript.Template" />
 </module>

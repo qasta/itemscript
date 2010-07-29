@@ -11,8 +11,7 @@ import org.itemscript.core.values.JsonObject;
 import org.itemscript.core.values.JsonValue;
 
 /**
- * Represents a Schema. A schema is a JSON object whose keys are the names of types,
- * and whose values are the type definitions. 
+ * Provides access to the Schema functions of Itemscript. 
  * 
  * @author Jacob Davies <br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  *

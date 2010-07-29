@@ -14,7 +14,7 @@
 		</jar>
 	</target>
 	<target name="standard-jar" description="Create the itemscript-standard JAR file">
-		<jar destfile="dist/itemscript-standard-${version}.jar" basedir="war/WEB-INF/classes" excludes="**/test/**,**/examples/**,**/gwt/**,**/Itemscript.gwt.xml" />
+		<jar destfile="dist/itemscript-standard-${version}.jar" basedir="war/WEB-INF/classes" excludes="**/test/**,**/examples/**,**/gwt/**,**/*.gwt.xml" />
 	</target>
 	<target name="javadoc" description="Create the Javadoc">
 		<javadoc destdir="doc" author="true" windowtitle="Itemscript Javadoc">
@@ -46,5 +46,6 @@
 		<gwtCompile module="org.itemscript.Itemscript" />
 		<gwtCompile module="org.itemscript.Template" />
 		<gwtCompile module="org.itemscript.Schema" />
+		<gwtCompile module="examples.org.itemscript.gwt.Example" />
 	</target>
 </project>
