@@ -464,3 +464,5 @@ The expected state of the data model after the call:
     }
 }
 }}}
+
+Itemscript is a registered trademark of Data Base Architects, Inc. The Itemscript specification, the Itemstore API specification and the JAM template language specification are open source works published under the new BSD license.
