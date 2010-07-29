@@ -3,6 +3,8 @@
 
 =Itemscript Schema=
 
+_Authors: Eileen Bai & Jacob Davies_
+
 Itemscript Schema is a very simple schema language for describing JSON values.
 
 It aims to be extremely concise, self-explanatory, and minimal. Other schema languages allow much
