@@ -74,3 +74,5 @@ For instance, in the Itemscript project we build two different JARs with ant lik
 The standard JAR contains no GWT-specific-classes and none of the gwt.xml files, making it safe to use in an environment where the GWT libraries are not installed. The GWT JAR can be used both on the server side and to compile GWT code for the client side.
 
 The other advantage of two JARs is that the standard JAR does not need to contain the source code, whereas the GWT JAR does. You can see that in the `<fileset>` line in the above ant script.
+
+Itemscript is a registered trademark of Data Base Architects, Inc. The Itemscript specification, the Itemstore API specification and the JAM template language specification are open source works published under the new BSD license.
