@@ -1,3 +1,4 @@
+#labels Featured,Phase-Design
 =Itemscript Schema=
 
 Itemscript Schema is a very simple schema language for describing JSON values.
@@ -453,3 +454,6 @@ The schema definition for a schema:
 	}
 }
 }}}
+
+
+Itemscript is a registered trademark of Data Base Architects, Inc, sponsors of the Itemscript open source project.  Itemscript is open source, published under the new BSD license.
