@@ -1,7 +1,7 @@
-#labels Phase-Requirements
+#labels Phase-Requirements,Featured,Phase-Implementation
 =What is Itemscript?=
 
-The *Itemscript project* intends to provide a set of technologies and standard conventions for building applications from Itemscript components. 
+The *Itemscript project* intends to provide a set of technologies and standard conventions for building applications from simple name:value pairs that direct Itemscript components. 
 
 *Itemscript* is a declarative provisioning language for JSON data.  Itemscript gives [http://json.org/ JSON] a language for expressing data, metadata, and applications. 
 
@@ -25,7 +25,9 @@ At its most basic level, Itemscript provides a schema definition for JSON data. 
 
 If you're building new applications, remodeling into AJAX style UIs, adding cloud services or building mashboards, the Itemscript JSON library provides a common API for Java and GWT development.
 
-==Is this an all or nothing proposition?  What about my stuff that already works?==
+JAM (JSON Application Markup) extends Itemscript to express data, interfaces and events using a common language based on name:value pairs.  JAM templates are described [http://code.google.com/p/itemscript/wiki/JAMtemplates here].
+
+==What about my stuff that already works?==
 
 An "Itemscript system" is one that uses some or all of these building blocks.   An Itemscript system can interact with any component or service that knows how to read or write JSON, especially over RESTful connections.
 
@@ -33,7 +35,7 @@ It's possible to consume SOAP to build an Itemscript payload.  It's possible to 
 
 ==What levels of use are available?==
 
-===Level 0=== 
+===Level 0 Marshalling JSON data=== 
 
 The lowest level of compliance is any system that uses JSON to marshall data from RESTful services and provision interfaces using Java or Javascript APIs.
 
@@ -41,19 +43,19 @@ A level 0 application might use no Itemscript technologies. It may simply connec
 
 Many existing systems that use JSON over REST are already available for integration.
 
-===Level 1=== 
+===Level 1 Writing services with JSON payloads === 
 
 A level 1 Itemscript system uses itemscript JSON libraries to process JSON values and expose JSON APIs either in Java or over a RESTful service.
 
 If you have a system architecture that works for you, you can use Itemscript to expose JSON APIs that wrap its technical details and expose controls using itemscript declarations.  
 
-===Level 2=== 
+===Level 2 Managing JSON data=== 
 
 A level 2 Itemscript system uses Itemscript schema to describe its metadata.  It may also use the Itemscript protocol to persist items. 
 
 At this level, the Itemscript schema provides data validation and the Itemscript library provides an in memory object model and a RESTful proxy for data sources.
 
-===Level 3===
+===Level 3 Managing rich web interactions===
 
 A level 3 Itemscript system uses an Itemscript object model to manage its internal workings. The application is entirely configured using JSON structures that are processed
 by the Itemscript libraries.
@@ -94,13 +96,16 @@ human-readable, human-writable way to share the contents of a JSON structure.  I
 Any schema language intends to support human-to-human communication. Domain experts should not need to be experts in a schema language to communicate their
 understanding of the structure and content of shared information.
 
-==How does Itemscript compare to YAML?==
+===JAM specification===
 
-YAML (YAML Ain't Markup Language) is a great project that's very compatible with Itemscript, as it can read and emit standard JSON. YAML provides a way to serialize and
-deserialize objects but it doesn't provide an in-memory object store or an event model.
+[http://code.google.com/p/itemscript/wiki/JAMtemplates JAM (JSON Application Markup)] is a simple standard way to describe content, events and interactions using Itemscript declarations.  
 
-==What if we want to connect SQL databases and other legacy data?==
+===Item Store specification===
 
-It's pretty straightforward to write an adapter to a relational server. We're working on a tool that will connect to SQL databases using Itemscript declarations.
+[http://code.google.com/p/itemscript/w/edit/GettingStartedRESTfulJSONDatabase Itemstore is a RESTful API specification for JSON data.  
 
-Relational databases are not going away.  Legacy data is not going away.  Messaging is not going away.  Itemscript hides the complexity of their technical details and makes it easier to mash disparate data into intelligent interfaces.
+Relational databases are not going away.  Legacy data is not going away.  Messaging is not going away.  
+
+The Itemstore API provides a simple agnostic interface to data sources that hides the complex technical details. This gives the interface designer the ability to mash disparate data into intelligent interfaces without need to master a separate API for each data source.
+
+Software developers publish data sources that expose the Itemstore API that can wrap a database query, url, SOAP service or message queue, then support that interface for application development.  This reduces support costs, but more importantly it gives the publisher of the API the ability to remodel internals without affecting applications.
