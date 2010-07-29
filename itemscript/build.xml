@@ -1,5 +1,5 @@
 <project name="JAR Itemscript" default="dist" basedir=".">
-	<property name="version" value="0.9.12" />
+	<property name="version" value="1.0.0" />
     <macrodef name="gwtCompile">
         <attribute name="module" />
         <sequential>
@@ -7,9 +7,10 @@
                 <arg value="@{module}" />
             </java>
         </sequential>
-    </macrodef>	<target name="gwt-jar" description="Create the itemscript-gwt JAR file">
+    </macrodef>
+	<target name="gwt-jar" description="Create the itemscript-gwt JAR file">
 		<jar destfile="dist/itemscript-gwt-${version}.jar" basedir="war/WEB-INF/classes" excludes="**/test/**,**/examples/**">
-			<fileset dir="src/" excludes="**/Itemscript.gwt.xml,**/examples/**,**/test/**" />
+			<fileset dir="src/" excludes="**/examples/**,**/test/**" />
 		</jar>
 	</target>
 	<target name="standard-jar" description="Create the itemscript-standard JAR file">
@@ -44,5 +45,6 @@
 	<target name="gwt-compile">
 		<gwtCompile module="org.itemscript.Itemscript" />
 		<gwtCompile module="org.itemscript.Template" />
+		<gwtCompile module="org.itemscript.Schema" />
 	</target>
 </project>
