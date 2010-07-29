@@ -1,5 +1,5 @@
+#summary introducing Itemscript
 #labels Phase-Requirements,Featured,Phase-Implementation
-#introducing Itemscript
 =What is Itemscript?=
 
 The *Itemscript project* intends to provide a set of technologies and standard conventions for building applications from simple name:value pairs that direct Itemscript components. 
