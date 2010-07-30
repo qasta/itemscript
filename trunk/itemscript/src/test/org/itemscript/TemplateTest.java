@@ -704,6 +704,14 @@ public class TemplateTest extends ItemscriptTestBase {
     }
 
     @Test
+    public void testSetErrorMessageBadName() {
+    	String text = "{:thisFieldDoesNotExist validate('boolean')}";
+    	JsonValue val = processTemplateToValue(text);
+    	String error = val.asObject().getString("message");
+    	assertEquals(error, "The value you provided does not exist.");
+    }
+    
+    @Test
     public void testSetErrorMessageAny() {
     	String text = "{:x validate(:y)}";
     	JsonObject anyDef = system().createObject();

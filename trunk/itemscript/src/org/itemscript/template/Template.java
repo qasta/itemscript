@@ -236,7 +236,7 @@ public class Template implements HasSystem, Element {
 	    		
 	    		//General Type errors
 	    		if (error.equals("value.was.null")) {
-	    			returnedObject.p("message", "Value cannot be null.");
+	    			returnedObject.p("message", "The value you provided does not exist.");
 	    		}
 	    		if (error.equals("value.was.not.null")) {
 	    			returnedObject.p("message", "Value '" + value + "' was not null.");

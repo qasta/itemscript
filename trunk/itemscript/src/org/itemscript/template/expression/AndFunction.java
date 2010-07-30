@@ -19,10 +19,10 @@ public class AndFunction extends FunctionBase {
                 "value.was.not.boolean", value + ""); }
         if (args().size() != 1) { throw ItemscriptError.internalError(this, "execute.only.one.arg.allowed", args()
                 + ""); }
-        JsonValue orValue = args().get(0)
+        JsonValue andValue = args().get(0)
                 .interpret(templateExec, context);
-        if (orValue != null && !orValue.isBoolean()) { throw ItemscriptError.internalError(this,
-                "or.value.was.not.boolean", orValue + ""); }
+        if (andValue != null && !andValue.isBoolean()) { throw ItemscriptError.internalError(this,
+                "and.value.was.not.boolean", andValue + ""); }
         boolean valueBoolean;
         if (value == null) {
             valueBoolean = false;
@@ -30,10 +30,10 @@ public class AndFunction extends FunctionBase {
             valueBoolean = value.booleanValue();
         }
         boolean andValueBoolean;
-        if (orValue == null) {
+        if (andValue == null) {
             andValueBoolean = false;
         } else {
-            andValueBoolean = orValue.booleanValue();
+            andValueBoolean = andValue.booleanValue();
         }
         return system().createBoolean(valueBoolean && andValueBoolean);
     }
