@@ -1,0 +1,26 @@
+#summary Getting started with using the Validator for the Itemscript Schema Language.
+
+= Introduction =
+
+The Schema Validator is used to validate JSON values against template defined types.
+The following guide will provide examples on how to create type definitions and validate input against it.
+Please refer to the [ItemscriptSchema ItemscriptSchema] page to see a list of the default types that every other created type will extend.
+
+= Simple Example =
+Let's start out by validating a simple value against the Boolean default type.
+So the template text would look something like this:
+  {{{{:x validate('boolean')}
+
+--start editing here.
+    @Test
+    public void testFunctionValidateBooleanType() {
+    	String text = "{:x validate('boolean')}";
+    	context.asObject()
+    			.put("x", true);
+    	JsonValue val = processTemplateToValue(text);
+    	assertTrue(val.asObject().get("valid").booleanValue());
+    	context.asObject()
+    			.put("x", 123);
+    	val = processTemplateToValue(text);
+    	assertFalse(val.asObject().get("valid").booleanValue());
+    }
