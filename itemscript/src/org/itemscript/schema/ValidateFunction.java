@@ -18,8 +18,8 @@ import org.itemscript.template.expression.FunctionFactory;
 /**
  * Represents the general "validate" function.
  * This Function validates that a given value is valid according to the specified Type.
- * After validation, either a successObject or an errorObject is returned. If validation results in an
- * error, the "message" key provides the human-readable error message.
+ * After validation, either a successObject or an errorObject with an error message under
+ * the "message" value is returned.
  * 
  * @author Eileen Bai
  */
