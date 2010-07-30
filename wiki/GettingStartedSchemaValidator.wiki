@@ -9,7 +9,7 @@ Please refer to the [ItemscriptSchema ItemscriptSchema] page to see a list of th
 = Simple Example =
 Let's start out by validating a simple value against the Boolean default type.
 So the template text would look something like this:
-  {{{{:x validate('boolean')}
+  {{{{:x validate('boolean')}}}}
 
 --start editing here.
     @Test
