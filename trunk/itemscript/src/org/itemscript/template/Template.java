@@ -221,7 +221,8 @@ public class Template implements HasSystem, Element {
      * validated. Only deals with error messages seen by the user at runtime.
      * 
      * @param returnedObject
-     * @return the error message if the validate failed, a null string otherwise
+     * @return the error Object with new error message attached if validation failed, else the original
+     * object.
      */
     public static JsonObject setErrorMessage(JsonObject returnedObject) {
     	if (returnedObject.get("valid").booleanValue() == false) {
