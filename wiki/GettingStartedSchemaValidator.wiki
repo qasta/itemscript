@@ -50,7 +50,7 @@ Remember we need two closing `.end` tags; one for the `.section` directive and o
 ==Validating against user-defined types==
 Now let's say you want to create your own type to validate with. You can do this by writing up a type definition in your Configuration file under the key "types."
 
-Let's say that you want to validate that the `name` input is a string with a minimum length of 5 and begins with the letter "A." We will call this type: "AName."
+Let's say that you want to validate that the `name` input is a string with a minimum length of 5 characters and begins with the letter "A." We will call this type: "AName."
 
 So inside the Configuration file we would write:
 {{{
@@ -69,7 +69,7 @@ So inside the Configuration file we would write:
 
 _It is always a good idea to name your type prefixed with the name of your application._
 
-And now we can validate our name field just like before with this new type.
+And now we can validate our name field in the Template just like before with this new type.
 {{{
   {:name validate('Itemscript.AName')}
 }}}
