@@ -17,7 +17,7 @@ Let's start out by setting up the JAMTemplate and creating a simple TextBox widg
   }
 }}}
 
-We want to validate the input from the TextBox to make sure it is a String. In order to do this, we need to call the validate function so our Template would look something like this:
+We want to validate the input from the TextBox to make sure it is a String. In order to do this, we need to call the validate function which always takes a value to be validated (`name`) and an argument which is a Type reference (`string`). So our Template would look something like this:
 {{{
   {:name validate('string')}
 }}}
@@ -50,7 +50,7 @@ Remember we need two closing `.end` tags; one for the `.section` directive and o
 ==Validating against user-defined types==
 Now let's say you want to create your own type to validate with. You can do this by writing up a type definition in your Configuration file under the key "types."
 
-Let's say that you want to validate that the input is a string with a minimum length of 5 and begins with the letter "A." We will call this type: "AName."
+Let's say that you want to validate that the `name` input is a string with a minimum length of 5 and begins with the letter "A." We will call this type: "AName."
 
 So inside the Configuration file we would write:
 {{{
@@ -67,9 +67,9 @@ So inside the Configuration file we would write:
   }
 }}}
 
-It is always a good idea to name your type prefixed with the name of your application.
+_It is always a good idea to name your type prefixed with the name of your application._
 
 And now we can validate our name field just like before with this new type.
 {{{
-  {:name validate('AName')}
+  {:name validate('Itemscript.AName')}
 }}}
