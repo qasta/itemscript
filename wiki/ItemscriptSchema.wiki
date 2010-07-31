@@ -7,15 +7,14 @@ _Authors: Eileen Bai & Jacob Davies_
 
 Itemscript Schema is a very simple schema language for describing JSON values.
 
-It aims to be extremely concise, self-explanatory, and minimal. Other schema languages allow much
-more precision in specifying what values are acceptable, but are also much more complex and less concise.
+It aims to be extremely concise, self-explanatory, and minimal. Other schema languages allow much more precision in specifying what values are acceptable, but are also much more complex and less concise.
 
-Schema languages are primarily for people; they're used to communicate expectations between
-people programming different parts of a system, or to document the external interfaces of a system.
+Schema languages are primarily for people; they're used to communicate expectations between people programming different parts of a system, or to document the external interfaces of a system.
+
 As such, the most important aspect of a schema language is that it be human-readable and human-writable, and that it be concise enough to be useful in documentation. No schema language can hope to convey all of the subtleties of a system's interfaces, but it can clarify things like the names and spellings of keys in objects, what types are expected (and not expected) in what places, and what fixed constraints exist on the size or range of values.
 
 Validation of instance values is not nearly as important in most real situations. Validation with Itemscript Schema does not change the instance value in any way, and does not assign types to values.
-All it does is confirm that what was supplied matches the types it knows about.
+<br>All it does is confirm that what was supplied matches the types it knows about.
 
 ==A Schema==
 
@@ -25,27 +24,28 @@ There are about a dozen "core" types, with short names like "string", "object", 
 
 You should name your own types with a unique prefix; a good one is your domain name, reversed, like: "org.itemscript.Type". That way your schema can be combined with someone else's schema later, without the names interfering with each other. In this document, we'll include type definitions alone, without the rest of the schema.
 
-An example
+===An example===
 
 Let's start with an object:
 
 {{{
 {
-	"name" : "Bella",
-	"age" : 2,
-	"owner" : "Vera",
-	"breed" : "Cavalier King Charles"
+  "name" : "Bella",
+  "age" : 2,
+  "owner" : "Vera",
+  "breed" : "Cavalier King Charles"
 }
 }}}
 
 Here's a type that describes that object:
 
 {{{
-"com.petstore.Dog" : {
-	"name" : "string",
-	".optional age" : "integer"
-	"owner" : "string",
-	"breed" : "string"
+"com.petstore.Dog" :
+{
+  "name" : "string",
+  ".optional age" : "integer"
+  "owner" : "string",
+  "breed" : "string"
 }
 }}}
 
@@ -53,45 +53,45 @@ That type also matches this object:
 
 {{{
 {
-	"name" : "Fido",
-	"owner" : "Steve",
-	"breed" : "mutt",
-	"siblings" : ["Rex"]
+  "name" : "Fido",
+  "owner" : "Steve",
+  "breed" : "mutt",
+  "siblings" : ["Rex"]
 }
 }}}
 
 Note that the existence of extra values under keys not specified in the original type is no problem.
-By default, we just ignore any keys & values we don't know about. This is a good default, as it lets other people extend those objects without having to consult with us.
+<br>By default, we just ignore any keys & values we don't know about. This is a good default, as it lets other people extend those objects without having to consult with us.
 
 That type doesn't match this object:
 
 {{{
 {
-	"name" : "Loki",
-	"species" : "cat",
-	"owner" : "Jacob"
+  "name" : "Loki",
+  "species" : "cat",
+  "owner" : "Jacob"
 }
 }}}
 
-It's the missing "breed" value that's the problem with this object.
+The fact that it's the missing "breed" value is the problem with this object.
 
 It doesn't match this object either:
 
 {{{
 {
-	"name" : "Rex",
-	"age" : "6 months",
-	"owner" : "Steve",
-	"breed" : "mutt"
+  "name" : "Rex",
+  "age" : "6 months",
+  "owner" : "Steve",
+  "breed" : "mutt"
 }
 }}}
 
 The "age" value is optional, so it's okay if it's not present at all.
-But if it's present, it has to be an integer number, not a string.
+<br>But if it's present, it has to be an integer number, not a string.
 
 To distinguish between type definitions and objects you're describing, the former will be called "*types*" and the latter "*instances*".
 
-The basic types
+====The basic types====
 
   * any
   * object
@@ -109,7 +109,7 @@ The basic types
 A type definition can either be a JSON object or a JSON array. If it's an object, it contains keys that define the type, and it can be any kind of type, with the default being an object type if no “.extends” value is supplied. If it's an array, it always means an array type, and the allowable values for that array are given by the contents of the array. Until we get to talking about array type definitions, we'll assume that we're talking about type definitions in a JSON object.
 
 An empty object as a definition just means the basic "object" type that can contain any kind of values.
-An empty array as a definition just means the basic "array" type that can contain any kind of values.
+<br>An empty array as a definition just means the basic "array" type that can contain any kind of values.
 
 ==Type reference==
 
@@ -118,17 +118,18 @@ A type reference is a string giving the name of another type. The other type has
 ==Type specification==
 
 A type specification is used when you need to say what kind of type is allowed in an object or array.
-A type specification can either be a type reference referring to another type, or a type definition itself.
-So, you can write things like this:
+<br>A type specification can either be a type reference referring to another type, or a type definition itself.
+<br>So, you can write things like this:
 
 {{{
 {
-	"name" : "string",
-	"address" : {
-		"street" : "string",
-		"city" : "string",
-		"zip" : "string"
-	}
+  "name" : "string",
+  "address" :
+  {
+    "street" : "string",
+    "city" : "string",
+    "zip" : "string"
+  }
 }
 }}}
 
@@ -144,30 +145,32 @@ All type definitions can contain these two keys:
 
 ==Object type definitions==
 
-The default kind of type definition is an object type definition.
-Object type definitions are a JSON object whose keys are the names of keys that are required to appear in the matching instance, and whose corresponding values are type specifications for the types that the corresponding values in the instance must match.
+The default kind of type definition is an Object type definition.
+<br>Object type definitions are a JSON object whose keys are the names of keys that are required to appear in the matching instance, and whose corresponding values are type specifications for the types that the corresponding values in the instance must match.
 
   * *.optional* [key name] – a key starting with the string ".optional" has a value that is a type specification. The remainder of the key after ".optional" is used as the name of a key that may (but does not have to) occur in the instance object. If it occurs, it must match the type specification.
   * *.key* [key name] – a key starting with the string ".key" has a value that is a type specification. The remainder of the key after ".key" is used as the name of a key that must occur in the instance object and match the type specification. This is useful when you have an all-caps key you wish to specify as being required.
   * *.pattern* [key pattern] – a key starting with the string ".pattern" has a value that is a type specification. The remainder of the key after ".pattern" is used as the pattern that will be used to match against keys in the instance object; any matching keys must match the type specification. If more than one .pattern key exists and a key in the instance object matches more than one of the patterns, it must match the type specifications of all the patterns it matches.
   * *.wildcard* – a key named .wildcard means that any instance value identified by a key not matching another key specification in the type (a fixed key or a pattern) must match the corresponding type. This can be used to specify something like a Java Map. It's most useful without any other keys, but can be useful for a more compact syntax by allowing a mixture of special fixed keys and other keys (as for instance in an object definition in this schema language), although care should be taken that the two (or more) interpretations of keys do not overlap one another.
-  * *.inArray* – with an array value providing an enumerable array of object values that the instance object can be equal to.
-  * *.notInArray* – with an array value providing an enumerable array of object values that the instance object can not be equal to.
+  * *.inArray* – a key named .inArray has a value that is an array value providing an enumerable array of object values that the instance object can be equal to.
+  * *.notInArray* – a key named .notInArray has a value that is an array value providing an enumerable array of object values that the instance object can not be equal to.
 
 ==String type definitions==
 
-  * *.equals* – with a string value giving the exact string the instance string must equal.
-  * *.isLength* – with an integer value giving the exact length of an instance string, in characters.
-  * *.inArray* – with an array value providing an enumerable array of string values that the instance string can be equal to.
-  * *.notInArray* – with an array value providing an enumerable array of string values that the instance string can not be equal to.
-  * *.minlength* – with an integer value giving the minimum length of an instance string, in characters.
-  * *.maxlength* – with an integer value giving the maximum length of an instance string. in characters.
-  * *.pattern* – with a value that is either a single string or an array of strings; each is a pattern (see "Patterns", below), and an instance string must match one of these to match this type.
-  * *.regExPattern* – with a string value that is a regular expression used to validate the format of the instance string with.
+The String type just represents the standard string value. Most values retrieved from widgets such as TextBox and ListBox are of the String type.
+
+  * *.equals* – a key named .equals has a value that is a string value giving the exact string the instance string must equal.
+  * *.isLength* – a key named .isLength has a value that is an integer value giving the exact length of an instance string, in characters.
+  * *.minlength* – a key named .minLength has a value that is an integer value giving the minimum length of an instance string, in characters.
+  * *.maxlength* – a key named .maxLength has a value that is an integer value giving the maximum length of an instance string, in characters.
+  * *.pattern* – a key named .pattern has a value that is a value that is either a single string or an array of strings; each is a pattern (see "Patterns", below), and an instance string must match one of these to match this type.
+  * *.regExPattern* – a key named .regExPattern has a value that is a string value that is a regular expression used to validate the format of the instance string with.
+  * *.inArray* – a key named .inArray has a value that is an array value providing an enumerable array of string values that the instance string can be equal to.
+  * *.notInArray* – a key named .notInArray has a value that is an array value providing an enumerable array of string values that the instance string can not be equal to.
 
 ==Decimal type definitions==
 
-Decimal values represent an exact decimal number in a JSON string. The decimal type extends the basic string type. They are useful when working with currencies or other values where standard floating-point numbers are not appropriate. The representation is:
+Decimal values represent an exact decimal number in a JSON string. The Decimal type extends the basic String type. They are useful when working with currencies or other values where standard floating-point numbers are not appropriate. The representation is:
 
 decimal
   * int
@@ -185,13 +188,13 @@ frac
 No whitespace is permitted. Any string that does not match this pattern fails to match a decimal type.
 
   * _See *number type definitions* for list of generic numerical parameters, all number instance values must be of type decimal._
-  * *.fractionDigits* – with an integer value giving the maximum number of digits after the decimal point in an instance number.
+  * *.fractionDigits* – a key named .fractionDigits has a value that is an integer value giving the maximum number of digits after the decimal point in an instance number.
 
 (Validator implementations that cannot handle very large numbers should be careful to ignore MIN and MAX specifications that are outside of their number range, and allow any decimal instance to match, rather than reject values that may be valid but uncheckable because of implementation limitations.)
 
 ==Long type definition==
 
-Long values represent a 64-bit signed integer value with the same range as a Java long, with a minimum value of -2^63^ and a maximum value of 2^63 - 1^. The long type extends the decimal type, so they are also stored in a JSON string, and they implicitly specify the following restrictions:
+Long values represent a 64-bit signed integer value with the same range as a Java long with a minimum value of -2^63^ and a maximum value of 2^63 - 1^. The long type extends the decimal type, so they are also stored in a JSON string, and they implicitly specify the following restrictions:
 
   * “.min” : "-2^63",
   * ".max" : "2^63 – 1",
@@ -207,12 +210,13 @@ This type is useful when you are transferring Java long values (or other 64-bit 
 
 Binary values represent an array of bytes that can be converted to a base-64-encoded string for transport in JSON values. The binary type extends the string type.
 
-  * *.maxBytes* – With an integer or decimal value giving the maximum length of a binary instance, in bytes.
+  * *.maxBytes* – a key named .maxBytes has a value that is an integer or decimal value giving the maximum length of a binary instance, in bytes.
 
-(You should avoid using the string restrictions on binary values, since they will be applied to the base-64-encoded representation of the value, which is not very useful, and checking them may trigger the
-base-64 conversion unnecessarily.)
+(You should avoid using the string restrictions on binary values, since they will be applied to the base-64-encoded representation of the value, which is not very useful, and checking them may trigger the base-64 conversion unnecessarily.)
 
 ==Number type definitions==
+
+The Number type represents all standard numerical values.
 
   * *.equalTo* – with a number value giving the exact number the instance number can be equal to.
   * *.even* – with a boolean value indicating whether or not the instance number needs to be even or not even.
