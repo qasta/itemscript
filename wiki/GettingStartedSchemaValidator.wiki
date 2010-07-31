@@ -57,7 +57,7 @@ So inside the Configuration file we would write:
   {
     "types" :
     {
-      "Itemscript.AName" :
+      "org.itemscript.AName" :
       {
         ".extends" : "string",
         ".minLength" : 5,
@@ -67,9 +67,7 @@ So inside the Configuration file we would write:
   }
 }}}
 
-_It is always a good idea to name your type prefixed with the name of your application._
-
 And now we can validate our name field in the Template just like before with this new type.
 {{{
-  {:name validate('Itemscript.AName')}
+  {:name validate('org.itemscript.AName')}
 }}}
