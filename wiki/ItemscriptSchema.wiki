@@ -140,8 +140,8 @@ A type specification can therefore be a JSON string, a JSON object, or a JSON ar
 Inside a type definition, all keys that start with a dot are treated as schema-related.
 
 All type definitions can contain these two keys:
-  * *.extends* – with a string value that is a type reference giving the name of the type that this type is extending. The instance must match the type that this type extends (and the type that *that* type extends, and so on) as well as the type being specified. There is no way to "loosen" restrictions made by a type that you are extending.
-  * *.description* – with a string value that contains a description of the type.
+  * *.extends* – has a string value that is a type reference giving the name of the type that this type is extending. The instance must match the type that this type extends (and the type that *that* type extends, and so on) as well as the type being specified. There is no way to "loosen" restrictions made by a type that you are extending.
+  * *.description* – has a string value that contains a description of the type.
 
 ==Object type definitions==
 
@@ -151,22 +151,22 @@ The default kind of type definition is an Object type definition.
   * *.optional* [key name] – a key starting with the string ".optional" has a value that is a type specification. The remainder of the key after ".optional" is used as the name of a key that may (but does not have to) occur in the instance object. If it occurs, it must match the type specification.
   * *.key* [key name] – a key starting with the string ".key" has a value that is a type specification. The remainder of the key after ".key" is used as the name of a key that must occur in the instance object and match the type specification. This is useful when you have an all-caps key you wish to specify as being required.
   * *.pattern* [key pattern] – a key starting with the string ".pattern" has a value that is a type specification. The remainder of the key after ".pattern" is used as the pattern that will be used to match against keys in the instance object; any matching keys must match the type specification. If more than one .pattern key exists and a key in the instance object matches more than one of the patterns, it must match the type specifications of all the patterns it matches.
-  * *.wildcard* – a key named .wildcard means that any instance value identified by a key not matching another key specification in the type (a fixed key or a pattern) must match the corresponding type. This can be used to specify something like a Java Map. It's most useful without any other keys, but can be useful for a more compact syntax by allowing a mixture of special fixed keys and other keys (as for instance in an object definition in this schema language), although care should be taken that the two (or more) interpretations of keys do not overlap one another.
-  * *.inArray* – a key named .inArray has a value that is an array value providing an enumerable array of object values that the instance object can be equal to.
-  * *.notInArray* – a key named .notInArray has a value that is an array value providing an enumerable array of object values that the instance object can not be equal to.
+  * *.wildcard* – a key named ".wildcard" means that any instance value identified by a key not matching another key specification in the type (a fixed key or a pattern) must match the corresponding type. This can be used to specify something like a Java Map. It's most useful without any other keys, but can be useful for a more compact syntax by allowing a mixture of special fixed keys and other keys (as for instance in an object definition in this schema language), although care should be taken that the two (or more) interpretations of keys do not overlap one another.
+  * *.inArray* – a key named ".inArray" has a value that is an array value providing an enumerable array of object values that the instance object can be equal to.
+  * *.notInArray* – a key named ".notInArray" has a value that is an array value providing an enumerable array of object values that the instance object can not be equal to.
 
 ==String type definitions==
 
 The String type just represents the standard string value. Most values retrieved from widgets such as TextBox and ListBox are of the String type.
 
-  * *.equals* – a key named .equals has a value that is a string value giving the exact string the instance string must equal.
-  * *.isLength* – a key named .isLength has a value that is an integer value giving the exact length of an instance string, in characters.
-  * *.minlength* – a key named .minLength has a value that is an integer value giving the minimum length of an instance string, in characters.
-  * *.maxlength* – a key named .maxLength has a value that is an integer value giving the maximum length of an instance string, in characters.
-  * *.pattern* – a key named .pattern has a value that is a value that is either a single string or an array of strings; each is a pattern (see "Patterns", below), and an instance string must match one of these to match this type.
-  * *.regExPattern* – a key named .regExPattern has a value that is a string value that is a regular expression used to validate the format of the instance string with.
-  * *.inArray* – a key named .inArray has a value that is an array value providing an enumerable array of string values that the instance string can be equal to.
-  * *.notInArray* – a key named .notInArray has a value that is an array value providing an enumerable array of string values that the instance string can not be equal to.
+  * *.equals* – has a string value giving the exact string the instance string must equal.
+  * *.isLength* – has an integer value giving the exact length of an instance string, in characters.
+  * *.minlength* – has an integer value giving the minimum length of an instance string, in characters.
+  * *.maxlength* – has an integer value giving the maximum length of an instance string, in characters.
+  * *.pattern* – has a value that is either a single string or an array of strings; each is a pattern, and an instance string must match one of these to match this type.
+  * *.regExPattern* – has a string value that is a regular expression used to validate the format of the instance string with.
+  * *.inArray* – has an array value providing an enumerable array of string values that the instance string can be equal to.
+  * *.notInArray* – has an array value providing an enumerable array of string values that the instance string can not be equal to.
 
 ==Decimal type definitions==
 
@@ -188,7 +188,7 @@ frac
 No whitespace is permitted. Any string that does not match this pattern fails to match a decimal type.
 
   * _See *number type definitions* for list of generic numerical parameters, all number instance values must be of type decimal._
-  * *.fractionDigits* – a key named .fractionDigits has a value that is an integer value giving the maximum number of digits after the decimal point in an instance number.
+  * *.fractionDigits* – has an integer value giving the maximum number of digits after the decimal point in an instance number.
 
 (Validator implementations that cannot handle very large numbers should be careful to ignore MIN and MAX specifications that are outside of their number range, and allow any decimal instance to match, rather than reject values that may be valid but uncheckable because of implementation limitations.)
 
@@ -210,7 +210,7 @@ This type is useful when you are transferring Java long values (or other 64-bit 
 
 Binary values represent an array of bytes that can be converted to a base-64-encoded string for transport in JSON values. The binary type extends the string type.
 
-  * *.maxBytes* – a key named .maxBytes has a value that is an integer or decimal value giving the maximum length of a binary instance, in bytes.
+  * *.maxBytes* – has an integer value giving the maximum length of a binary instance, in bytes.
 
 (You should avoid using the string restrictions on binary values, since they will be applied to the base-64-encoded representation of the value, which is not very useful, and checking them may trigger the base-64 conversion unnecessarily.)
 
@@ -218,15 +218,15 @@ Binary values represent an array of bytes that can be converted to a base-64-enc
 
 The Number type represents all standard numerical values.
 
-  * *.equalTo* – with a number value giving the exact number the instance number can be equal to.
-  * *.even* – with a boolean value indicating whether or not the instance number needs to be even or not even.
-  * *.greaterThan* – with a number value giving the minimum value for instance number, must be greater than this number.
-  * *.greaterThanOrEqualTo* – with a number value giving the minimum value for instance number, must be greater than or equal to this number.
-  * *.lessThan* – with a number value giving the maximum value for instance number, must be less than this number.
-  * *.lessThanOrEqualTo* – with a number value giving the maximum value for instance number, must be less than or equal to this number.
-  * *.inArray* – with an array value providing an enumerable array of number values that the instance number can be equal to.
-  * *.notInArray* – with an array value providing an enumerable array of number values that the instance number can not be equal to.
-  * *.odd* – with a boolean value indicating whether or not the instance number needs to be odd or not odd.
+  * *.equalTo* – has a value giving the exact number the instance number can be equal to.
+  * *.greaterThan* – has a value giving the minimum number for an instance number, must be greater than this number.
+  * *.greaterThanOrEqualTo* – has a value giving the minimum value for an instance number, must be greater than or equal to this number.
+  * *.lessThan* – has a value giving the maximum value for an instance number, must be less than this number.
+  * *.lessThanOrEqualTo* – has a value giving the maximum value for an instance number, must be less than or equal to this number.
+  * *.even* – has a boolean value indicating whether or not the instance number needs to be even or not even.
+  * *.odd* – has a boolean value indicating whether or not the instance number needs to be odd or not odd.
+  * *.inArray* – has an array value providing an enumerable array of number values that the instance number can be equal to.
+  * *.notInArray* – has an array value providing an enumerable array of number values that the instance number can not be equal to.
 
 ==Integer type definitions==
 
@@ -236,9 +236,9 @@ Integers extend the number type, and are JSON numbers, but cannot have any non-z
 
 ==Boolean type definitions==
 
-Represent basic boolean structure.
+Represents the basic boolean structure.
 
-  * *.booleanValue* – with a boolean value specifying what the instance boolean must be in order to pass
+  * *.booleanValue* – has a boolean value specifying what the instance boolean must be in order to pass.
 
 ==Array type definitions==
 
@@ -246,47 +246,45 @@ Array type definitions can be either a JSON object like other type definitions, 
 
 When they're a JSON object, they can contain the following keys:
 
-  * *.exactSize* – with an integer value giving the exact number of elements that an instance array must contain.
-  * *.minSize* – with an integer value giving the minimum number of elements that an instance array can contain.
-  * *.maxSize* – with an integer value giving the maximum number of elements that an instance array can contain.
-  * *.contains* – with a value that is a type specification giving the type of value that an instance array can contain. If you need them to be able to contain more than one type of value, specify an "any" type reference.
-  * *.inArray* – with an array value providing an enumerable array of array values that the instance array can be equal to.
-  * *.notInArray* – with an array value providing an enumerable array of array values that the instance array can not be equal to.
+  * *.exactSize* – has an integer value giving the exact number of elements that an instance array must contain.
+  * *.minSize* – has an integer value giving the minimum number of elements that an instance array can contain.
+  * *.maxSize* – has an integer value giving the maximum number of elements that an instance array can contain.
+  * *.contains* – has a value that is a type specification giving the type of value that an instance array can contain. If you need them to be able to contain more than one type of value, specify an "any" type reference.
+  * *.inArray* – has an array value providing an enumerable array of array values that the instance array can be equal to.
+  * *.notInArray* – has an array value providing an enumerable array of array values that the instance array can not be equal to.
 
-When they're a JSON array, they can either be empty, or contain a single value that is a type specification giving the type of value that an instance array can contain. So, ["string"] defines an array
-type that can only contain strings and is exactly equivalent to a type definition of:
+When they're a JSON array, they can either be empty, or contain a single value that is a type specification giving the type of value that an instance array can contain. So, ["string"] defines an array type that can only contain strings and is exactly equivalent to an object type definition of:
 
 {{{
 {
-	".extends" : "array",
-	".contains" : "string"
+  ".extends" : "array",
+  ".contains" : "string"
 }
 }}}
 
 ==Any type definitions==
 
-An "any" type allows you to specify that a value can be one of several different types depending on what JSON type it is. This is often useful when you want to be able to supply different JSON types under the same key and trigger different behavior. For instance, a type specification is itself an instance of "any" type, as it can be either a JSON string, a JSON array, or a JSON object, each of which is
-treated differently.
+An "any" type allows you to specify that a value can be one of several different types depending on what JSON type it is. This is often useful when you want to be able to supply different JSON types under the same key and trigger different behavior. For instance, a type specification is itself an instance of "any" type, as it can be either a JSON string, a JSON array, or a JSON object, each of which is treated differently.
 
-  * *.string* – With a value that is a type reference to a string type, specifies the type to match if the value is a JSON string.
-  * *.number* – With a value that is a type reference to a number type, specifies the type to match if the value is a JSON number.
-  * *.boolean* – With a value that is a type reference to a boolean type, specifies the type to match if the value is a JSON boolean.
-  * *.array* – With a value that is a type specification of an array type, specifies the type to match if the value is a JSON array.
-  * *.object* – With a value that is a type specification of an object type, specifies the type to match if the value is a JSON object.
-  * *.inArray* – with an array value providing an enumerable array of "Any" values that the instance Any Type can be equal to.
-  * *.notInArray* – with an array value providing an enumerable array of "Any" values that the instance Any Type can not be equal to.
+  * *.string* – has a value that is a type reference to a string type, specifies the type to match if the value is a JSON string.
+  * *.number* – has a value that is a type reference to a number type, specifies the type to match if the value is a JSON number.
+  * *.boolean* – has a value that is a type reference to a boolean type, specifies the type to match if the value is a JSON boolean.
+  * *.array* – has a value that is a type specification of an array type, specifies the type to match if the value is a JSON array.
+  * *.object* – has a value that is a type specification of an object type, specifies the type to match if the value is a JSON object.
+  * *.inArray* – has an array value providing an enumerable array of "Any" values that the instance Any Type can be equal to.
+  * *.notInArray* – has an array value providing an enumerable array of "Any" values that the instance Any Type can not be equal to.
 
-If any of these keys is present in a type extending "any", an instance value must be of one of the types that is specified. For instance, if .number and .array are present, an instance value must be a JSON number or JSON array.
+If any of these keys are present in a type extending "any", an instance value must be of one of the types that is specified. For instance, if .number and .array are present, an instance value must be a JSON number or JSON array.
 
 If none of the keys is present, any value type at all can be present.
 
-Recipes
+*Recipes*
 
   * A key with a fixed string value
   * A 2d array
   * Use of domain name for namespaces
 
-The schema definition for a schema:
+====The schema definition for a schema:====
 {{{
 {
 	“org.itemscript.Schema” :
@@ -362,9 +360,9 @@ The schema definition for a schema:
 		“.description” : “A definition of an array type.”,
 		“.optional .contains” : “org.itemscript.TypeSpec”,
 		“.optional .exactSize” : “integer”,
-		“.optional .inArray” : “array,
 		“.optional .minSize” : “integer”,
 		“.optional .maxSize” : “integer”,
+		“.optional .inArray” : “array,
 		“.optional .notInArray” : “array”
 
 	},
@@ -419,12 +417,7 @@ The schema definition for a schema:
 	{
 		“.extends” : “org.itemscript.StringTypeDef”,
 		“.description” : “A definition of a binary type.”,
-		“.optional .maxBytes” :
-		{
-			“.extends” : “any”,
-			“.number” : “integer”,
-			“.string” : “decimal”
-		}
+		“.optional .maxBytes” : "integer"
 	},
 	“org.itemscript.NumberTypeDef” :
 	{
