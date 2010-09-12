@@ -151,7 +151,8 @@ class ObjectType extends TypeBase {
     	
     	//this first for loop is to make sure none of the instance keys are empty strings.
     	for (String instanceKey : object.keySet()) {
-    		if (instanceKey.isEmpty()) {
+    		//if (instanceKey.isEmpty()) {
+    		if (("").equals(instanceKey)) {
     			throw ItemscriptError.internalError(this,
 	            		"validateObject.value.instance.key.was.empty",
 	            		pathValueParams(path, object));
