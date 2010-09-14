@@ -50,7 +50,7 @@ public final class EventType {
         this.eventType = eventType;
     }
 
-    @Override
+    //@Override
     public String toString() {
         return "[EventType " + eventType + "]";
     }

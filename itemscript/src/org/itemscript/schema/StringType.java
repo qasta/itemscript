@@ -115,7 +115,7 @@ class StringType extends TypeBase {
         }
     }
 
-    @Override
+    //@Override
     public boolean isString() {
         return true;
     }
@@ -125,7 +125,7 @@ class StringType extends TypeBase {
                 .p("value", string);
     }
 
-    @Override
+    //@Override
     public void validate(String path, JsonValue value) {
         super.validate(path, value);
         if (!value.isString()) { throw ItemscriptError.internalError(this, "validate.value.was.not.string",

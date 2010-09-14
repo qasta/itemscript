@@ -51,12 +51,12 @@ final class ItemscriptString extends ItemscriptScalar implements JsonString {
         this.binaryValue = null;
     }
 
-    @Override
+    //@Override
     public JsonString asString() {
         return this;
     }
 
-    @Override
+    //@Override
     public byte[] binaryValue() {
         if (binaryValue == null) {
             binaryValue = Base64.decode(stringValue);
@@ -64,24 +64,24 @@ final class ItemscriptString extends ItemscriptScalar implements JsonString {
         return binaryValue;
     }
 
-    @Override
+    //@Override
     public JsonValue copy() {
         if (stringValue == null && binaryValue != null) { return system().createString(binaryValue); }
         return system().createString(stringValue);
     }
 
-    @Override
+    //@Override
     public boolean equals(Object other) {
         if (other instanceof JsonString) { return stringValue().equals(((JsonString) other).stringValue()); }
         return false;
     }
 
-    @Override
+    //@Override
     public boolean isString() {
         return true;
     }
 
-    @Override
+    //@Override
     public Long longValue() {
         try {
             return Long.parseLong(stringValue);
@@ -90,7 +90,7 @@ final class ItemscriptString extends ItemscriptScalar implements JsonString {
         }
     }
 
-    @Override
+    //@Override
     public String stringValue() {
         if (stringValue == null) {
             if (binaryValue != null) {
@@ -100,7 +100,7 @@ final class ItemscriptString extends ItemscriptScalar implements JsonString {
         return stringValue;
     }
 
-    @Override
+    //@Override
     public String toJsonString() {
         return ItemscriptCreator.quotedString(stringValue());
     }

@@ -10,7 +10,7 @@ public class UuidFunction extends FunctionBase {
         super(system, null);
     }
 
-    @Override
+    //@Override
     public JsonValue execute(TemplateExec template, JsonValue context, JsonValue value) {
         return system().createString(system().util()
                 .generateUuid());

@@ -41,7 +41,7 @@ import org.itemscript.core.config.JsonConfig;
 public class GwtConfig extends MinimalGwtConfig implements JsonConfig {
     private static final String ITEMSCRIPT_CONNECTORS_PREFIX = "/itemscript/connectors#";
 
-    @Override
+    //@Override
     public void seedSystem(JsonSystem system) {
         GwtHttpConnector jsonHttpConnector = new GwtHttpConnector(system);
         system.putNative(ITEMSCRIPT_CONNECTORS_PREFIX + "http", jsonHttpConnector);

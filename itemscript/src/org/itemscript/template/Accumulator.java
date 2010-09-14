@@ -64,7 +64,7 @@ public class Accumulator implements HasSystem {
         return key + "/" + index;
     }
 
-    @Override
+    //@Override
     public JsonSystem system() {
         return system;
     }

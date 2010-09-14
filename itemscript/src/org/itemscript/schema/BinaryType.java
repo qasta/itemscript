@@ -38,7 +38,7 @@ final class BinaryType extends TypeBase {
     	}
     }
 
-    @Override
+    //@Override
     public boolean isBinary() {
         return true;
     }
@@ -47,7 +47,7 @@ final class BinaryType extends TypeBase {
 		return schema().pathParams(path).p("value", binary);
 	}
 
-    @Override
+    //@Override
     public void validate(String path, JsonValue value) {
         super.validate(path, value);
         byte[] binaryValue;

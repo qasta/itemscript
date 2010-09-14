@@ -13,7 +13,7 @@ public class LoadFunction extends FunctionBase {
         this.url = url;
     }
 
-    @Override
+    //@Override
     public JsonValue execute(TemplateExec template, JsonValue context, JsonValue value) {
         return template.get(url);
     }

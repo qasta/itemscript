@@ -220,14 +220,14 @@ public final class GwtSystem implements EntryPoint {
      */
     public static void copyAsync(String fromUrl, String toUrl, final JavaScriptObject callback) {
         SYSTEM.copy(fromUrl, toUrl, new PutCallback() {
-            @Override
+            //@Override
             public void onError(Throwable e) {
                 if (callback != null) {
                     callOnError(callback, e);
                 }
             }
 
-            @Override
+            //@Override
             public void onSuccess(PutResponse putResponse) {
                 if (callback != null) {
                     callOnSuccess(callback, convertPutResponse(putResponse));
@@ -305,12 +305,12 @@ public final class GwtSystem implements EntryPoint {
             GWT.log("itemscript.getAsync(\"" + url + "\")", null);
         }
         SYSTEM.get(url, new GetCallback() {
-            @Override
+            //@Override
             public void onError(Throwable e) {
                 callOnError(callback, e);
             }
 
-            @Override
+            //@Override
             public void onSuccess(JsonValue value) {
                 JavaScriptObject convertedValue = convertAndWrapValue(value);
                 callOnSuccess(callback, convertedValue);
@@ -371,14 +371,14 @@ public final class GwtSystem implements EntryPoint {
             GWT.log("itemscript.putAsync(\"" + url + "\")", null);
         }
         SYSTEM.put(url, GwtJsonParser.convert(SYSTEM, value), new PutCallback() {
-            @Override
+            //@Override
             public void onError(Throwable e) {
                 if (callback != null) {
                     callOnError(callback, e);
                 }
             }
 
-            @Override
+            //@Override
             public void onSuccess(PutResponse putResponse) {
                 if (callback != null) {
                     callOnSuccess(callback, convertPutResponse(putResponse));
@@ -403,14 +403,14 @@ public final class GwtSystem implements EntryPoint {
             GWT.log("itemscript.removeAsync(\"" + url + "\")", null);
         }
         SYSTEM.remove(url, new RemoveCallback() {
-            @Override
+            //@Override
             public void onError(Throwable e) {
                 if (callback != null) {
                     callOnError(callback, e);
                 }
             }
 
-            @Override
+            //@Override
             public void onSuccess(RemoveResponse removeResponse) {
                 if (callback != null) {
                     callOnSuccess(callback, convertRemoveResponse(removeResponse));
@@ -432,7 +432,7 @@ public final class GwtSystem implements EntryPoint {
                                                                     return JSON.stringify(object);
                                                                     }-*/;
 
-    @Override
+    //@Override
     public void onModuleLoad() {
         SYSTEM = new ItemscriptSystem(new GwtConfig());
         exportCalls();

@@ -42,7 +42,7 @@ public class Analyzer implements HasSystem {
         }
     }
 
-    @Override
+    //@Override
     public JsonSystem system() {
         return system;
     }

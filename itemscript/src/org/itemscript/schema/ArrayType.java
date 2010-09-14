@@ -92,7 +92,7 @@ final class ArrayType extends TypeBase {
 		}
 	}
 
-	@Override
+	//@Override
 	public boolean isArray() {
 		return true;
 	}
@@ -101,7 +101,7 @@ final class ArrayType extends TypeBase {
 		return schema().pathParams(path).p("value", array);
 	}
 
-	@Override
+	//@Override
 	public void validate(String path, JsonValue value) {
 		super.validate(path, value);
 		if (!value.isArray()) {

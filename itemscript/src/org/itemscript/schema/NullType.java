@@ -23,12 +23,12 @@ final class NullType extends TypeBase {
         super(schema, extendsType, def);
     }
 
-    @Override
+    //@Override
     public boolean isNull() {
         return true;
     }
 
-    @Override
+    //@Override
     public void validate(String path, JsonValue value) {
         super.validate(path, value);
         if (!value.isNull()) { throw ItemscriptError.internalError(this, "validate.value.was.not.null",

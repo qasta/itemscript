@@ -8,12 +8,12 @@ public class CommaToken extends Token {
         super(-1, -1);
     }
 
-    @Override
+    //@Override
     public boolean isCommaToken() {
         return true;
     }
 
-    @Override
+    //@Override
     public String toString() {
         return "[CommaToken]";
     }

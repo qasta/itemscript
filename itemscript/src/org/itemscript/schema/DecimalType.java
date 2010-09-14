@@ -158,7 +158,7 @@ class DecimalType extends TypeBase {
 		}
 	}
 
-	@Override
+	//@Override
 	public boolean isDecimal() {
 		return true;
 	}
@@ -167,7 +167,7 @@ class DecimalType extends TypeBase {
 		return schema().pathParams(path).p("value", dec);
 	}
 
-	@Override
+	//@Override
 	public void validate(String path, JsonValue value) {
 		super.validate(path, value);
 		if (!value.isString()) {

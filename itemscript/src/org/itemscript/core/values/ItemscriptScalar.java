@@ -36,7 +36,7 @@ abstract class ItemscriptScalar extends ItemscriptValue {
         super(system);
     }
 
-    @Override
+    //@Override
     public String toCompactJsonString() {
         return toJsonString();
     }

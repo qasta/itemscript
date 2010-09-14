@@ -14,7 +14,7 @@ public class NumericLiteralFunction extends FunctionBase {
         this.number = system.createNumber(number);
     }
 
-    @Override
+    //@Override
     public JsonValue execute(TemplateExec template, JsonValue context, JsonValue value) {
         return number;
     }

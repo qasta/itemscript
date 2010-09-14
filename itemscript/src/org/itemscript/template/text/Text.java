@@ -14,12 +14,12 @@ public class Text extends Segment {
         this.text = system.createString(text);
     }
 
-    @Override
+    //@Override
     public JsonValue interpret(TemplateExec templateExec, JsonValue context) {
         return text;
     }
 
-    @Override
+    //@Override
     public String toString() {
         return "[Text text=" + text + "]";
     }

@@ -70,50 +70,50 @@ public class OverlayObject extends WeakContainer implements JsonObject, ToJsonSt
         }
     }
 
-    @Override
+    //@Override
     public JsonObject asObject() {
         return this;
     }
 
-    @Override
+    //@Override
     public void clear() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    //@Override
     public boolean containsKey(Object key) {
         if (!(key instanceof String)) { return false; }
         return getValue((String) key) != null;
     }
 
-    @Override
+    //@Override
     public boolean containsKey(String key) {
         return getValue(key) != null;
     }
 
-    @Override
+    //@Override
     public boolean containsValue(Object arg0) {
         // This could be implemented, but has not been necessary so far.
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    //@Override
     public JsonObject copy() {
         return JsonAccessHelper.copyObject(system(), this);
     }
 
-    @Override
+    //@Override
     public Set<java.util.Map.Entry<String, JsonValue>> entrySet() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    //@Override
     public JsonValue get(Object key) {
         if (!(key instanceof String)) { return null; }
         return getValue((String) key);
     }
 
-    @Override
+    //@Override
     public JsonValue getValue(String key) {
         for (int i = 0; i < objects.size(); ++i) {
             JsonValue value = objects.get(i)
@@ -123,18 +123,18 @@ public class OverlayObject extends WeakContainer implements JsonObject, ToJsonSt
         return null;
     }
 
-    @Override
+    //@Override
     public boolean isEmpty() {
         // This is expensive...
         return keySet().size() == 0;
     }
 
-    @Override
+    //@Override
     public boolean isObject() {
         return true;
     }
 
-    @Override
+    //@Override
     public Set<String> keySet() {
         Set<String> keySet = new HashSet<String>();
         for (int i = 0; i < objects.size(); ++i) {
@@ -144,83 +144,83 @@ public class OverlayObject extends WeakContainer implements JsonObject, ToJsonSt
         return keySet;
     }
 
-    @Override
+    //@Override
     public JsonObject p(String key, Boolean value) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    //@Override
     public JsonObject p(String key, Double value) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    //@Override
     public JsonObject p(String key, Float value) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    //@Override
     public JsonObject p(String key, Integer value) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    //@Override
     public JsonObject p(String key, JsonValue value) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    //@Override
     public JsonObject p(String key, Long value) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    //@Override
     public JsonObject p(String key, String value) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    //@Override
     public JsonValue put(String arg0, JsonValue arg1) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    //@Override
     public void putAll(Map<? extends String, ? extends JsonValue> arg0) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    //@Override
     public JsonValue remove(Object arg0) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    //@Override
     public int size() {
         // This is quite expensive...
         return keySet().size();
     }
 
-    @Override
+    //@Override
     public String toCompactJsonString() {
         return JsonAccessHelper.objectToCompactJsonString(this);
     }
 
-    @Override
+    //@Override
     public String toJsonString() {
         return toJsonString(0) + "\n";
     }
 
-    @Override
+    //@Override
     public String toJsonString(int indent) {
         return JsonAccessHelper.objectToJsonString(this, indent);
     }
 
-    @Override
+    //@Override
     public String toString() {
         return toJsonString();
     }
 
-    @Override
+    //@Override
     public Collection<JsonValue> values() {
         throw new UnsupportedOperationException();
     }

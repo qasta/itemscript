@@ -51,7 +51,7 @@ public class ResourceHandler extends URLStreamHandler {
         this.classLoader = classLoader;
     }
 
-    @Override
+    //@Override
     protected URLConnection openConnection(URL url) throws IOException {
         URL resource = classLoader.getResource(url.getPath());
         if (resource == null) { throw ItemscriptError.internalError(this, "openConnection.resource.not.found",

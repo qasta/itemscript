@@ -11,7 +11,7 @@ public class DataUrlFunction extends FunctionBase {
         super(system, null);
     }
 
-    @Override
+    //@Override
     public JsonValue execute(TemplateExec context, JsonValue contextVal, JsonValue value) {
         if (value.isString()) {
             String contentType = value.item()

@@ -24,7 +24,7 @@ public abstract class Segment implements HasSystem, TextElement {
         return false;
     }
 
-    @Override
+    //@Override
     public JsonSystem system() {
         return system;
     }

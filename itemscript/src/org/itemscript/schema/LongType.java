@@ -187,7 +187,7 @@ class LongType extends TypeBase {
 		}
 	}
 
-	@Override
+	//@Override
 	public boolean isLong() {
 		return true;
 	}
@@ -196,7 +196,7 @@ class LongType extends TypeBase {
 		return schema().pathParams(path).p("value", longVal);
 	}
 
-	@Override
+	//@Override
 	public void validate(String path, JsonValue value) {
 		super.validate(path, value);
 		Long longVal;

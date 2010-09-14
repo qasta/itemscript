@@ -26,7 +26,7 @@ public class TextTemplate implements Element, HasSystem {
         }
     }
 
-    @Override
+    //@Override
     public JsonValue interpret(TemplateExec templateExec, JsonValue context) {
         // special-case when contents is only one thing; just return the single value returned by the single contents.
         if (oneElement != null) {
@@ -46,7 +46,7 @@ public class TextTemplate implements Element, HasSystem {
         return system;
     }
 
-    @Override
+    //@Override
     public String toString() {
         return "[TextTemplate oneElement=" + oneElement + " contents=" + contents + "]";
     }

@@ -8,12 +8,12 @@ public class OpenTagToken extends Token {
         super(-1, -1);
     }
 
-    @Override
+    //@Override
     public boolean isOpenTagToken() {
         return true;
     }
 
-    @Override
+    //@Override
     public String toString() {
         return "[OpenTagToken]";
     }

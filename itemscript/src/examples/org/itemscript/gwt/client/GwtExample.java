@@ -50,19 +50,19 @@ import com.google.gwt.user.client.ui.RootPanel;
  * @author Jacob Davies<br/><a href="mailto:jacob@itemscript.org">jacob@itemscript.org</a>
  */
 public class GwtExample implements EntryPoint {
-    @Override
+    //@Override
     public void onModuleLoad() {
         final JsonSystem system = GwtSystem.SYSTEM;
         GwtSystem.SYSTEM.get(GWT.getHostPageBaseURL() + "cat.json", new GetCallback() {
-            @Override
+            //@Override
             public void onSuccess(JsonValue value) {
                 GwtSystem.SYSTEM.put(GWT.getHostPageBaseURL() + "test/foo", value, new PutCallback() {
-                    @Override
+                    //@Override
                     public void onError(Throwable e) {
                         throw new RuntimeException(e);
                     }
 
-                    @Override
+                    //@Override
                     public void onSuccess(PutResponse putResponse) {
                         RootPanel.get()
                                 .add(new HTML(StaticJsonUtil.toHtmlJson(putResponse.value())));
@@ -75,12 +75,12 @@ public class GwtExample implements EntryPoint {
             }
         });
         GwtSystem.SYSTEM.remove(GWT.getHostPageBaseURL() + "test/foo", new RemoveCallback() {
-            @Override
+            //@Override
             public void onError(Throwable e) {
                 throw new RuntimeException(e);
             }
 
-            @Override
+            //@Override
             public void onSuccess(RemoveResponse removeResponse) {}
         });
     }

@@ -50,44 +50,44 @@ final class ItemscriptObject extends ItemscriptContainer implements JsonObject {
         putAll(value);
     }
 
-    @Override
+    //@Override
     public JsonObject asObject() {
         return this;
     }
 
-    @Override
+    //@Override
     public void clear() {
         for (String key : values.keySet()) {
             remove(key);
         }
     }
 
-    @Override
+    //@Override
     public boolean containsKey(Object key) {
         return values.containsKey(key);
     }
 
-    @Override
+    //@Override
     public boolean containsKey(String key) {
         return values.containsKey(key);
     }
 
-    @Override
+    //@Override
     public boolean containsValue(Object key) {
         return values.containsValue(key);
     }
 
-    @Override
+    //@Override
     public JsonObject copy() {
         return JsonAccessHelper.copyObject(system(), this);
     }
 
-    @Override
+    //@Override
     public Set<java.util.Map.Entry<String, JsonValue>> entrySet() {
         return values.entrySet();
     }
 
-    @Override
+    //@Override
     public boolean equals(Object other) {
         if (other instanceof JsonObject) {
             JsonObject otherObject = (JsonObject) other;
@@ -101,74 +101,74 @@ final class ItemscriptObject extends ItemscriptContainer implements JsonObject {
         return false;
     }
 
-    @Override
+    //@Override
     public JsonValue get(Object key) {
         return values.get(key);
     }
 
-    @Override
+    //@Override
     public JsonValue getValue(String key) {
         return get(key);
     }
 
-    @Override
+    //@Override
     public boolean isEmpty() {
         return values.isEmpty();
     }
 
-    @Override
+    //@Override
     public boolean isObject() {
         return true;
     }
 
-    @Override
+    //@Override
     public Set<String> keySet() {
         return values.keySet();
     }
 
-    @Override
+    //@Override
     public JsonObject p(String key, Boolean value) {
         put(key, value);
         return this;
     }
 
-    @Override
+    //@Override
     public JsonObject p(String key, Double value) {
         put(key, value);
         return this;
     }
 
-    @Override
+    //@Override
     public JsonObject p(String key, Float value) {
         put(key, value);
         return this;
     }
 
-    @Override
+    //@Override
     public JsonObject p(String key, Integer value) {
         put(key, value);
         return this;
     }
 
-    @Override
+    //@Override
     public JsonObject p(String key, JsonValue value) {
         put(key, value);
         return this;
     }
 
-    @Override
+    //@Override
     public JsonObject p(String key, Long value) {
         put(key, value);
         return this;
     }
 
-    @Override
+    //@Override
     public JsonObject p(String key, String value) {
         put(key, value);
         return this;
     }
 
-    @Override
+    //@Override
     public JsonValue put(String key, JsonValue value) {
         if (value == null) {
             value = system().createNull();
@@ -185,7 +185,7 @@ final class ItemscriptObject extends ItemscriptContainer implements JsonObject {
         return previous;
     }
 
-    @Override
+    //@Override
     public void putAll(Map<? extends String, ? extends JsonValue> other) {
         for (String key : other.keySet()) {
             JsonValue value = other.get(key);
@@ -193,12 +193,12 @@ final class ItemscriptObject extends ItemscriptContainer implements JsonObject {
         }
     }
 
-    @Override
+    //@Override
     public void putValue(String key, JsonValue value) {
         put(key, value);
     }
 
-    @Override
+    //@Override
     public JsonValue remove(Object key) {
         String fragment = null;
         if (item() != null) {
@@ -217,32 +217,32 @@ final class ItemscriptObject extends ItemscriptContainer implements JsonObject {
         return ret;
     }
 
-    @Override
+    //@Override
     public void removeValue(String key) {
         remove(key);
     }
 
-    @Override
+    //@Override
     public int size() {
         return values.size();
     }
 
-    @Override
+    //@Override
     public String toCompactJsonString() {
         return JsonAccessHelper.objectToCompactJsonString(this);
     }
 
-    @Override
+    //@Override
     public String toJsonString() {
         return toJsonString(0) + "\n";
     }
 
-    @Override
+    //@Override
     public String toJsonString(int indent) {
         return JsonAccessHelper.objectToJsonString(this, indent);
     }
 
-    @Override
+    //@Override
     public Collection<JsonValue> values() {
         return values.values();
     }

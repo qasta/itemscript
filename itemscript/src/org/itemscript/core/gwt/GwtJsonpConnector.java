@@ -64,7 +64,7 @@ public class GwtJsonpConnector implements AsyncGetConnector, HasSystem {
         this.system = system;
     }
 
-    @Override
+    //@Override
     public void get(final Url url, final GetCallback callback) {
         // Split the URL.
         String remainder = url.remainder();
@@ -87,7 +87,7 @@ public class GwtJsonpConnector implements AsyncGetConnector, HasSystem {
             builder.setFailureCallbackParam(errorCallbackParam);
         }
         builder.requestObject(jsonpUrl, new AsyncCallback<JavaScriptObject>() {
-            @Override
+            //@Override
             public void onFailure(Throwable e) {
                 callback.onError(e);
             }
@@ -100,7 +100,7 @@ public class GwtJsonpConnector implements AsyncGetConnector, HasSystem {
         });
     }
 
-    @Override
+    //@Override
     public JsonSystem system() {
         return system;
     }

@@ -51,7 +51,7 @@ public class GwtJsonCreator extends ItemscriptCreator {
         super(system);
     }
 
-    @Override
+    //@Override
     public JsonValue parse(String json) {
         return GwtJsonParser.parse(system(), json);
     }
@@ -88,7 +88,7 @@ public class GwtJsonCreator extends ItemscriptCreator {
     //            throw new RuntimeException("Uknown value type: " + value);
     //        }
     //    }
-    @Override
+    //@Override
     public JsonValue parseReader(Object input) {
         throw new UnsupportedOperationException("error.itemscript.parseReader.not.supported");
     }

@@ -32,7 +32,7 @@ public class SchemaTest extends ItemscriptTestBase {
         return schema;
     }
 
-    @Override
+    //@Override
     protected void setUp() {
         super.setUp();
         this.schema = new Schema(system());

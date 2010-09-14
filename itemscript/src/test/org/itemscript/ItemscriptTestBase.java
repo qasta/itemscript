@@ -39,7 +39,7 @@ import org.itemscript.standard.StandardConfig;
 public abstract class ItemscriptTestBase extends TestCase implements HasSystem {
     private JsonSystem system;
 
-    @Override
+    //@Override
     protected void setUp() {
         system = new ItemscriptSystem(new StandardConfig());
     }

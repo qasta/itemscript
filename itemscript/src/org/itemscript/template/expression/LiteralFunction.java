@@ -14,7 +14,7 @@ public class LiteralFunction extends FunctionBase {
         this.literal = system.createString(literal);
     }
 
-    @Override
+    //@Override
     public JsonValue execute(TemplateExec template, JsonValue context, JsonValue value) {
         return literal;
     }

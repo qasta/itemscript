@@ -13,7 +13,7 @@ public class FieldFunction extends FunctionBase {
         this.path = path;
     }
 
-    @Override
+    //@Override
     public JsonValue execute(TemplateExec template, JsonValue context, JsonValue value) {
         if (path.length() == 0) {
             return context;

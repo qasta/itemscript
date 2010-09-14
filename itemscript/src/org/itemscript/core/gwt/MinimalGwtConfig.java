@@ -45,12 +45,12 @@ public class MinimalGwtConfig implements JsonConfig {
     private static final String ITEMSCRIPT_CONNECTORS_PREFIX = "/itemscript/connectors#";
     private final static String integerToHex = "0123456789abcdef";
 
-    @Override
+    //@Override
     public JsonCreator createJsonCreator(JsonSystem system) {
         return new GwtJsonCreator(system);
     }
 
-    @Override
+    //@Override
     public String generateB64id() {
         byte[] s = new byte[16];
         for (int i = 0; i < 16; ++i) {
@@ -59,7 +59,7 @@ public class MinimalGwtConfig implements JsonConfig {
         return new String(Base64.encodeForUrl(s));
     }
 
-    @Override
+    //@Override
     public String generateUuid() {
         /* generateUuid() derived from:
          * randomUUID.js - Version 1.0
@@ -91,11 +91,11 @@ public class MinimalGwtConfig implements JsonConfig {
         return new String(s);
     }
 
-    @Override
+    //@Override
     public int nextRandomInt() {
         return com.google.gwt.user.client.Random.nextInt();
     }
 
-    @Override
+    //@Override
     public void seedSystem(JsonSystem system) {}
 }

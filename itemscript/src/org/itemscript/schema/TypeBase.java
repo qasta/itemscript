@@ -47,77 +47,77 @@ abstract class TypeBase implements Type, HasSystem {
         }
     }
 
-    @Override
+    //@Override
     public String description() {
         return description;
     }
 
-    @Override
+    //@Override
     public boolean isArray() {
         return false;
     }
 
-    @Override
+    //@Override
     public boolean isBinary() {
         return false;
     }
 
-    @Override
+    //@Override
     public boolean isBoolean() {
         return false;
     }
 
-    @Override
+    //@Override
     public boolean isInteger() {
         return false;
     }
 
-    @Override
+    //@Override
     public boolean isNull() {
         return false;
     }
 
-    @Override
+    //@Override
     public boolean isNumber() {
         return false;
     }
 
-    @Override
+    //@Override
     public boolean isObject() {
         return false;
     }
 
-    @Override
+    //@Override
     public boolean isString() {
         return false;
     }
     
-    @Override
+    //@Override
     public boolean isDecimal() {
     	return false;
     }
     
-    @Override
+    //@Override
     public boolean isLong() {
     	return false;
     }
     
-    @Override
+    //@Override
     public boolean isAny() {
     	return false;
     }
 
-    @Override
+    //@Override
     public Schema schema() {
         return schema;
     }
 
-    @Override
+    //@Override
     public JsonSystem system() {
         return system;
     }
     
-    @Override
+    //@Override
     public void validate(String path, JsonValue value) {
         if (!isBaseAnyType) {
             extendsType.validate(path, value);

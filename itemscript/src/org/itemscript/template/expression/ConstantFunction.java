@@ -14,7 +14,7 @@ public class ConstantFunction extends FunctionBase {
         constantValue = system().createString(system().constant(name));
     }
 
-    @Override
+    //@Override
     public JsonValue execute(TemplateExec template, JsonValue context, JsonValue value) {
         return constantValue;
     }

@@ -140,7 +140,7 @@ final class IntegerType extends TypeBase {
         }
     }
 
-    @Override
+    //@Override
     public boolean isInteger() {
         return true;
     }
@@ -150,7 +150,7 @@ final class IntegerType extends TypeBase {
                 .p("value", num);
     }
 
-    @Override
+    //@Override
     public void validate(String path, JsonValue value) {
         super.validate(path, value);
         if (!value.isNumber()) {

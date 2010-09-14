@@ -54,7 +54,7 @@ import org.itemscript.standard.MinimalConfig;
  *
  */
 public class ReflectJsonServlet extends HttpServlet {
-    @Override
+    //@Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         JsonSystem system = MinimalConfig.createSystem();
         String json = req.getParameter("value");
@@ -69,7 +69,7 @@ public class ReflectJsonServlet extends HttpServlet {
         }
     }
 
-    @Override
+    //@Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         JsonSystem system = MinimalConfig.createSystem();
         JsonValue value = system.parseReader(req.getReader());

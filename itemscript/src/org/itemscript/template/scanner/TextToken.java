@@ -42,12 +42,12 @@ public class TextToken extends Token {
         this.text = text;
     }
 
-    @Override
+    //@Override
     public TextToken asTextToken() {
         return this;
     }
 
-    @Override
+    //@Override
     public boolean isTextToken() {
         return true;
     }
@@ -56,7 +56,7 @@ public class TextToken extends Token {
         return text;
     }
 
-    @Override
+    //@Override
     public String toString() {
         return "[TextToken text='" + text + "']";
     }

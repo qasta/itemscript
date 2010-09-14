@@ -81,7 +81,7 @@ public class ItemscriptFoundry<T> implements HasSystem, JsonFoundry<T> {
         return create(getName(paramsObject), paramsObject);
     }
 
-    @Override
+    //@Override
     public final T create(JsonValue params) {
         if (params.isString()) { return create(params.stringValue()); }
         if (params.isContainer()) {
@@ -97,12 +97,12 @@ public class ItemscriptFoundry<T> implements HasSystem, JsonFoundry<T> {
                 params.toCompactJsonString());
     }
 
-    @Override
+    //@Override
     public final T create(String name) {
         return create(name, system().createObject());
     }
 
-    @Override
+    //@Override
     public final T create(String name, JsonObject params) {
         return createFromFactories(factories, name, params);
     }
@@ -163,29 +163,29 @@ public class ItemscriptFoundry<T> implements HasSystem, JsonFoundry<T> {
         return name;
     }
 
-    @Override
+    //@Override
     public final void put(final FactoryName<T> factoryName) {
         put(factoryName.getName(), factoryName);
     }
 
-    @Override
+    //@Override
     public final void put(String name, final JsonFactory<T> factory) {
         checkName(name);
         factories.putNative(name, factory);
     }
 
-    @Override
+    //@Override
     public void put(String name, JsonValue params) {
         checkName(name);
         factories.put(name, params);
     }
 
-    @Override
+    //@Override
     public JsonSystem system() {
         return system;
     }
 
-    @Override
+    //@Override
     public final String toString() {
         return "[Foundry location=" + location + "]";
     }

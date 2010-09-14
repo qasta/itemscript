@@ -114,7 +114,7 @@ final class AnyType extends TypeBase {
 		}
     }
   
-    @Override
+    //@Override
     public boolean isAny() {
         return true;
     }
@@ -124,7 +124,7 @@ final class AnyType extends TypeBase {
                 .p("value", value);
     }
     
-    @Override
+    //@Override
     public void validate(String path, JsonValue value) {
         super.validate(path, value);
         if (value == null) { throw ItemscriptError.internalError(this, "validate.value.was.null",

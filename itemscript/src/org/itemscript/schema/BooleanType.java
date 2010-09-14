@@ -41,7 +41,7 @@ final class BooleanType extends TypeBase {
         }
     }
 
-    @Override
+    //@Override
     public boolean isBoolean() {
         return true;
     }
@@ -51,7 +51,7 @@ final class BooleanType extends TypeBase {
                 .p("value", bool);
     }
     
-    @Override
+    //@Override
     public void validate(String path, JsonValue value) {
         super.validate(path, value);
         if (!value.isBoolean()) { throw ItemscriptError.internalError(this,

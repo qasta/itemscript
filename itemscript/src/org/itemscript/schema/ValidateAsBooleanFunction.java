@@ -30,7 +30,7 @@ public class ValidateAsBooleanFunction extends FunctionBase {
 	 */
 	public static void init() {
 		FunctionFoundry.put("validateAsBoolean", new FunctionFactory() {
-			@Override
+			//@Override
 			public Function create(JsonSystem system, List<Expression> args) {
 				return new ValidateAsBooleanFunction(system, args);
 			}
@@ -50,7 +50,7 @@ public class ValidateAsBooleanFunction extends FunctionBase {
         schema = new Schema(system);
     }
 
-    @Override
+    //@Override
     public JsonValue execute(TemplateExec templateExec, JsonValue context, JsonValue value) {
 		if (value == null) {
 			return Template.setErrorMessage(onError(ItemscriptError.internalError(this,

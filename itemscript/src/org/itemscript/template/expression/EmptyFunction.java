@@ -11,7 +11,7 @@ public class EmptyFunction extends FunctionBase {
         super(system, null);
     }
 
-    @Override
+    //@Override
     public JsonValue execute(TemplateExec templateExec, JsonValue context, JsonValue value) {
         if (value == null) {
             return system().createBoolean(true);

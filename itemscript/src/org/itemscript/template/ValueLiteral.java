@@ -20,7 +20,7 @@ public class ValueLiteral implements Element {
         this.value = value.copy();
     }
 
-    @Override
+    //@Override
     public JsonValue interpret(TemplateExec templateExec, JsonValue context) {
         return value;
     }

@@ -59,7 +59,7 @@ public class TemplateTest extends ItemscriptTestBase {
                 .interpretToValue(context);
     }
 
-    @Override
+    //@Override
     protected void setUp() {
         super.setUp();
         ValidateFunction.init();

@@ -64,7 +64,7 @@ public class GwtJavaScriptConnector implements SyncGetConnector, HasSystem {
         return { "value" : $wnd[name] };
     }-*/;
 
-    @Override
+    //@Override
     public JsonValue get(Url url) {
         JsonValue value = GwtJsonParser.convert(system(), get(url.remainder()));
         if (value == null) { return null; }
@@ -72,7 +72,7 @@ public class GwtJavaScriptConnector implements SyncGetConnector, HasSystem {
                 .value();
     }
 
-    @Override
+    //@Override
     public JsonSystem system() {
         return system;
     }
