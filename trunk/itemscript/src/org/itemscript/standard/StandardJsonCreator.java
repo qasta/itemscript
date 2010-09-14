@@ -59,7 +59,7 @@ public final class StandardJsonCreator extends ItemscriptCreator {
         parser = new JsonParser(system);
     }
 
-    @Override
+    //@Override
     public JsonValue parse(String json) {
         try {
             return parser.parse(json);
@@ -68,7 +68,7 @@ public final class StandardJsonCreator extends ItemscriptCreator {
         }
     }
 
-    @Override
+    //@Override
     public JsonValue parseReader(Object input) {
         try {
             return parser.parse((Reader) input);

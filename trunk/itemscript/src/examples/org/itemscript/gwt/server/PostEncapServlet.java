@@ -43,7 +43,7 @@ import org.itemscript.core.values.JsonValue;
 import org.itemscript.standard.MinimalConfig;
 
 public class PostEncapServlet extends HttpServlet {
-    @Override
+    //@Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         JsonSystem system = MinimalConfig.createSystem();
         String method = null;
@@ -68,7 +68,7 @@ public class PostEncapServlet extends HttpServlet {
         }
     }
 
-    @Override
+    //@Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         JsonSystem system = MinimalConfig.createSystem();
         JsonValue value = system.parseReader(req.getReader());
@@ -82,7 +82,7 @@ public class PostEncapServlet extends HttpServlet {
         return retValue;
     }
 
-    @Override
+    //@Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         JsonSystem system = MinimalConfig.createSystem();
         resp.setStatus(200);

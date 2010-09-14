@@ -18,12 +18,12 @@ public class Expression implements HasSystem, TextElement {
         this.contents = contents;
     }
 
-    @Override
+    //@Override
     public Expression asExpression() {
         return this;
     }
 
-    @Override
+    //@Override
     public JsonValue interpret(TemplateExec templateExec, JsonValue context) {
         // "output" to be fed to the first function in an expression is always a JsonNull.
         JsonValue output = system().createNull();
@@ -37,7 +37,7 @@ public class Expression implements HasSystem, TextElement {
         return output;
     }
 
-    @Override
+    //@Override
     public boolean isExpression() {
         return true;
     }
@@ -46,7 +46,7 @@ public class Expression implements HasSystem, TextElement {
         return system;
     }
 
-    @Override
+    //@Override
     public String toString() {
         return "[Expression contents=" + contents + "]";
     }

@@ -36,28 +36,28 @@ final class ItemscriptNull extends ItemscriptScalar implements JsonNull {
         super(system);
     }
 
-    @Override
+    //@Override
     public JsonNull asNull() {
         return this;
     }
 
-    @Override
+    //@Override
     public JsonNull copy() {
         return system().createNull();
     }
 
-    @Override
+    //@Override
     public boolean equals(Object other) {
         if (other instanceof JsonNull) { return true; }
         return false;
     }
 
-    @Override
+    //@Override
     public boolean isNull() {
         return true;
     }
 
-    @Override
+    //@Override
     public String toJsonString() {
         return "null";
     }

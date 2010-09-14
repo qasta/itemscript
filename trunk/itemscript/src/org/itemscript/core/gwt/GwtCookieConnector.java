@@ -70,7 +70,7 @@ public class GwtCookieConnector implements SyncGetConnector, SyncPutConnector, H
         this.system = system;
     }
 
-    @Override
+    //@Override
     public JsonValue get(Url url) {
         String cookie = Cookies.getCookie(url.remainder());
         if (cookie == null) {
@@ -81,7 +81,7 @@ public class GwtCookieConnector implements SyncGetConnector, SyncPutConnector, H
         return value;
     }
 
-    @Override
+    //@Override
     public PutResponse put(Url url, JsonValue value) {
         Cookies.setCookie(url.remainder(), value.toCompactJsonString(), new Date(new Date().getTime()
                 + TEN_YEARS_MILLIS));
@@ -90,13 +90,13 @@ public class GwtCookieConnector implements SyncGetConnector, SyncPutConnector, H
         return new ItemscriptPutResponse(url + "", null, null);
     }
 
-    @Override
+    //@Override
     public RemoveResponse remove(Url url) {
         Cookies.removeCookie(url.pathString());
         return new ItemscriptRemoveResponse(null);
     }
 
-    @Override
+    //@Override
     public JsonSystem system() {
         return system;
     }

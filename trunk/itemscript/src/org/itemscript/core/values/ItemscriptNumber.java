@@ -55,43 +55,43 @@ final class ItemscriptNumber extends ItemscriptScalar implements JsonNumber {
         this(system, (double) value);
     }
 
-    @Override
+    //@Override
     public JsonNumber asNumber() {
         return this;
     }
 
-    @Override
+    //@Override
     public JsonNumber copy() {
         return system().createNumber(value);
     }
 
-    @Override
+    //@Override
     public Double doubleValue() {
         return value;
     }
 
-    @Override
+    //@Override
     public boolean equals(Object other) {
         if (other instanceof JsonNumber) { return value == ((JsonNumber) other).doubleValue(); }
         return false;
     }
 
-    @Override
+    //@Override
     public Float floatValue() {
         return (float) value;
     }
 
-    @Override
+    //@Override
     public Integer intValue() {
         return (int) value;
     }
 
-    @Override
+    //@Override
     public boolean isNumber() {
         return true;
     }
 
-    @Override
+    //@Override
     public String toJsonString() {
         String s = value + "";
         if (s.indexOf('.') > 0 && s.indexOf('e') < 0 && s.indexOf('E') < 0) {

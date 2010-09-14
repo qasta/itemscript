@@ -13,7 +13,7 @@ public class OrFunction extends FunctionBase {
         super(system, args);
     }
 
-    @Override
+    //@Override
     public JsonValue execute(TemplateExec templateExec, JsonValue context, JsonValue value) {
         if (value != null && !value.isBoolean()) { throw ItemscriptError.internalError(this,
                 "value.was.not.boolean", value + ""); }

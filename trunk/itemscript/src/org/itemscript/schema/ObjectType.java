@@ -109,7 +109,7 @@ class ObjectType extends TypeBase {
         }
     }
 
-    @Override
+    //@Override
     public boolean isObject() {
         return true;
     }
@@ -133,7 +133,7 @@ class ObjectType extends TypeBase {
                 .p("value", object);
     }
     
-    @Override
+    //@Override
     public void validate(String path, JsonValue value) {
         super.validate(path, value);
         if (!value.isObject()) { throw ItemscriptError.internalError(this,

@@ -8,12 +8,12 @@ public final class CloseTagToken extends Token {
         super(-1, -1);
     }
 
-    @Override
+    //@Override
     public boolean isCloseTagToken() {
         return true;
     }
 
-    @Override
+    //@Override
     public String toString() {
         return "[CloseTagToken]";
     }

@@ -8,7 +8,7 @@ public class ItemscriptRemoveResponse implements RemoveResponse {
         this.meta = meta;
     }
 
-    @Override
+    //@Override
     public JsonObject meta() {
         return meta;
     }

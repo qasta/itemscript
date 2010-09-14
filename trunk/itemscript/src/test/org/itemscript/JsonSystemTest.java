@@ -144,12 +144,12 @@ public class JsonSystemTest extends ItemscriptTestBase {
     @Test
     public void testAsyncUseOfSyncConnector() {
         system().put("/foo", system().createString("bar"), new PutCallback() {
-            @Override
+            //@Override
             public void onError(Throwable e) {
                 throw new RuntimeException(e);
             }
 
-            @Override
+            //@Override
             public void onSuccess(PutResponse p) {
                 assertEquals("bar", p.value()
                         .stringValue());
@@ -158,12 +158,12 @@ public class JsonSystemTest extends ItemscriptTestBase {
         });
         assertTrue(putCompleted);
         system().get("/foo", new GetCallback() {
-            @Override
+            //@Override
             public void onError(Throwable e) {
                 throw new RuntimeException(e);
             }
 
-            @Override
+            //@Override
             public void onSuccess(JsonValue value) {
                 assertEquals("bar", value.stringValue());
                 getCompleted = true;
@@ -171,12 +171,12 @@ public class JsonSystemTest extends ItemscriptTestBase {
         });
         assertTrue(getCompleted);
         system().remove("/foo", new RemoveCallback() {
-            @Override
+            //@Override
             public void onError(Throwable e) {
                 throw new RuntimeException(e);
             }
 
-            @Override
+            //@Override
             public void onSuccess(RemoveResponse r) {
                 removeCompleted = true;
             }
@@ -337,7 +337,7 @@ public class JsonSystemTest extends ItemscriptTestBase {
         JsonItem item = system().get("/a/b/c")
                 .item();
         item.addHandler(new Handler() {
-            @Override
+            //@Override
             public void handle(Event event) {
                 if (event.eventType()
                         .equals(EventType.REMOVE)) {
@@ -351,7 +351,7 @@ public class JsonSystemTest extends ItemscriptTestBase {
         JsonItem item2 = system().get("/a/b")
                 .item();
         item2.addHandler(new Handler() {
-            @Override
+            //@Override
             public void handle(Event event) {
                 if (event.eventType()
                         .equals(EventType.REMOVE)) {

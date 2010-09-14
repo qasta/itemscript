@@ -99,7 +99,7 @@ public final class HttpConnector extends ConnectorBase
         return meta;
     }
 
-    @Override
+    //@Override
     public JsonValue get(Url url) {
         try {
             URLConnection connection = new URL(url + "").openConnection();
@@ -130,7 +130,7 @@ public final class HttpConnector extends ConnectorBase
         }
     }
 
-    @Override
+    //@Override
     public PutResponse post(Url url, JsonValue value) {
         try {
             URL javaUrl = new URL(url + "");
@@ -152,7 +152,7 @@ public final class HttpConnector extends ConnectorBase
         }
     }
 
-    @Override
+    //@Override
     public PutResponse put(Url url, JsonValue value) {
         try {
             URL javaUrl = new URL(url + "");
@@ -174,12 +174,12 @@ public final class HttpConnector extends ConnectorBase
         }
     }
 
-    @Override
+    //@Override
     public JsonValue query(Url url) {
         return get(url);
     }
 
-    @Override
+    //@Override
     public RemoveResponse remove(Url url) {
         try {
             URL javaUrl = new URL(url + "");

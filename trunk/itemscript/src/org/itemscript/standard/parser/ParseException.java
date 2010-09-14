@@ -44,7 +44,7 @@ public final class ParseException extends Exception {
         return line;
     }
 
-    @Override
+    //@Override
     public String getMessage() {
         return toString();
     }
@@ -69,7 +69,7 @@ public final class ParseException extends Exception {
         this.unexpectedObject = unexpectedObject;
     }
 
-    @Override
+    //@Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         switch (errorType) {

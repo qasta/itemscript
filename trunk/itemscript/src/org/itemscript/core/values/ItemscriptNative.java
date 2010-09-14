@@ -44,33 +44,33 @@ class ItemscriptNative extends ItemscriptValue implements JsonNative {
         this.value = value;
     }
 
-    @Override
+    //@Override
     public JsonNative asNative() {
         return this;
     }
 
-    @Override
+    //@Override
     public JsonValue copy() {
         // JsonNative values are not copied even with a deep copy.
         return system().createNative(null);
     }
 
-    @Override
+    //@Override
     public boolean isNative() {
         return true;
     }
 
-    @Override
+    //@Override
     public Object nativeValue() {
         return value;
     }
 
-    @Override
+    //@Override
     public String toCompactJsonString() {
         return toJsonString();
     }
 
-    @Override
+    //@Override
     public String toJsonString() {
         return ItemscriptCreator.quotedString("__NATIVE__ | " + (value != null ? value.getClass() : "(null)"));
     }

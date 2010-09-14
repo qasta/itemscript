@@ -51,7 +51,7 @@ public class StandardConfig extends MinimalConfig implements JsonConfig {
         return new ItemscriptSystem(new StandardConfig());
     }
 
-    @Override
+    //@Override
     public void seedSystem(JsonSystem system) {
         super.seedSystem(system);
         system.putNative("mem:/itemscript/connectors#classpath", new ResourceConnector(system));

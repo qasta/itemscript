@@ -16,17 +16,17 @@ public class ItemscriptPutResponse implements PutResponse {
         this.value = value;
     }
 
-    @Override
+    //@Override
     public JsonObject meta() {
         return meta;
     }
 
-    @Override
+    //@Override
     public String url() {
         return url;
     }
 
-    @Override
+    //@Override
     public JsonValue value() {
         return value;
     }

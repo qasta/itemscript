@@ -13,7 +13,7 @@ public class EqualsFunction extends FunctionBase {
         super(system, args);
     }
 
-    @Override
+    //@Override
     public JsonValue execute(TemplateExec templateExec, JsonValue context, JsonValue value) {
         if (args().size() != 1) { throw ItemscriptError.internalError(this, "execute.only.one.arg.allowed", args()
                 + ""); }

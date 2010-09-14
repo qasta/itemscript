@@ -31,7 +31,7 @@ public class ValidateFunction extends FunctionBase {
 	 */
 	public static void init() {
 		FunctionFoundry.put("validate", new FunctionFactory() {
-			@Override
+			//@Override
 			public Function create(JsonSystem system, List<Expression> args) {
 				return new ValidateFunction(system, args);
 			}
@@ -51,7 +51,7 @@ public class ValidateFunction extends FunctionBase {
 		schema = new Schema(system);
 	}
 
-	@Override
+	//@Override
 	public JsonValue execute(TemplateExec templateExec, JsonValue context, JsonValue value) {;
 		if (value == null) {
 			return Template.setErrorMessage(onError(ItemscriptError.internalError(this, "execute.validate.value.was.null",

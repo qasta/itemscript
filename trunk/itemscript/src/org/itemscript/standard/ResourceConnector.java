@@ -59,7 +59,7 @@ public final class ResourceConnector extends ConnectorBase implements SyncGetCon
         super(system);
     }
 
-    @Override
+    //@Override
     public JsonValue get(Url url) {
         return getResource(url);
     }

@@ -8,12 +8,12 @@ public class CloseArgToken extends Token {
         super(-1, -1);
     }
 
-    @Override
+    //@Override
     public boolean isCloseParanToken() {
         return true;
     }
 
-    @Override
+    //@Override
     public String toString() {
         return "[CloseArgToken]";
     }

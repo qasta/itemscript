@@ -16,7 +16,7 @@ public class ExpressionToken extends Token {
         this.content = content;
     }
 
-    @Override
+    //@Override
     public ExpressionToken asExpressionToken() {
         return this;
     }
@@ -37,7 +37,7 @@ public class ExpressionToken extends Token {
         return content.equals(".end");
     }
 
-    @Override
+    //@Override
     public boolean isExpressionToken() {
         return true;
     }
@@ -62,7 +62,7 @@ public class ExpressionToken extends Token {
         return content.equals(".section");
     }
 
-    @Override
+    //@Override
     public String toString() {
         return "[ExpressionToken content='" + content + "']";
     }

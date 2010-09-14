@@ -86,7 +86,7 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
         // Now attach an event handler in case someone changes it...
         postEncapsulatedVal.item()
                 .addHandler(new Handler() {
-                    @Override
+                    //@Override
                     public void handle(Event event) {
                         // If it's removed that's an error.
                         if (event.eventType()
@@ -119,15 +119,15 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
         return meta;
     }
 
-    @Override
+    //@Override
     public void get(final Url url, final GetCallback callback) {
         RequestUtils.sendGetRequest(url + "", new RequestCallback() {
-            @Override
+            //@Override
             public void onError(Request request, Throwable e) {
                 callback.onError(e);
             }
 
-            @Override
+            //@Override
             public void onResponseReceived(Request request, Response response) {
                 String statusCode = response.getStatusCode() + "";
                 // Currently only handles 2xx status codes... 3xx and so on are treated as errors.
@@ -164,15 +164,15 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
         });
     }
 
-    @Override
+    //@Override
     public void post(final Url url, JsonValue value, final PutCallback callback) {
         RequestCallback requestCallback = new RequestCallback() {
-            @Override
+            //@Override
             public void onError(Request request, Throwable exception) {
                 callback.onError(exception);
             }
 
-            @Override
+            //@Override
             public void onResponseReceived(Request request, Response response) {
                 String statusCode = response.getStatusCode() + "";
                 // Treat any 2xx or 3xx response code as successful... we should really treat certain 3xx
@@ -201,15 +201,15 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
         }
     }
 
-    @Override
+    //@Override
     public void put(final Url url, JsonValue value, final PutCallback callback) {
         RequestCallback requestCallback = new RequestCallback() {
-            @Override
+            //@Override
             public void onError(Request request, Throwable exception) {
                 callback.onError(exception);
             }
 
-            @Override
+            //@Override
             public void onResponseReceived(Request request, Response response) {
                 String statusCode = response.getStatusCode() + "";
                 // Currently any response to a put that isn't a 2xx is considered an error.
@@ -237,15 +237,15 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
         }
     }
 
-    @Override
+    //@Override
     public void remove(final Url url, final RemoveCallback callback) {
         RequestCallback requestCallback = new RequestCallback() {
-            @Override
+            //@Override
             public void onError(Request request, Throwable exception) {
                 callback.onError(exception);
             }
 
-            @Override
+            //@Override
             public void onResponseReceived(Request request, Response response) {
                 String statusCode = response.getStatusCode() + "";
                 // Currently any response to a delete that isn't a 2xx is considered an error.
@@ -266,7 +266,7 @@ public class GwtHttpConnector implements AsyncGetConnector, AsyncPutConnector, A
         }
     }
 
-    @Override
+    //@Override
     public JsonSystem system() {
         return system;
     }

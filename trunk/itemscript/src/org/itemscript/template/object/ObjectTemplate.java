@@ -25,7 +25,7 @@ public class ObjectTemplate implements Element, HasSystem {
         return this;
     }
 
-    @Override
+    //@Override
     public JsonValue interpret(TemplateExec templateExec, JsonValue context) {
         JsonObject out = system().createObject();
         for (String key : literalKeys.keySet()) {
@@ -44,12 +44,12 @@ public class ObjectTemplate implements Element, HasSystem {
         return true;
     }
 
-    @Override
+    //@Override
     public JsonSystem system() {
         return system;
     }
 
-    @Override
+    //@Override
     public String toString() {
         return "[ObjectTemplate literalKeys=" + literalKeys + " regularKeys=" + regularKeys + "]";
     }

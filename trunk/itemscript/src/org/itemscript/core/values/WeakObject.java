@@ -58,142 +58,142 @@ public class WeakObject extends WeakContainer implements JsonObject, ToJsonStrin
         super(system);
     }
 
-    @Override
+    //@Override
     public JsonObject asObject() {
         return this;
     }
 
-    @Override
+    //@Override
     public void clear() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    //@Override
     public boolean containsKey(Object key) {
         return values.containsKey(key);
     }
 
-    @Override
+    //@Override
     public boolean containsKey(String key) {
         return values.containsKey(key);
     }
 
-    @Override
+    //@Override
     public boolean containsValue(Object value) {
         return values.containsValue(value);
     }
 
-    @Override
+    //@Override
     public JsonObject copy() {
         return JsonAccessHelper.copyObject(system(), this);
     }
 
-    @Override
+    //@Override
     public Set<java.util.Map.Entry<String, JsonValue>> entrySet() {
         return values.entrySet();
     }
 
-    @Override
+    //@Override
     public JsonValue get(Object key) {
         return values.get(key);
     }
 
-    @Override
+    //@Override
     public JsonValue getValue(String key) {
         return values.get(key);
     }
 
-    @Override
+    //@Override
     public boolean isEmpty() {
         return values.isEmpty();
     }
 
-    @Override
+    //@Override
     public boolean isObject() {
         return true;
     }
 
-    @Override
+    //@Override
     public Set<String> keySet() {
         return values.keySet();
     }
 
-    @Override
+    //@Override
     public JsonObject p(String key, Boolean value) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    //@Override
     public JsonObject p(String key, Double value) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    //@Override
     public JsonObject p(String key, Float value) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    //@Override
     public JsonObject p(String key, Integer value) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    //@Override
     public JsonObject p(String key, JsonValue value) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    //@Override
     public JsonObject p(String key, Long value) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    //@Override
     public JsonObject p(String key, String value) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    //@Override
     public JsonValue put(String arg0, JsonValue arg1) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    //@Override
     public void putAll(Map<? extends String, ? extends JsonValue> arg0) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    //@Override
     public JsonValue remove(Object arg0) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    //@Override
     public int size() {
         return values.size();
     }
 
-    @Override
+    //@Override
     public String toCompactJsonString() {
         return JsonAccessHelper.objectToCompactJsonString(this);
     }
 
-    @Override
+    //@Override
     public String toJsonString() {
         return toJsonString(0) + "\n";
     }
 
-    @Override
+    //@Override
     public String toJsonString(int indent) {
         return JsonAccessHelper.objectToJsonString(this, indent);
     }
 
-    @Override
+    //@Override
     public String toString() {
         return toJsonString();
     }
 
-    @Override
+    //@Override
     public Collection<JsonValue> values() {
         throw new UnsupportedOperationException();
     }

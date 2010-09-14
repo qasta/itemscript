@@ -11,7 +11,7 @@ public class NotFunction extends FunctionBase {
         super(system, null);
     }
 
-    @Override
+    //@Override
     public JsonValue execute(TemplateExec templateExec, JsonValue context, JsonValue value) {
         if (value != null && !value.isBoolean()) { throw ItemscriptError.internalError(this,
                 "value.was.not.boolean", value + ""); }

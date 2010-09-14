@@ -13,7 +13,7 @@ public class SubstringFunction extends FunctionBase {
         super(system, args);
     }
 
-    @Override
+    //@Override
     public JsonValue execute(TemplateExec templateExec, JsonValue context, JsonValue value) {
         if (value == null || !value.isString()) { throw ItemscriptError.internalError(this,
                 "execute.value.was.not.a.string", value + ""); }

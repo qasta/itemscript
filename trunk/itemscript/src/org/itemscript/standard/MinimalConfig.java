@@ -64,12 +64,12 @@ public class MinimalConfig implements JsonConfig {
 
     private final Random random = new Random();
 
-    @Override
+    //@Override
     public JsonCreator createJsonCreator(JsonSystem system) {
         return new StandardJsonCreator(system);
     }
 
-    @Override
+    //@Override
     public String generateB64id() {
         UUID uuid = UUID.randomUUID();
         byte[] bytes = new byte[16];
@@ -78,17 +78,17 @@ public class MinimalConfig implements JsonConfig {
         return new String(Base64.encodeForUrl(bytes));
     }
 
-    @Override
+    //@Override
     public String generateUuid() {
         return UUID.randomUUID()
                 .toString();
     }
 
-    @Override
+    //@Override
     public int nextRandomInt() {
         return random.nextInt();
     }
 
-    @Override
+    //@Override
     public void seedSystem(JsonSystem system) {}
 }

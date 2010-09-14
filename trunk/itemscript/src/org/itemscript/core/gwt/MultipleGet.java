@@ -76,24 +76,24 @@ public class MultipleGet implements HasSystem {
     public static MultipleGet load(final JsonSystem system, Map<String, String> urls,
             final MultipleGetCallback callback) {
         MultipleGet multipleGet = new MultipleGet(system, urls, new MultipleGetCallback() {
-            @Override
+            //@Override
             public void onError(Map<String, JsonValue> responses, Map<String, Throwable> errors) {
                 callback.onError(responses, errors);
             }
 
-            @Override
+            //@Override
             public void onIntermediateError(Map<String, JsonValue> responses, Map<String, Throwable> errors,
                     String key, Throwable e) {
                 onIntermediateError(responses, errors, key, e);
             }
 
-            @Override
+            //@Override
             public void onIntermediateSuccess(Map<String, JsonValue> responses, String key, JsonValue value) {
                 system.put(key, value);
                 onIntermediateSuccess(responses, key, value);
             }
 
-            @Override
+            //@Override
             public void onSuccess(Map<String, JsonValue> responses) {
                 callback.onSuccess(responses);
             }
@@ -138,7 +138,7 @@ public class MultipleGet implements HasSystem {
         for (final String key : urls.keySet()) {
             final String url = urls.get(key);
             system.get(url, new GetCallback() {
-                @Override
+                //@Override
                 public void onError(Throwable e) {
                     // Put a null value in responses to keep the count right.
                     responses.put(key, null);
@@ -147,7 +147,7 @@ public class MultipleGet implements HasSystem {
                     testForComplete();
                 }
 
-                @Override
+                //@Override
                 public void onSuccess(JsonValue value) {
                     responses.put(key, value);
                     callback.onIntermediateSuccess(responses, key, value);
@@ -157,7 +157,7 @@ public class MultipleGet implements HasSystem {
         }
     }
 
-    @Override
+    //@Override
     public JsonSystem system() {
         return system;
     }

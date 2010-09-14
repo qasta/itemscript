@@ -48,7 +48,7 @@ public class ObjectAnalyzer implements HasSystem {
         return new ObjectTemplate(system(), literalKeys, regularKeys);
     }
 
-    @Override
+    //@Override
     public JsonSystem system() {
         return system;
     }

@@ -9,12 +9,12 @@ public class QuotedStringToken extends Token {
         this.string = string;
     }
 
-    @Override
+    //@Override
     public QuotedStringToken asQuotedStringToken() {
         return this;
     }
 
-    @Override
+    //@Override
     public boolean isQuotedStringToken() {
         return true;
     }
@@ -23,7 +23,7 @@ public class QuotedStringToken extends Token {
         return string;
     }
 
-    @Override
+    //@Override
     public String toString() {
         return "[QuotedStringToken string='" + string + "']";
     }

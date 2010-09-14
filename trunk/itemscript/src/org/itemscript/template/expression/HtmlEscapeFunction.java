@@ -13,7 +13,7 @@ public class HtmlEscapeFunction extends FunctionBase {
         super(system, null);
     }
 
-    @Override
+    //@Override
     public JsonString execute(TemplateExec template, JsonValue context, JsonValue value) {
         return system().createString(GeneralUtil.htmlEncode(Template.coerceToString(value)));
     }

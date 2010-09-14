@@ -146,7 +146,7 @@ final class NumberType extends TypeBase {
         }
     }
 
-    @Override
+    //@Override
     public boolean isNumber() {
         return true;
     }
@@ -156,7 +156,7 @@ final class NumberType extends TypeBase {
                 .p("value", num);
     }
 
-    @Override
+    //@Override
     public void validate(String path, JsonValue value) {
         super.validate(path, value);
         if (!value.isNumber()) { throw ItemscriptError.internalError(this, "validate.value.was.not.number",

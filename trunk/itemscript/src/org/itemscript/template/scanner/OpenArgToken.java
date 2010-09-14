@@ -8,12 +8,12 @@ public class OpenArgToken extends Token {
         super(-1, -1);
     }
 
-    @Override
+    //@Override
     public boolean isOpenParanToken() {
         return true;
     }
 
-    @Override
+    //@Override
     public String toString() {
         return "[OpenArgToken]";
     }

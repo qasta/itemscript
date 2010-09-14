@@ -61,13 +61,13 @@ public final class FileConnector extends ConnectorBase implements SyncGetConnect
         super(system);
     }
 
-    @Override
+    //@Override
     public JsonObject countItems(Url url) {
         return countObject(getKeys(url).asArray()
                 .size());
     }
 
-    @Override
+    //@Override
     public JsonValue get(Url url) {
         File file = getFile(url);
         String contentType = URLConnection.guessContentTypeFromName(url.filename());
@@ -118,7 +118,7 @@ public final class FileConnector extends ConnectorBase implements SyncGetConnect
         return file;
     }
 
-    @Override
+    //@Override
     public final JsonArray getKeys(Url url) {
         File file = getDirectory(url);
         JsonArray keys = system().createArray();

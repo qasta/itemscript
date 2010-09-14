@@ -73,7 +73,7 @@ public final class ItemscriptItem implements JsonItem {
         this(system, source, null, value);
     }
 
-    @Override
+    //@Override
     public HandlerReg addHandler(Handler handler) {
         if (handlers == null) {
             handlers = new HashMap<String, Handler>();
@@ -84,17 +84,17 @@ public final class ItemscriptItem implements JsonItem {
         return new HandlerReg(this, id);
     }
 
-    @Override
+    //@Override
     public PutResponse createArray(String url) {
         return put(url, system().createArray());
     }
 
-    @Override
+    //@Override
     public PutResponse createObject(String url) {
         return put(url, system().createObject());
     }
 
-    @Override
+    //@Override
     public void detachValue() {
         if (value() == null) { return; }
         ((ItemscriptValue) value).setItem(null);
@@ -125,13 +125,13 @@ public final class ItemscriptItem implements JsonItem {
         }
     }
 
-    @Override
+    //@Override
     public JsonValue get(String url) {
         return get(system().util()
                 .createUrl(url));
     }
 
-    @Override
+    //@Override
     public void get(String url, GetCallback callback) {
         get(system().util()
                 .createUrl(url), callback);
@@ -161,42 +161,42 @@ public final class ItemscriptItem implements JsonItem {
         }
     }
 
-    @Override
+    //@Override
     public JsonArray getArray(String key) {
         return JsonAccessHelper.asArray(get(key));
     }
 
-    @Override
+    //@Override
     public byte[] getBinary(String key) {
         return JsonAccessHelper.asBinary(get(key));
     }
 
-    @Override
+    //@Override
     public Boolean getBoolean(String key) {
         return JsonAccessHelper.asBoolean(get(key));
     }
 
-    @Override
+    //@Override
     public Double getDouble(String key) {
         return JsonAccessHelper.asDouble(get(key));
     }
 
-    @Override
+    //@Override
     public Float getFloat(String key) {
         return JsonAccessHelper.asFloat(get(key));
     }
 
-    @Override
+    //@Override
     public Integer getInt(String key) {
         return JsonAccessHelper.asInt(get(key));
     }
 
-    @Override
+    //@Override
     public Long getLong(String key) {
         return JsonAccessHelper.asLong(get(key));
     }
 
-    @Override
+    //@Override
     public Object getNative(String key) {
         return JsonAccessHelper.asNative(get(key));
     }
@@ -214,17 +214,17 @@ public final class ItemscriptItem implements JsonItem {
         return next;
     }
 
-    @Override
+    //@Override
     public JsonObject getObject(String key) {
         return JsonAccessHelper.asObject(get(key));
     }
 
-    @Override
+    //@Override
     public String getString(String key) {
         return JsonAccessHelper.asString(get(key));
     }
 
-    @Override
+    //@Override
     public JsonValue getValue(String url) {
         return get(url);
     }
@@ -238,7 +238,7 @@ public final class ItemscriptItem implements JsonItem {
         return (url.fragment() != null) && (!url.hasScheme()) && (!url.hasPath()) && (!url.hasQuery());
     }
 
-    @Override
+    //@Override
     public JsonObject meta() {
         return meta;
     }
@@ -265,49 +265,49 @@ public final class ItemscriptItem implements JsonItem {
         }
     }
 
-    @Override
+    //@Override
     public PutResponse put(String url, Boolean value) {
         return putValue(url, system().createBoolean(value));
     }
 
-    @Override
+    //@Override
     public PutResponse put(String url, byte[] value) {
         return putValue(url, system().createString(value));
     }
 
-    @Override
+    //@Override
     public PutResponse put(String url, Double value) {
         return putValue(url, system().createNumber(value));
     }
 
-    @Override
+    //@Override
     public PutResponse put(String url, Float value) {
         return putValue(url, system().createNumber(value));
     }
 
-    @Override
+    //@Override
     public PutResponse put(String url, Integer value) {
         return putValue(url, system().createNumber(value));
     }
 
-    @Override
+    //@Override
     public PutResponse put(String url, JsonValue value) {
         return putValue(system().util()
                 .createUrl(url), value);
     }
 
-    @Override
+    //@Override
     public void put(String url, JsonValue value, PutCallback callback) {
         put(system().util()
                 .createUrl(url), value, callback);
     }
 
-    @Override
+    //@Override
     public PutResponse put(String url, Long value) {
         return putValue(url, system().createString(value));
     }
 
-    @Override
+    //@Override
     public PutResponse put(String url, String value) {
         return putValue(url, system().createString(value));
     }
@@ -328,12 +328,12 @@ public final class ItemscriptItem implements JsonItem {
         }
     }
 
-    @Override
+    //@Override
     public PutResponse putNative(String url, Object value) {
         return put(url, system().createNative(value));
     }
 
-    @Override
+    //@Override
     public PutResponse putValue(String url, JsonValue value) {
         return putValue(system().util()
                 .createUrl(url), value);
@@ -368,13 +368,13 @@ public final class ItemscriptItem implements JsonItem {
         }
     }
 
-    @Override
+    //@Override
     public RemoveResponse remove(String url) {
         return remove(system().util()
                 .createUrl(url));
     }
 
-    @Override
+    //@Override
     public void remove(String url, RemoveCallback callback) {
         remove(system().util()
                 .createUrl(url), callback);
@@ -425,35 +425,35 @@ public final class ItemscriptItem implements JsonItem {
                 .createRelativeUrl(source, url), callback);
     }
 
-    @Override
+    //@Override
     public void removeHandler(HandlerReg reg) {
         if (handlers != null) {
             handlers.remove(reg.id());
         }
     }
 
-    @Override
+    //@Override
     public RemoveResponse removeValue(String url) {
         remove(url);
         return new ItemscriptRemoveResponse(null);
     }
 
-    @Override
+    //@Override
     public String source() {
         return source + "";
     }
 
-    @Override
+    //@Override
     public JsonSystem system() {
         return system;
     }
 
-    @Override
+    //@Override
     public String toString() {
         return "[ItemscriptItem sourceUrl=" + source + " value=" + value.toCompactJsonString() + "]";
     }
 
-    @Override
+    //@Override
     public JsonValue value() {
         return value;
     }
