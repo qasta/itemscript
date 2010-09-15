@@ -52,7 +52,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class JsonSystemTest extends ItemscriptTestBase {
-    final static String basePath = "/d:/workspace/Itemscript/src/test/org/itemscript/";
+	   final static String basePath = System.getProperty("user.dir")+"/src/test/org/itemscript/";
+//	   final static String basePath = "/d:/workspace/Itemscript/src/test/org/itemscript/";
     //    @Test
     //    public void testTextFileGet() {
     //        JsonArray array = system().get("file:" + basePath + "test.txt")
