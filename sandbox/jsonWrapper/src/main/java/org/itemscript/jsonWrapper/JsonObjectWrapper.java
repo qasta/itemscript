@@ -12,5 +12,4 @@ public interface JsonObjectWrapper {
 	public abstract Double getDouble(String key);
 	public abstract Integer getInteger(String key);
 	public abstract JsonArrayWrapper getArray(String key);
-	public abstract boolean isJsonType(JsonType t);
 }
