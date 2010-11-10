@@ -16,26 +16,6 @@ public class JacksonObjectWrapper extends JacksonBase implements
 
 	private JsonNode node;
 
-	public boolean isJsonType(JsonType t) {
-		if (t != null) {
-			switch (t) {
-			case STRING:
-				return node.isTextual();
-			case BOOLEAN:
-				return node.isBoolean();
-			case OBJECT:
-				return node.isObject();
-			case NUMBER:
-				return node.isNumber();
-			case ARRAY:
-				return node.isArray();
-			case NULL:
-				return node.isNull();
-			}
-		}
-		return false;
-	}
-
 	public JacksonObjectWrapper(JsonNode n) {
 		this.node = n;
 	}
