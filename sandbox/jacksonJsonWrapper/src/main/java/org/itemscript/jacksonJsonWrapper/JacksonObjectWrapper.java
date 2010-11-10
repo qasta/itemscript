@@ -11,14 +11,35 @@ import org.itemscript.jsonWrapper.JsonObjectWrapper;
 import org.itemscript.jsonWrapper.JsonArrayWrapper;
 import org.itemscript.jsonWrapper.JsonType;
 
-public class JacksonObjectWrapper extends JacksonBase implements JsonObjectWrapper{
+public class JacksonObjectWrapper extends JacksonBase implements
+		JsonObjectWrapper {
 
 	private JsonNode node;
-	
-	public JacksonObjectWrapper(JsonNode n){
+
+	public boolean isJsonType(JsonType t) {
+		if (t != null) {
+			switch (t) {
+			case STRING:
+				return node.isTextual();
+			case BOOLEAN:
+				return node.isBoolean();
+			case OBJECT:
+				return node.isObject();
+			case NUMBER:
+				return node.isNumber();
+			case ARRAY:
+				return node.isArray();
+			case NULL:
+				return node.isNull();
+			}
+		}
+		return false;
+	}
+
+	public JacksonObjectWrapper(JsonNode n) {
 		this.node = n;
 	}
-	
+
 	public JsonArrayWrapper getArray(String key) {
 		return getArray(node.get(key));
 	}
@@ -42,7 +63,7 @@ public class JacksonObjectWrapper extends JacksonBase implements JsonObjectWrapp
 	public Collection<String> getKeys() {
 		List<String> result = new ArrayList<String>();
 		Iterator<String> iterator = node.getFieldNames();
-		while(iterator.hasNext()){
+		while (iterator.hasNext()) {
 			result.add(iterator.next());
 		}
 		return Collections.unmodifiableList(result);
